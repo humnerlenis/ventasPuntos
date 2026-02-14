@@ -196,7 +196,11 @@ function clearCanvas(canvas) {
 // Configurar event listeners generales
 function setupEventListeners() {
     // Botones de generar PDF
-    document.getElementById('generarPDF')?.addEventListener('click', generarPDF);
+    document.getElementById('generarPDF')?.addEventListener('click', function() {
+        if (validarFormularioDisglobal()) {
+            generarPDF();
+        }
+    });
     document.getElementById('enviarWhatsApp')?.addEventListener('click', enviarPorWhatsApp);
     document.getElementById('qrScannerBtn')?.addEventListener('click', scanQR);
 }
@@ -220,6 +224,312 @@ function scanQR() {
         alert('Datos del RIF cargados exitosamente');
     }, 2000);
 }
+
+//######### VALIDACIONES PAG DISGLOBAL #########
+/*
+function validarFormularioDisglobal() {
+    const camposVacios = [];
+    const campos = document.querySelectorAll('#disglobalForm input:not([type="radio"]):not([type="checkbox"]), #disglobalForm select, #disglobalForm textarea');
+    
+    campos.forEach(campo => {
+        // Omitir campos ocultos o deshabilitados
+        if (campo.type === 'hidden' || campo.disabled) return;
+        
+        // Verificar si el campo está visible
+        const estilo = window.getComputedStyle(campo);
+        if (estilo.display === 'none' || estilo.visibility === 'hidden') return;
+        
+        // Validar que no esté vacío (solo si es requerido o queremos validar todos)
+        let valorVacio = false;
+        if (campo.tagName === 'SELECT') {
+            valorVacio = !campo.value || campo.value === '';
+        } else {
+            valorVacio = !campo.value.trim();
+        }
+        
+        if (valorVacio && campo.hasAttribute('required')) {
+            // Obtener nombre del campo para el mensaje
+            let nombreCampo = '';
+            const label = document.querySelector(`label[for="${campo.id}"]`);
+            if (label) {
+                nombreCampo = label.textContent.trim();
+            } else {
+                const parentDiv = campo.closest('.form-group');
+                if (parentDiv) {
+                    const parentLabel = parentDiv.querySelector('label');
+                    if (parentLabel) nombreCampo = parentLabel.textContent.trim();
+                }
+            }
+            
+            camposVacios.push(nombreCampo || campo.name || campo.id || 'Campo sin nombre');
+            campo.style.borderColor = '#ff4444';
+        } else {
+            campo.style.borderColor = '';
+        }
+    });
+
+    // Validaciones condicionales específicas
+    if (document.getElementById('simSi')?.checked) {
+        const operadora = document.getElementById('operadora');
+        if (operadora && (!operadora.value || !operadora.value.trim())) {
+            camposVacios.push('Operadora');
+            operadora.style.borderColor = '#ff4444';
+        }
+    }
+
+    if (document.getElementById('seguroSi')?.checked) {
+        const tarifaSeguro = document.getElementById('tarifaSeguro');
+        const frecuenciaCobro = document.getElementById('frecuenciaCobro');
+        const montoTarifa = document.getElementById('montoTarifa');
+        
+        if (tarifaSeguro && !tarifaSeguro.value.trim()) {
+            camposVacios.push('Tarifa del Seguro');
+            tarifaSeguro.style.borderColor = '#ff4444';
+        }
+        if (frecuenciaCobro && (!frecuenciaCobro.value || !frecuenciaCobro.value.trim())) {
+            camposVacios.push('Frecuencia de Cobro');
+            frecuenciaCobro.style.borderColor = '#ff4444';
+        }
+        if (montoTarifa && !montoTarifa.value.trim()) {
+            camposVacios.push('Monto de Tarifa');
+            montoTarifa.style.borderColor = '#ff4444';
+        }
+    }
+
+    if (document.getElementById('appsSi')?.checked) {
+        const nombreApp = document.getElementById('nombreApp');
+        if (nombreApp && !nombreApp.value.trim()) {
+            camposVacios.push('Nombre de la Aplicación');
+            nombreApp.style.borderColor = '#ff4444';
+        }
+    }
+
+    if (document.querySelector('input[name="tipoCliente"][value="juridica"]')?.checked) {
+        const camposRegistro = [
+            { id: 'nombreRegistroMercantil', nombre: 'Nombre del Registro Mercantil' },
+            { id: 'fechaRegistro', nombre: 'Fecha de Registro' },
+            { id: 'nroRegistro', nombre: 'Nro de Registro' },
+            { id: 'numeroTomo', nombre: 'Número de Tomo' },
+            { id: 'clausulaDelegatoria', nombre: 'Clausula Delegatoria' },
+            { id: 'ciudadRegistro', nombre: 'Ciudad de Registro' }
+        ];
+        
+        camposRegistro.forEach(campoInfo => {
+            const campo = document.getElementById(campoInfo.id);
+            if (campo && !campo.value.trim()) {
+                camposVacios.push(campoInfo.nombre);
+                campo.style.borderColor = '#ff4444';
+            }
+        });
+    }
+
+    if (camposVacios.length > 0) {
+        alert('Campos obligatorios vacíos:\n- ' + camposVacios.join('\n- '));
+        return false;
+    }
+    
+    return true;
+}*/
+
+function validarFormularioDisglobal() {
+    const camposVacios = [];
+    const tipoCliente = document.querySelector('input[name="tipoCliente"]:checked')?.value;
+    if (tipoCliente === 'natural') {
+        // Para persona natural, copiar datos de razón social al representante legal
+        const razonSocial = document.querySelector('input[name="razonSocial"]');
+        let rif = document.querySelector('input[name="rif"]').value ;
+        const telefono = document.querySelector('input[name="telefono"]').value;
+        const correo = document.querySelector('input[name="correo"]').value; 
+        const nombresRepresentante = document.getElementById('nombresRepresentante');
+        const cedulaRepresentante = document.getElementById('cedulaRepresentante');
+        const cargoRepresentante = document.getElementById('cargoRepresentante');
+        const telefonoRepresentante = document.getElementById('telefonoRepresentante');
+        const correoRepresentante = document.getElementById('correoRepresentante');
+        if (razonSocial && nombresRepresentante) {   
+            nombresRepresentante.value = razonSocial.value;
+            cedulaRepresentante.value = rif.slice(0, -1); // Asumiendo que el RIF termina con una letra, se quita para la cédula
+            cargoRepresentante.value = 'DUEÑO';
+            telefonoRepresentante.value = telefono;
+            correoRepresentante.value = correo;
+        }
+    }
+
+    const campos = document.querySelectorAll('#disglobalForm input:not([type="radio"]):not([type="checkbox"]), #disglobalForm select, #disglobalForm textarea');
+    
+    campos.forEach(campo => {
+        // Omitir campos ocultos o deshabilitados
+        if (campo.type === 'hidden' || campo.disabled) return;
+        
+        // Verificar si el campo está visible
+        const estilo = window.getComputedStyle(campo);
+        if (estilo.display === 'none' || estilo.visibility === 'hidden') return;
+        
+        // Validar que no esté vacío (solo si es requerido o queremos validar todos)
+        let valorVacio = false;
+        if (campo.tagName === 'SELECT') {
+            valorVacio = !campo.value || campo.value === '';
+        } else {
+            valorVacio = !campo.value.trim();
+        }
+        
+        if (valorVacio && campo.hasAttribute('required')) {
+            // Obtener nombre del campo para el mensaje
+            let nombreCampo = '';
+            const label = document.querySelector(`label[for="${campo.id}"]`);
+            if (label) {
+                nombreCampo = label.textContent.trim();
+            } else {
+                const parentDiv = campo.closest('.form-group');
+                if (parentDiv) {
+                    const parentLabel = parentDiv.querySelector('label');
+                    if (parentLabel) nombreCampo = parentLabel.textContent.trim();
+                }
+            }
+            
+            camposVacios.push(nombreCampo || campo.name || campo.id || 'Campo sin nombre');
+            campo.style.borderColor = '#ff4444';
+        } else {
+            campo.style.borderColor = '';
+        }
+    });
+
+    // Validaciones condicionales específicas
+    if (document.getElementById('simSi')?.checked) {
+        // Validar operadora
+        const operadora = document.getElementById('operadora');
+        if (operadora && (!operadora.value || !operadora.value.trim())) {
+            camposVacios.push('Operadora');
+            operadora.style.borderColor = '#ff4444';
+        }
+        
+        // Validar serial del SIM Card
+        const serialSim = document.getElementById('serialSim');
+        if (serialSim && !serialSim.value.trim()) {
+            camposVacios.push('Serial del SIM Card');
+            serialSim.style.borderColor = '#ff4444';
+        }
+    }
+
+    if (document.getElementById('seguroSi')?.checked) {
+        const tarifaSeguro = document.getElementById('tarifaSeguro');
+        const frecuenciaCobro = document.getElementById('frecuenciaCobro');
+        const montoTarifa = document.getElementById('montoTarifa');
+        
+        if (tarifaSeguro && !tarifaSeguro.value.trim()) {
+            camposVacios.push('Tarifa del Seguro');
+            tarifaSeguro.style.borderColor = '#ff4444';
+        }
+        if (frecuenciaCobro && (!frecuenciaCobro.value || !frecuenciaCobro.value.trim())) {
+            camposVacios.push('Frecuencia de Cobro');
+            frecuenciaCobro.style.borderColor = '#ff4444';
+        }
+        if (montoTarifa && !montoTarifa.value.trim()) {
+            camposVacios.push('Monto de Tarifa');
+            montoTarifa.style.borderColor = '#ff4444';
+        }
+    }
+
+    if (document.getElementById('appsSi')?.checked) {
+        const nombreApp = document.getElementById('nombreApp');
+        if (nombreApp && !nombreApp.value.trim()) {
+            camposVacios.push('Nombre de la Aplicación');
+            nombreApp.style.borderColor = '#ff4444';
+        }
+    }
+
+    // Validación específica para Persona Jurídica
+    if (tipoCliente === 'juridica') {
+        // Validar que el tipo de RIF sea J
+        const tipoRif = document.querySelector('select[name="tipoRif"]');
+        if (tipoRif && tipoRif.value !== 'J') {
+            camposVacios.push('Tipo de RIF debe ser J para Persona Jurídica');
+            tipoRif.style.borderColor = '#ff4444';
+            
+            // Mostrar mensaje específico
+            alert('Para Persona Jurídica, el Tipo de RIF debe ser "J"');
+        } else if (tipoRif) {
+            tipoRif.style.borderColor = '';
+        }
+
+        // Validar campos del Registro Mercantil
+        const camposRegistro = [
+            { id: 'nombreRegistroMercantil', nombre: 'Nombre del Registro Mercantil' },
+            { id: 'fechaRegistro', nombre: 'Fecha de Registro' },
+            { id: 'nroRegistro', nombre: 'Nro de Registro' },
+            { id: 'numeroTomo', nombre: 'Número de Tomo' },
+            { id: 'clausulaDelegatoria', nombre: 'Clausula Delegatoria' },
+            { id: 'ciudadRegistro', nombre: 'Ciudad de Registro' }
+        ];
+        
+        camposRegistro.forEach(campoInfo => {
+            const campo = document.getElementById(campoInfo.id);
+            if (campo && !campo.value.trim()) {
+                camposVacios.push(campoInfo.nombre);
+                campo.style.borderColor = '#ff4444';
+            }
+        });
+
+        // Validar campos del Representante Legal (solo para persona jurídica)
+        const camposRepresentante = [
+            { id: 'cedulaRepresentante', nombre: 'Cédula del Representante' },
+            { id: 'nombresRepresentante', nombre: 'Nombres y Apellidos del Representante' },
+            { id: 'cargoRepresentante', nombre: 'Cargo del Representante' },
+            { id: 'telefonoRepresentante', nombre: 'Teléfono del Representante' },
+            { id: 'correoRepresentante', nombre: 'Correo del Representante' }
+        ];
+            if(tipoCliente !== 'natural') {
+            camposRepresentante.forEach(campoInfo => {
+                const campo = document.getElementById(campoInfo.id);
+                if (campo && !campo.value.trim()) {
+                    camposVacios.push(campoInfo.nombre);
+                    campo.style.borderColor = '#ff4444';
+                }
+            });
+        }
+    } else if (tipoCliente === 'natural' || tipoCliente === 'firma') {
+        // Para persona natural o firma personal, validamos que el tipo de RIF sea V
+        const tipoRif = document.querySelector('select[name="tipoRif"]');
+        if (tipoRif && tipoRif.value !== 'V' && tipoRif.value !== 'E') {
+            camposVacios.push('Tipo de RIF debe ser V o E para Persona Natural o Firma Personal');
+            tipoRif.style.borderColor = '#ff4444';
+            alert('Para Persona Natural o Firma Personal, el Tipo de RIF debe ser "V" o "E"');
+        } else if (tipoRif) {
+            tipoRif.style.borderColor = '';
+        }
+
+        // Nota: Los campos del representante legal NO se validan para persona natural
+        // ya que se usan los datos de la razón social
+        console.log('Validación de persona natural: usando datos de razón social');
+    }
+
+    // Validación específica para el formato del RIF
+    const rifInput = document.getElementById('rif');
+    if (rifInput && rifInput.value.trim()) {
+        const rifValue = rifInput.value.trim();
+        
+        // Validar que el RIF tenga el formato correcto (solo números)
+        if (!/^\d+$/.test(rifValue)) {
+            camposVacios.push('RIF (solo números, sin letras ni guiones)');
+            rifInput.style.borderColor = '#ff4444';
+            alert('El RIF debe contener solo números');
+        }
+    }
+
+    if (camposVacios.length > 0) {
+        alert('Campos obligatorios vacíos o incorrectos:\n- ' + camposVacios.join('\n- '));
+        return false;
+    }
+    
+    return true;
+}
+
+
+
+//######## FIN VALIDACIONES PAG DISGLOBAL #########
+
+
+
+
 
 // Función para generar PDF según el aliado
 function generarPDF() {
@@ -419,7 +729,7 @@ function generarPlanillaUnicaDisglobal() {
     }
 
     doc.text(`${modeloEquipo.toUpperCase().slice(0, 30)}`, 22, 147);
-    //doc.text(`${cantidadEquipo.toUpperCase().slice(0, 5)}`, 60, 142);
+    doc.text(`${cantidadEquipo.toUpperCase().slice(0, 5)}`, 60, 147);
 
         switch (incluyeSim) {
         case "si":
@@ -489,14 +799,14 @@ function generarPlanillaUnicaDisglobal() {
     if (signatureCanvas && !isCanvasBlank(signatureCanvas)) {
         const signatureData = signatureCanvas.toDataURL('image/png');
         doc.text(`${razonSocial.toUpperCase().slice(0, 30)}`, 65, 245);
-        doc.text(`${rif.slice(0, 8)}`, 68, 257);
+        doc.text(`${rif.slice(0, 8)}`, 68, 256);
         doc.addImage(signatureData, 'PNG', 65, 258, 35, 10);
         
     }
     
     // Guardar PDF
     doc.save('planilla_unica_disglobal.pdf');
-    alert(fechaRegistro +" "+ fechareg +'   Planilla Unica generada exitosamente');
+    alert('   Planilla Unica generada exitosamente');
 }
 
 function generarCargoDisglobal() {
