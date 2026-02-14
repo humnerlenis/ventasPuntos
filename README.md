@@ -1,1 +1,3 @@
 # ventasPuntos
+siatema para generar las planillas y contratos y plantilla de whatsapp de los diferentes aliados de manera automatica...
+probablemente despues se genere una base de datos para el registro de cada venta, o se cargue de una vez el el formulario de google
