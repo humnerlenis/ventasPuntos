@@ -334,7 +334,7 @@ input[readonly] {
     max-width: 400px;
     border: 1px solid #e2e8f0;
     border-radius: var(--radius-sm);
-    background: white;
+    background: rgb(177, 175, 175);
     cursor: crosshair;
     touch-action: none;
 }

@@ -19,11 +19,15 @@ function initializeForms() {
         tipoClienteRadios.forEach(radio => {
             radio.addEventListener('change', function() {
                 const registroMercantil = document.getElementById('registroMercantilSection');
+                const representanteLegal = document.getElementById('representanteLegalSection');
                 if (this.value === 'natural') {
                     registroMercantil.style.display = 'none';
+                    representanteLegal.style.display = 'none';
                 } else {
                     registroMercantil.style.display = 'block';
+                    representanteLegal.style.display = 'block';
                 }
+
             });
         });
     }
@@ -297,6 +301,27 @@ function generarPlanillaUnicaDisglobal() {
     const numeroTomo = document.querySelector('input[name="numeroTomo"]')?.value || 'No especificado';
     const clausulaDelegatoria = document.querySelector('input[name="clausulaDelegatoria"]')?.value || 'No especificado';
     const ciudadRegistro = document.querySelector('input[name="ciudadRegistro"]')?.value || 'No especificado';
+    const representanteLegal = document.querySelector('input[name="nombresRepresentante"]')?.value || 'No especificado';
+    const cargoRepresentante = document.querySelector('input[name="cargoRepresentante"]')?.value || 'No especificado';
+    const telefonoRepresentante = document.querySelector('input[name="telefonoRepresentante"]')?.value || 'No especificado';
+    const correoRepresentante = document.querySelector('input[name="correoRepresentante"]')?.value || 'No especificado';
+    const cedulaRepresentante = document.querySelector('input[name="cedulaRepresentante"]')?.value || 'No especificado';
+    const modeloEquipo = document.querySelector('input[name="modeloEquipo"]')?.value || 'No especificado';
+    const cantidadEquipo = document.querySelector('input[name="cantidadEquipo"]')?.value || 'No especificado';
+    const incluyeSim = document.querySelector('input[name="incluyeSim"]:checked')?.value || 'No especificado';
+    const operadora = document.querySelector('select[name="operadora"]')?.value || 'No especificado';
+    const incluyeSeguro = document.querySelector('input[name="incluyeSeguro"]:checked')?.value || 'No especificado';    
+    const tarifaSeguro = document.querySelector('input[name="tarifaSeguro"]')?.value || 'No especificado';
+    const frecuenciaCobro = document.querySelector('select[name="frecuenciaCobro"]')?.value || 'No especificado';
+    const montoTarifa = document.querySelector('input[name="montoTarifa"]')?.value || 'No especificado';    
+    const appAdicional = document.querySelector('input[name="appsAdicionales"]:checked')?.value || 'No especificado';
+    const nombreAppAdicional = document.querySelector('input[name="nombreApp"]')?.value || 'No especificado';
+    const serialEquipo = document.querySelector('input[name="serialEquipo"]')?.value || 'No especificado';
+    const serialSim = document.querySelector('input[name="serialSim"]')?.value || 'No especificado';
+    const modeloRecepcion = document.querySelector('input[name="modeloRecepcion"]')?.value || 'No especificado';
+    const marcaRecepcion = document.querySelector('input[name="marcaRecepcion"]')?.value || 'No especificado';
+    const serialRecepcion = document.querySelector('input[name="serialRecepcion"]')?.value || 'No especificado';
+
 
     // Configurar documento
     let imgData= new Image();
@@ -372,13 +397,101 @@ function generarPlanillaUnicaDisglobal() {
     doc.text(`${clausulaDelegatoria.toUpperCase().slice(0, 30)}`, 133, 117);
     doc.text(`${ciudadRegistro.toUpperCase().slice(0, 30)}`, 160, 117);
     
-    
+    if (tipoCliente === 'natural') {
+        doc.setFontSize(9);
+        doc.text(`${rif.slice(0, 8)}`, 16, 132);
+        doc.text(`${razonSocial.toUpperCase().slice(0, 30)}`, 36, 132);
+        doc.text(`${telefono.toUpperCase().slice(0, 11)}`, 123, 132);
+        doc.text(`${correo.toUpperCase().slice(0, 30)}`, 155, 132);
+        doc.setFontSize(7);
+        doc.text(`${razonSocial.toUpperCase().slice(0, 30)}`, 34, 221);
+        doc.text(`${ciudad.toUpperCase().slice(0, 30)}`, 16, 225);
+        doc.text(`${rif.slice(0, 8)}`, 100, 225);
+    } else {
+         doc.setFontSize(9);
+       /* doc.text(`${razonSocial.toUpperCase().slice(0, 30)}`, 16, 132);
+        doc.text(`${telefono.toUpperCase().slice(0, 11)}`, 123, 132);*/
+        doc.text(`${cedulaRepresentante.slice(0, 10)}`, 16, 132);
+        doc.text(`${representanteLegal.toUpperCase().slice(0, 30)}`, 40, 132);
+        doc.text(`${cargoRepresentante.toUpperCase().slice(0, 30)}`, 70, 132);
+        doc.text(`${telefonoRepresentante.toUpperCase().slice(0, 11)}`, 126, 132);
+        doc.text(`${correoRepresentante.toUpperCase().slice(0, 30)}`, 153, 132);
+    }
+
+    doc.text(`${modeloEquipo.toUpperCase().slice(0, 30)}`, 22, 147);
+    //doc.text(`${cantidadEquipo.toUpperCase().slice(0, 5)}`, 60, 142);
+
+        switch (incluyeSim) {
+        case "si":
+            doc.text("X", 71, 147 );
+            break;
+        case "no":
+            doc.text("X", 80, 147 );
+            break;
+        default:
+            break;
+    }
+        switch (operadora) {
+        case "movistar":
+            doc.text("X", 110, 143 );
+            break;
+        case "digitel":
+            doc.text("X", 110, 147 );
+            break;
+        case "movilnet":
+            doc.text("X", 110, 151 );
+            break;
+        default:
+            break;
+    }
+        switch (incluyeSeguro) {
+        case "si":
+            doc.text("X", 123, 147 );
+            doc.text(`${tarifaSeguro.toUpperCase().slice(0, 30)}`, 141, 147);
+             doc.setFontSize(5);
+            doc.text(`${frecuenciaCobro.toUpperCase().slice(0, 30)}`, 159, 147);
+             doc.setFontSize(9);
+            doc.text(`${montoTarifa.toUpperCase().slice(0, 30)}`, 183, 147);
+            break;
+        case "no":  
+            doc.text("X", 132, 147 );
+            break;
+        default:
+            break;
+    }
+
+        switch (appAdicional) { 
+        case "si":
+            doc.text("X", 63, 151 );
+            doc.setFontSize(9);
+            doc.text(`${nombreAppAdicional.toUpperCase().slice(0, 80)}`, 28, 155);
+            break;
+        case "no":
+            doc.text("X", 71, 151 );
+            break;
+        default:
+            break;
+    }
+    doc.setFontSize(9);
+     doc.text(`${serialEquipo.toUpperCase().slice(0, 30)}`, 34, 166);
+     doc.text(`${serialSim.toUpperCase().slice(0, 30)}`, 105, 166);
+
+    doc.text(`${modeloRecepcion.toUpperCase().slice(0, 30)}, ${marcaRecepcion.toUpperCase().slice(0, 30)}, ${serialRecepcion.toUpperCase().slice(0, 30)}`, 16, 174);
+   
+
+
+
+
+
+
     // Agregar firma si existe
     const signatureCanvas = document.getElementById('signatureCanvas');
     if (signatureCanvas && !isCanvasBlank(signatureCanvas)) {
         const signatureData = signatureCanvas.toDataURL('image/png');
-        doc.addImage(signatureData, 'PNG', 20, 150, 80, 30);
-        doc.text('Firma del Representante', 20, 190);
+        doc.text(`${razonSocial.toUpperCase().slice(0, 30)}`, 65, 245);
+        doc.text(`${rif.slice(0, 8)}`, 68, 257);
+        doc.addImage(signatureData, 'PNG', 65, 258, 35, 10);
+        
     }
     
     // Guardar PDF
@@ -386,6 +499,51 @@ function generarPlanillaUnicaDisglobal() {
     alert(fechaRegistro +" "+ fechareg +'   Planilla Unica generada exitosamente');
 }
 
+function generarCargoDisglobal() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();    
+        
+    const tipoCliente = document.querySelector('input[name="tipoCliente"]:checked')?.value || 'No especificado';
+    const razonSocial = document.querySelector('input[name="razonSocial"]')?.value || 'No especificado';
+    const tiporif = document.querySelector('select[name="tipoRif"]')?.value || 'No especificado';
+    let rif = document.querySelector('input[name="rif"]')?.value || 'No especificado';
+    const banco = document.querySelector('select[name="banco"]')?.value || 'No especificado';
+    let cuentaBancaria = document.querySelector('input[name="cuentaBancaria"]')?.value || 'No especificado';
+    let imgData= new Image();
+    imgData.src = 'img/disglobal/cardo_a_cuenta.png'; // Tu imagen en Base64
+    doc.addImage(imgData, 'PNG', 0, 0, 210, 297); // 210x297mm es A4
+        doc.setFont('helvetica', 'bold');
+    doc.setFontSize(16);
+
+     if (tipoCliente === 'natural') {
+        doc.setFontSize(9);
+        doc.text(`${rif.slice(0, 8)}`, 16, 132);
+        doc.text(`${razonSocial.toUpperCase().slice(0, 30)}`, 36, 132);
+        doc.text(`${telefono.toUpperCase().slice(0, 11)}`, 123, 132);
+        doc.text(`${correo.toUpperCase().slice(0, 30)}`, 155, 132);
+        doc.setFontSize(7);
+        doc.text(`${razonSocial.toUpperCase().slice(0, 30)}`, 34, 221);
+        doc.text(`${ciudad.toUpperCase().slice(0, 30)}`, 16, 225);
+        doc.text(`${rif.slice(0, 8)}`, 100, 225);
+    } else {
+         doc.setFontSize(9);
+       /* doc.text(`${razonSocial.toUpperCase().slice(0, 30)}`, 16, 132);
+        doc.text(`${telefono.toUpperCase().slice(0, 11)}`, 123, 132);*/
+        doc.text(`${cedulaRepresentante.slice(0, 10)}`, 16, 132);
+        doc.text(`${representanteLegal.toUpperCase().slice(0, 30)}`, 40, 132);
+        doc.text(`${cargoRepresentante.toUpperCase().slice(0, 30)}`, 70, 132);
+        doc.text(`${telefonoRepresentante.toUpperCase().slice(0, 11)}`, 126, 132);
+        doc.text(`${correoRepresentante.toUpperCase().slice(0, 30)}`, 153, 132);
+    }
+
+
+    doc.text('CARGO REPRESENTANTE LEGAL', 105, 20, { align: 'center' });            
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Cargo: ${cargoRepresentante}`, 20, 40);    
+    doc.save('cargo_a_cuenta.pdf');
+    alert('Cargo del representante legal generado exitosamente');
+}   
 
 // Generar PDF para Vepagos
 function generarPDFVepagos() {

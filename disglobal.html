@@ -206,33 +206,33 @@
                 </div>
 
                 <!-- Datos del Representante Legal -->
-                <div class="form-section">
+                <div class="form-section" id="representanteLegalSection">
                     <h3><i class="fas fa-user-tie"></i> Datos del Representante Legal</h3>
                     
                     <div class="form-group">
-                        <label>Cédula</label>
-                        <input type="text" name="cedulaRepresentante" placeholder="V-12345678" required>
+                        <label for="cedulaRepresentante" >Cédula</label>
+                        <input type="text" id="cedulaRepresentante" name="cedulaRepresentante" placeholder="V-12345678" required>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Nombres y Apellidos</label>
-                            <input type="text" name="nombresRepresentante" required>
+                            <label for="nombresRepresentante">Nombres y Apellidos</label>
+                            <input type="text" id="nombresRepresentante" name="nombresRepresentante" required>
                         </div>
                         <div class="form-group">
-                            <label>Cargo</label>
-                            <input type="text" name="cargoRepresentante" required>
+                            <label for="cargoRepresentante">Cargo</label>
+                            <input type="text" id="cargoRepresentante"   name="cargoRepresentante" required>
                         </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Teléfono</label>
-                            <input type="tel" name="telefonoRepresentante" required>
+                            <label for="telefonoRepresentante">Teléfono</label>
+                            <input type="tel" id="telefonoRepresentante" name="telefonoRepresentante" required>
                         </div>
                         <div class="form-group">
-                            <label>Correo</label>
-                            <input type="email" name="correoRepresentante" required>
+                            <label for="correoRepresentante">Correo</label>
+                            <input type="email" id="correoRepresentante" name="correoRepresentante" required>
                         </div>
                     </div>
                 </div>
@@ -243,12 +243,12 @@
                     
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Modelo de Equipo</label>
-                            <input type="text" name="modeloEquipo" required>
+                            <label for="modeloEquipo">Modelo de Equipo</label>
+                            <input type="text" id="modeloEquipo" name="modeloEquipo" required>
                         </div>
                         <div class="form-group">
-                            <label>Cantidad</label>
-                            <input type="number" name="cantidadEquipo" value="1" min="1" readonly>
+                            <label for="cantidadEquipo">Cantidad</label>
+                            <input type="number" id="cantidadEquipo"    name="cantidadEquipo" value="1" min="1" readonly>
                         </div>
                     </div>
 
@@ -265,8 +265,8 @@
                     </div>
 
                     <div class="form-group" id="operadoraGroup" style="display: none;">
-                        <label>Operadora</label>
-                        <select name="operadora">
+                        <label for="operadora">Operadora</label>
+                        <select id="operadora" name="operadora">
                             <option value="">Seleccione...</option>
                             <option value="movistar">Movistar</option>
                             <option value="digitel">Digitel</option>
@@ -287,26 +287,26 @@
                     </div>
 
                     <div class="form-group" id="tarifaSeguroGroup" style="display: none;">
-                        <label>Tarifa del Seguro</label>
-                        <input type="text" name="tarifaSeguro" placeholder="Monto del seguro">
-                    </div>
+                        <label for="tarifaSeguro" >Tarifa del Seguro</label>
+                        <input type="text" id="tarifaSeguro" name="tarifaSeguro" placeholder="Monto del seguro">
+                    
 
-                    <div class="form-group">
-                        <label>Frecuencia de Cobro</label>
-                        <select name="frecuenciaCobro">
-                            <option value="">Seleccione...</option>
-                            <option value="tarifa_plana">Tarifa Plana</option>
-                            <option value="tarifa_diaria">Tarifa Diaria</option>
-                            <option value="porcentaje">Porcentaje</option>
-                            <option value="prepagada">Prepagada</option>
-                        </select>
-                    </div>
+                        <div class="form-group">
+                            <label for="frecuenciaCobro" >Frecuencia de Cobro</label>
+                            <select id="frecuenciaCobro" name="frecuenciaCobro">
+                                <option value="">Seleccione...</option>
+                                <option value="tarifa_plana">Tarifa Plana</option>
+                                <option value="tarifa_diaria">Tarifa Diaria</option>
+                                <option value="porcentaje">Porcentaje</option>
+                                <option value="prepagada">Prepagada</option>
+                            </select>
+                        </div>
 
-                    <div class="form-group">
-                        <label>Monto de Tarifa</label>
-                        <input type="text" name="montoTarifa" placeholder="Monto">
+                        <div class="form-group">
+                            <label for="montoTarifa">Monto de Tarifa</label>
+                            <input type="text" id="montoTarifa" name="montoTarifa" placeholder="Monto">
+                        </div>
                     </div>
-
                     <div class="form-group">
                         <label>¿Desea aplicaciones adicionales?</label>
                         <div class="radio-group">
@@ -320,8 +320,8 @@
                     </div>
 
                     <div class="form-group" id="nombreAppGroup" style="display: none;">
-                        <label>Nombre de la Aplicación</label>
-                        <input type="text" name="nombreApp" placeholder="Nombre de la app">
+                        <label for="nombreApp" >Nombre de la Aplicación</label>
+                        <input type="text" id="nombreApp" name="nombreApp" placeholder="Nombre de la app">
                     </div>
                 </div>
 
@@ -331,30 +331,30 @@
                     
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Serial del Equipo</label>
-                            <input type="text" name="serialEquipo" required>
+                            <label for="serialEquipo">Serial del Equipo</label>
+                            <input type="text" id="serialEquipo" name="serialEquipo" required>
                         </div>
                         <div class="form-group">
-                            <label>Serial del SIM Card</label>
-                            <input type="text" name="serialSim">
+                            <label for="serialSim">Serial del SIM Card</label>
+                            <input type="text" id="serialSim" name="serialSim">
                         </div>
                     </div>
 
                     <h4>Recepción de Equipo</h4>
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Modelo</label>
-                            <input type="text" name="modeloRecepcion">
+                            <label for="modeloRecepcion">Modelo</label>
+                            <input type="text" id="modeloRecepcion" name="modeloRecepcion">
                         </div>
                         <div class="form-group">
-                            <label>Marca</label>
-                            <input type="text" name="marcaRecepcion">
+                            <label for="marcaRecepcion">Marca</label>
+                            <input type="text" id="marcaRecepcion" name="marcaRecepcion">
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label>Serial</label>
-                        <input type="text" name="serialRecepcion">
+                        <label for="serialRecepcion">Serial</label>
+                        <input type="text" id="serialRecepcion" name="serialRecepcion">
                     </div>
                 </div>
 
@@ -371,7 +371,7 @@
                         </div>
                     </div>
 
-                    <div class="fingerprint-container">
+                    <!--div class="fingerprint-container">
                         <label>Huella Dactilar</label>
                         <canvas id="fingerprintCanvas" width="200" height="200" class="fingerprint-canvas"></canvas>
                         <div class="signature-controls">
@@ -380,7 +380,7 @@
                             </button>
                         </div>
                     </div>
-                </div>
+                </div -->
 
                 <!-- Acciones -->
                 <div class="form-actions">
