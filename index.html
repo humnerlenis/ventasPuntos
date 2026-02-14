@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Sistema de Registro de Ventas</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo-container">
+                <i class="fas fa-store-alt logo-icon"></i>
+                <h1>Registro de Ventas</h1>
+            </div>
+            <p class="subtitle">Seleccione el aliado comercial para continuar</p>
+        </header>
+
+        <main>
+            <div class="aliados-grid">
+                <!-- Disglobal -->
+                <a href="disglobal.html" class="aliado-card">
+                    <div class="card-image disglobal-bg">
+                        <i class="fas fa-globe"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>Disglobal</h3>
+                        <p>Contado · Comodato · Financiado</p>
+                        <span class="card-link">Seleccionar <i class="fas fa-arrow-right"></i></span>
+                    </div>
+                </a>
+
+                <!-- Vepagos -->
+                <a href="vepagos.html" class="aliado-card">
+                    <div class="card-image vepagos-bg">
+                        <i class="fas fa-credit-card"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>Vepagos</h3>
+                        <p>Contado · Financiado</p>
+                        <span class="card-link">Seleccionar <i class="fas fa-arrow-right"></i></span>
+                    </div>
+                </a>
+
+                <!-- Master -->
+                <a href="master.html" class="aliado-card">
+                    <div class="card-image master-bg">
+                        <i class="fas fa-crown"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>Master</h3>
+                        <p>Contado · Planilla única</p>
+                        <span class="card-link">Seleccionar <i class="fas fa-arrow-right"></i></span>
+                    </div>
+                </a>
+
+                <!-- Credicard -->
+                <a href="credicard.html" class="aliado-card">
+                    <div class="card-image credicard-bg">
+                        <i class="fas fa-id-card"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>Credicard</h3>
+                        <p>Contado · Financiado · Comodato</p>
+                        <span class="card-link">Seleccionar <i class="fas fa-arrow-right"></i></span>
+                    </div>
+                </a>
+            </div>
+
+            <div class="qr-scanner-section">
+                <button class="qr-scanner-btn" id="qrScannerBtn">
+                    <i class="fas fa-qrcode"></i>
+                    Leer QR del RIF
+                </button>
+                <p class="qr-hint">Escanea el código QR del RIF para autocompletar datos</p>
+            </div>
+        </main>
+
+        <footer>
+            <p>© 2024 Sistema de Registro de Ventas · Versión 1.0</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
