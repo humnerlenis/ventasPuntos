@@ -537,7 +537,8 @@ function generarPDF() {
     
     if (currentPage.includes('disglobal')) {
         //generarPDFDisglobal();
-        generarPlanillaUnicaDisglobal()
+        generarPlanillaUnicaDisglobal();
+        generarCargoDisglobal();
     } else if (currentPage.includes('vepagos')) {
         generarPDFVepagos();
     } else if (currentPage.includes('master')) {
@@ -555,10 +556,10 @@ function generarPDFDisglobal() {
     const doc = new jsPDF();
     
     // Obtener datos del formulario
-    const tipoColocacion = document.querySelector('input[name="modeloNegocio"]')?.value || 'No especificado';
-    const tipoCliente = document.querySelector('input[name="tipoCliente"]:checked')?.value || 'No especificado';
-    const razonSocial = document.querySelector('input[name="razonSocial"]')?.value || 'No especificado';
-    const rif = document.querySelector('input[name="rif"]')?.value || 'No especificado';
+    const tipoColocacion = document.querySelector('input[name="modeloNegocio"]').value;
+    const tipoCliente = document.querySelector('input[name="tipoCliente"]:checked').value;
+    const razonSocial = document.querySelector('input[name="razonSocial"]').value;
+    const rif = document.querySelector('input[name="rif"]').value;
     
     // Configurar documento
     doc.setFont('helvetica', 'bold');
@@ -590,47 +591,47 @@ function generarPlanillaUnicaDisglobal() {
     const doc = new jsPDF();
     
     // Obtener datos del formulario
-    const tipoColocacion = document.querySelector('select[name="modeloNegocio"]')?.value || 'No especificado';
-    const tipoCliente = document.querySelector('input[name="tipoCliente"]:checked')?.value || 'No especificado';
-    const razonSocial = document.querySelector('input[name="razonSocial"]')?.value || 'No especificado';
-    const tiporif = document.querySelector('select[name="tipoRif"]')?.value || 'No especificado';
-    let rif = document.querySelector('input[name="rif"]')?.value || 'No especificado';
-    const banco = document.querySelector('select[name="banco"]')?.value || 'No especificado';
-    let cuentaBancaria = document.querySelector('input[name="cuentaBancaria"]')?.value || 'No especificado';
-    const actividadEconomica = document.querySelector('input[name="actividadEconomica"]')?.value || 'No especificado';
-    const ciudad = document.querySelector('input[name="ciudad"]')?.value || 'No especificado';
-    const estado = document.querySelector('input[name="estado"]')?.value || 'No especificado';
-    const municipio = document.querySelector('input[name="municipio"]')?.value || 'No especificado';
-    const codigoPostal = document.querySelector('input[name="codigoPostal"]')?.value || 'No especificado';
-    const direccionFiscal = document.querySelector('input[name="direccionFiscal"]')?.value || 'No especificado';
-    const telefono = document.querySelector('input[name="telefono"]')?.value || 'No especificado';
-    const correo = document.querySelector('input[name="correo"]')?.value || 'No especificado';
-    const nombreRegistroMercantil = document.querySelector('input[name="nombreRegistroMercantil"]')?.value || 'No especificado';
-    const fechaRegistro = document.querySelector('input[name="fechaRegistro"]')?.value || 'No especificado';
-    const nroRegistro = document.querySelector('input[name="nroRegistro"]')?.value || 'No especificado';    
-    const numeroTomo = document.querySelector('input[name="numeroTomo"]')?.value || 'No especificado';
-    const clausulaDelegatoria = document.querySelector('input[name="clausulaDelegatoria"]')?.value || 'No especificado';
-    const ciudadRegistro = document.querySelector('input[name="ciudadRegistro"]')?.value || 'No especificado';
-    const representanteLegal = document.querySelector('input[name="nombresRepresentante"]')?.value || 'No especificado';
-    const cargoRepresentante = document.querySelector('input[name="cargoRepresentante"]')?.value || 'No especificado';
-    const telefonoRepresentante = document.querySelector('input[name="telefonoRepresentante"]')?.value || 'No especificado';
-    const correoRepresentante = document.querySelector('input[name="correoRepresentante"]')?.value || 'No especificado';
-    const cedulaRepresentante = document.querySelector('input[name="cedulaRepresentante"]')?.value || 'No especificado';
-    const modeloEquipo = document.querySelector('input[name="modeloEquipo"]')?.value || 'No especificado';
-    const cantidadEquipo = document.querySelector('input[name="cantidadEquipo"]')?.value || 'No especificado';
-    const incluyeSim = document.querySelector('input[name="incluyeSim"]:checked')?.value || 'No especificado';
-    const operadora = document.querySelector('select[name="operadora"]')?.value || 'No especificado';
-    const incluyeSeguro = document.querySelector('input[name="incluyeSeguro"]:checked')?.value || 'No especificado';    
-    const tarifaSeguro = document.querySelector('input[name="tarifaSeguro"]')?.value || 'No especificado';
-    const frecuenciaCobro = document.querySelector('select[name="frecuenciaCobro"]')?.value || 'No especificado';
-    const montoTarifa = document.querySelector('input[name="montoTarifa"]')?.value || 'No especificado';    
-    const appAdicional = document.querySelector('input[name="appsAdicionales"]:checked')?.value || 'No especificado';
-    const nombreAppAdicional = document.querySelector('input[name="nombreApp"]')?.value || 'No especificado';
-    const serialEquipo = document.querySelector('input[name="serialEquipo"]')?.value || 'No especificado';
-    const serialSim = document.querySelector('input[name="serialSim"]')?.value || 'No especificado';
-    const modeloRecepcion = document.querySelector('input[name="modeloRecepcion"]')?.value || 'No especificado';
-    const marcaRecepcion = document.querySelector('input[name="marcaRecepcion"]')?.value || 'No especificado';
-    const serialRecepcion = document.querySelector('input[name="serialRecepcion"]')?.value || 'No especificado';
+    const tipoColocacion = document.querySelector('select[name="modeloNegocio"]').value;
+    const tipoCliente = document.querySelector('input[name="tipoCliente"]:checked').value;
+    const razonSocial = document.querySelector('input[name="razonSocial"]').value;
+    const tiporif = document.querySelector('select[name="tipoRif"]').value;
+    let rif = document.querySelector('input[name="rif"]').value;
+    const banco = document.querySelector('select[name="banco"]').value;
+    let cuentaBancaria = document.querySelector('input[name="cuentaBancaria"]').value;
+    const actividadEconomica = document.querySelector('input[name="actividadEconomica"]').value;
+    const ciudad = document.querySelector('input[name="ciudad"]').value;
+    const estado = document.querySelector('input[name="estado"]').value;
+    const municipio = document.querySelector('input[name="municipio"]').value;
+    const codigoPostal = document.querySelector('input[name="codigoPostal"]').value;
+    const direccionFiscal = document.querySelector('input[name="direccionFiscal"]').value;
+    const telefono = document.querySelector('input[name="telefono"]').value;
+    const correo = document.querySelector('input[name="correo"]').value;
+    const nombreRegistroMercantil = document.querySelector('input[name="nombreRegistroMercantil"]').value;
+    const fechaRegistro = document.querySelector('input[name="fechaRegistro"]').value;
+    const nroRegistro = document.querySelector('input[name="nroRegistro"]').value;    
+    const numeroTomo = document.querySelector('input[name="numeroTomo"]').value;
+    const clausulaDelegatoria = document.querySelector('input[name="clausulaDelegatoria"]').value;
+    const ciudadRegistro = document.querySelector('input[name="ciudadRegistro"]').value;
+    const representanteLegal = document.querySelector('input[name="nombresRepresentante"]').value;
+    const cargoRepresentante = document.querySelector('input[name="cargoRepresentante"]').value;
+    const telefonoRepresentante = document.querySelector('input[name="telefonoRepresentante"]').value;
+    const correoRepresentante = document.querySelector('input[name="correoRepresentante"]').value;
+    const cedulaRepresentante = document.querySelector('input[name="cedulaRepresentante"]').value;
+    const modeloEquipo = document.querySelector('input[name="modeloEquipo"]').value;
+    const cantidadEquipo = document.querySelector('input[name="cantidadEquipo"]').value;
+    const incluyeSim = document.querySelector('input[name="incluyeSim"]:checked').value;
+    const operadora = document.querySelector('select[name="operadora"]').value;
+    const incluyeSeguro = document.querySelector('input[name="incluyeSeguro"]:checked').value;    
+    const tarifaSeguro = document.querySelector('input[name="tarifaSeguro"]').value;
+    const frecuenciaCobro = document.querySelector('select[name="frecuenciaCobro"]').value;
+    const montoTarifa = document.querySelector('input[name="montoTarifa"]').value;    
+    const appAdicional = document.querySelector('input[name="appsAdicionales"]:checked').value;
+    const nombreAppAdicional = document.querySelector('input[name="nombreApp"]').value;
+    const serialEquipo = document.querySelector('input[name="serialEquipo"]').value;
+    const serialSim = document.querySelector('input[name="serialSim"]').value;
+    const modeloRecepcion = document.querySelector('input[name="modeloRecepcion"]').value;
+    const marcaRecepcion = document.querySelector('input[name="marcaRecepcion"]').value;
+    const serialRecepcion = document.querySelector('input[name="serialRecepcion"]').value;
 
 
     // Configurar documento
@@ -872,10 +873,141 @@ function generarCargoDisglobal() {
     alert('Cargo a cuenta generado exitosamente');
 }   
 
-function generarContrato(tipoContrato) {
+function generarContratoDisglobal(tipoContrato) {
+    /* datos necesarios para el contrato */
+    /* 
+    pag 1
+    nombre completo
+    ciudad de domicilio
+    RIF
+    pago mensual (mNTENIMIENTO)
+    pag 2
+    DIRECCION
+    TELEFONO
+    NOMBRE
+    CORREO
+    CIUDAD 
+    FECHA
+    modelo
+    serial equipo
+    serial simcard
+    banco    */
+
+     // Obtener datos del formulario
+    const tipoColocacion = document.querySelector('select[name="modeloNegocio"]').value;
+    const tipoCliente = document.querySelector('input[name="tipoCliente"]:checked').value;
+    const razonSocial = document.querySelector('input[name="razonSocial"]').value;
+    const tiporif = document.querySelector('select[name="tipoRif"]').value;
+    let rif = document.querySelector('input[name="rif"]').value;
+    const banco = document.querySelector('select[name="banco"]').value;
+   
+    const ciudad = document.querySelector('input[name="ciudad"]').value;
+    const estado = document.querySelector('input[name="estado"]').value;
+    
+    
+    const direccionFiscal = document.querySelector('input[name="direccionFiscal"]').value;
+    const telefono = document.querySelector('input[name="telefono"]').value;
+    const correo = document.querySelector('input[name="correo"]').value;
+    const nombreRegistroMercantil = document.querySelector('input[name="nombreRegistroMercantil"]').value;
+    const fechaRegistro = document.querySelector('input[name="fechaRegistro"]').value;
+    const nroRegistro = document.querySelector('input[name="nroRegistro"]').value;    
+    const numeroTomo = document.querySelector('input[name="numeroTomo"]').value;
+    const clausulaDelegatoria = document.querySelector('input[name="clausulaDelegatoria"]').value;
+    const ciudadRegistro = document.querySelector('input[name="ciudadRegistro"]').value;
+    let representanteLegal = document.querySelector('input[name="nombresRepresentante"]').value;
+    const cargoRepresentante = document.querySelector('input[name="cargoRepresentante"]').value;
+    const telefonoRepresentante = document.querySelector('input[name="telefonoRepresentante"]').value;
+    const correoRepresentante = document.querySelector('input[name="correoRepresentante"]').value;
+    let cedulaRepresentante = document.querySelector('input[name="cedulaRepresentante"]').value;
+    const modeloEquipo = document.querySelector('input[name="modeloEquipo"]').value;
+    
+    
+   
+      
+    
+    const serialEquipo = document.querySelector('input[name="serialEquipo"]').value;
+    const serialSim = document.querySelector('input[name="serialSim"]').value;
+   
+
+
+
+    const { jsPDF } = window.jspdf;
+            const doc = new jsPDF(); 
+
     switch (tipoContrato) {
+        
+        
         case 'natural':
-            // Generar contrato 1
+            // Generar contrato PN
+               
+                
+            
+            
+            let imgData1= new Image();
+            imgData1.src = 'img/disglobal/contrato_PN_1.png'; // Tu imagen en Base64
+            doc.addImage(imgData1, 'PNG', 0, 0, 216, 279); //carta es 216x279mm
+            doc.setFontSize(6);
+            doc.setFont('helvetica', 'normal');    
+            
+            
+                // Para persona natural, copiar datos de razón social al representante legal
+                representanteLegal = document.querySelector('input[name="razonSocial"]').value
+                cedulaRepresentante = rif.slice(0, -1);
+                doc.text(`${representanteLegal.toUpperCase()}`, 15, 29.5);  
+                doc.text(`${ciudad.toUpperCase()}`, 127, 29.5); 
+                doc.text(`${cedulaRepresentante.toUpperCase()}`, 15, 32);  
+                
+                doc.text(`${tiporif.toUpperCase()}-${rif}`, 80, 32); 
+                doc.text(`CUARENTA`, 125, 119.5);
+                doc.text(`40$`, 195, 119.5);
+                    
+           doc.addPage();
+            let imgData2= new Image();
+            imgData2.src = 'img/disglobal/contrato_PN_2.png'; // Tu imagen en Base64
+            doc.addImage(imgData2, 'PNG', 0, 0, 216, 279);  
+            doc.setFontSize(6);
+            doc.setFont('helvetica', 'normal');
+
+            doc.text(`${direccionFiscal.toUpperCase()}`, 15, 152.5);
+            doc.text(`${telefono.toUpperCase()}`, 95, 152.5);
+             doc.text(`${representanteLegal.toUpperCase()}`, 146, 152.5); 
+            doc.text(`${correo.toUpperCase()}`, 15, 155);
+            doc.text(`${ciudad.toUpperCase()}`, 151, 157);
+            const fechaActual = new Date();
+            const dia = fechaActual.getDate();       // const mes = fechaActual.getMonth() + 1;  // Mes (0-11, por eso sumamos 1)
+            const mes = fechaActual.toLocaleString('default', { month: 'long' });   
+            const anio = fechaActual.getFullYear();
+            doc.text(` ${dia} `, 190, 157);
+            doc.text(`  ${mes.toUpperCase()} `, 20, 159.5);
+            doc.text(` ### ${anio}`, 54, 159.5);
+            doc.text(`${modeloEquipo.toUpperCase()}`, 30, 183);
+            doc.text(`${serialEquipo.toUpperCase()}`, 30, 185.6);
+            doc.text(`${serialSim.toUpperCase()}`, 30, 188);
+            doc.text(`${banco.toUpperCase()}`, 30, 190.4);
+            doc.setFontSize(5);
+            doc.text(`${ciudad.toUpperCase()}`, 79.8, 195);
+            doc.setFontSize(6);
+            doc.text(` ${dia} `, 102, 195);
+            doc.text(`  ${mes.toUpperCase()} `, 120, 195);
+            doc.text(` ### ${anio}`, 147.5, 195);
+
+            // Agregar firma si existe
+            const signatureCanvas = document.getElementById('signatureCanvas');
+            if (signatureCanvas && !isCanvasBlank(signatureCanvas)) {
+                const signatureData = signatureCanvas.toDataURL('image/png');
+                
+                doc.addImage(signatureData, 'PNG', 137, 165, 35, 10);
+                doc.addImage(signatureData, 'PNG', 137, 205, 35, 10);
+                
+            }
+                doc.setFontSize(7);
+           
+            
+            
+            
+            
+            doc.save('contrato_PN.pdf');
+            alert('Contrato PN generado exitosamente');
             break;
         case 'juridica':
             // Generar contrato 2
@@ -895,7 +1027,7 @@ function generarPDFVepagos() {
     const doc = new jsPDF();
     
     const tipoColocacion = document.querySelector('input[name="tipoColocacion"]:checked')?.value || 'contado';
-    const comercio = document.querySelector('input[name="comercio"]')?.value || 'No especificado';
+    const comercio = document.querySelector('input[name="comercio"]').value;
     const monto = document.querySelector('input[name="monto"]')?.value || '0';
     
     doc.setFont('helvetica', 'bold');
@@ -914,9 +1046,9 @@ function generarPDFVepagos() {
         doc.setFontSize(16);
         doc.text('ADENDUM FINANCIAMIENTO', 105, 20, { align: 'center' });
         
-        const plazo = document.querySelector('input[name="plazoFinanciamiento"]')?.value || 'No especificado';
-        const tasa = document.querySelector('input[name="tasaInteres"]')?.value || 'No especificado';
-        const cuota = document.querySelector('input[name="cuotaMensual"]')?.value || 'No especificado';
+        const plazo = document.querySelector('input[name="plazoFinanciamiento"]').value;
+        const tasa = document.querySelector('input[name="tasaInteres"]').value;
+        const cuota = document.querySelector('input[name="cuotaMensual"]').value;
         
         doc.setFontSize(12);
         doc.text(`Plazo: ${plazo} meses`, 20, 40);
@@ -941,9 +1073,9 @@ function generarPDFMaster() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
     
-    const razonSocial = document.querySelector('input[name="razonSocial"]')?.value || 'No especificado';
-    const rif = document.querySelector('input[name="rif"]')?.value || 'No especificado';
-    const modelo = document.querySelector('input[name="modelo"]')?.value || 'No especificado';
+    const razonSocial = document.querySelector('input[name="razonSocial"]').value;
+    const rif = document.querySelector('input[name="rif"]').value;
+    const modelo = document.querySelector('input[name="modelo"]').value;
     
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(16);
@@ -974,9 +1106,9 @@ function generarPDFCredicard() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
     
-    const modalidad = document.querySelector('input[name="modalidad"]:checked')?.value || 'No especificado';
-    const razonSocial = document.querySelector('input[name="razonSocial"]')?.value || 'No especificado';
-    const rif = document.querySelector('input[name="rifComercio"]')?.value || 'No especificado';
+    const modalidad = document.querySelector('input[name="modalidad"]:checked').value;
+    const razonSocial = document.querySelector('input[name="razonSocial"]').value;
+    const rif = document.querySelector('input[name="rifComercio"]').value;
     
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(16);
@@ -1007,16 +1139,16 @@ function enviarPorWhatsApp() {
     
     // Obtener datos básicos según la página
     if (currentPage.includes('disglobal')) {
-        const razonSocial = document.querySelector('input[name="razonSocial"]')?.value || 'No especificado';
+        const razonSocial = document.querySelector('input[name="razonSocial"]').value;
         mensaje += `*Disglobal*\nRazón Social: ${razonSocial}\n`;
     } else if (currentPage.includes('vepagos')) {
-        const comercio = document.querySelector('input[name="comercio"]')?.value || 'No especificado';
+        const comercio = document.querySelector('input[name="comercio"]').value;
         mensaje += `*Vepagos*\nComercio: ${comercio}\n`;
     } else if (currentPage.includes('master')) {
-        const razonSocial = document.querySelector('input[name="razonSocial"]')?.value || 'No especificado';
+        const razonSocial = document.querySelector('input[name="razonSocial"]').value;
         mensaje += `*Master*\nRazón Social: ${razonSocial}\n`;
     } else if (currentPage.includes('credicard')) {
-        const razonSocial = document.querySelector('input[name="razonSocial"]')?.value || 'No especificado';
+        const razonSocial = document.querySelector('input[name="razonSocial"]').value;
         mensaje += `*Credicard*\nRazón Social: ${razonSocial}\n`;
     }
     
