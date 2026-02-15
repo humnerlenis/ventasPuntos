@@ -713,6 +713,7 @@ function generarPlanillaUnicaDisglobal() {
         doc.text(`${razonSocial.toUpperCase().slice(0, 30)}`, 36, 132);
         doc.text(`${telefono.toUpperCase().slice(0, 11)}`, 123, 132);
         doc.text(`${correo.toUpperCase().slice(0, 30)}`, 155, 132);
+        //seccion de representante legal al final del documento
         doc.setFontSize(7);
         doc.text(`${razonSocial.toUpperCase().slice(0, 30)}`, 34, 221);
         doc.text(`${ciudad.toUpperCase().slice(0, 30)}`, 16, 225);
@@ -726,6 +727,11 @@ function generarPlanillaUnicaDisglobal() {
         doc.text(`${cargoRepresentante.toUpperCase().slice(0, 30)}`, 70, 132);
         doc.text(`${telefonoRepresentante.toUpperCase().slice(0, 11)}`, 126, 132);
         doc.text(`${correoRepresentante.toUpperCase().slice(0, 30)}`, 153, 132);
+        //seccion de representante legal al final del documento
+        doc.setFontSize(7);
+        doc.text(`${representanteLegal.toUpperCase().slice(0, 30)}`, 34, 221);
+        doc.text(`${ciudad.toUpperCase().slice(0, 30)}`, 16, 225);
+        doc.text(`${cedulaRepresentante.slice(0, 10)}`, 100, 225);
     }
 
     doc.text(`${modeloEquipo.toUpperCase().slice(0, 30)}`, 22, 147);
@@ -813,47 +819,75 @@ function generarCargoDisglobal() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();    
         
-    const tipoCliente = document.querySelector('input[name="tipoCliente"]:checked')?.value || 'No especificado';
-    const razonSocial = document.querySelector('input[name="razonSocial"]')?.value || 'No especificado';
-    const tiporif = document.querySelector('select[name="tipoRif"]')?.value || 'No especificado';
-    let rif = document.querySelector('input[name="rif"]')?.value || 'No especificado';
-    const banco = document.querySelector('select[name="banco"]')?.value || 'No especificado';
-    let cuentaBancaria = document.querySelector('input[name="cuentaBancaria"]')?.value || 'No especificado';
+    const tipoCliente = document.querySelector('input[name="tipoCliente"]:checked').value;
+    let representanteLegal = document.querySelector('input[name="nombresRepresentante"]').value ;
+    let cedulaRepresentante = document.querySelector('input[name="cedulaRepresentante"]').value ;
+    const razonSocial = document.querySelector('input[name="razonSocial"]').value ;
+    const tiporif = document.querySelector('select[name="tipoRif"]').value ;
+    let rif = document.querySelector('input[name="rif"]').value ;
+    const banco = document.querySelector('select[name="banco"]').value ;
+    const cuentaBancaria = document.querySelector('input[name="cuentaBancaria"]').value ;
     let imgData= new Image();
-    imgData.src = 'img/disglobal/cardo_a_cuenta.png'; // Tu imagen en Base64
+    imgData.src = 'img/disglobal/cargo_a_cuenta.png'; // Tu imagen en Base64
     doc.addImage(imgData, 'PNG', 0, 0, 210, 297); // 210x297mm es A4
-        doc.setFont('helvetica', 'bold');
-    doc.setFontSize(16);
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'normal');    
+     
+    if (tipoCliente === 'natural') {
+        // Para persona natural, copiar datos de razón social al representante legal
+        representanteLegal = document.querySelector('input[name="razonSocial"]').value
+        cedulaRepresentante = rif.slice(0, -1);
+        doc.text(`${representanteLegal.toUpperCase()}`, 30, 82);  
+        doc.text(`${tiporif.toUpperCase()}-${cedulaRepresentante.toUpperCase()}`, 120, 88);  
+        doc.text(`${razonSocial.toUpperCase()}`, 85, 107);  
+        doc.text(`${tiporif.toUpperCase()}-${rif}`, 60, 113); 
+        doc.text(`${cuentaBancaria}`, 37, 124);
+               
+    }else {
+        doc.text(`${representanteLegal.toUpperCase()}`, 30, 82);  
+        doc.text(`${cedulaRepresentante.toUpperCase()}`, 120, 88);  
+        doc.text(`${razonSocial.toUpperCase()}`, 85, 107);  
+        doc.text(`${tiporif.toUpperCase()}-${rif}`, 60, 113); 
+        doc.text(`${cuentaBancaria}`, 37, 124);
+     
 
-     if (tipoCliente === 'natural') {
-        doc.setFontSize(9);
-        doc.text(`${rif.slice(0, 8)}`, 16, 132);
-        doc.text(`${razonSocial.toUpperCase().slice(0, 30)}`, 36, 132);
-        doc.text(`${telefono.toUpperCase().slice(0, 11)}`, 123, 132);
-        doc.text(`${correo.toUpperCase().slice(0, 30)}`, 155, 132);
-        doc.setFontSize(7);
-        doc.text(`${razonSocial.toUpperCase().slice(0, 30)}`, 34, 221);
-        doc.text(`${ciudad.toUpperCase().slice(0, 30)}`, 16, 225);
-        doc.text(`${rif.slice(0, 8)}`, 100, 225);
-    } else {
-         doc.setFontSize(9);
-       /* doc.text(`${razonSocial.toUpperCase().slice(0, 30)}`, 16, 132);
-        doc.text(`${telefono.toUpperCase().slice(0, 11)}`, 123, 132);*/
-        doc.text(`${cedulaRepresentante.slice(0, 10)}`, 16, 132);
-        doc.text(`${representanteLegal.toUpperCase().slice(0, 30)}`, 40, 132);
-        doc.text(`${cargoRepresentante.toUpperCase().slice(0, 30)}`, 70, 132);
-        doc.text(`${telefonoRepresentante.toUpperCase().slice(0, 11)}`, 126, 132);
-        doc.text(`${correoRepresentante.toUpperCase().slice(0, 30)}`, 153, 132);
     }
 
-
-    doc.text('CARGO REPRESENTANTE LEGAL', 105, 20, { align: 'center' });            
-    doc.setFontSize(12);
-    doc.setFont('helvetica', 'normal');
-    doc.text(`Cargo: ${cargoRepresentante}`, 20, 40);    
+    // Agregar firma si existe
+    const signatureCanvas = document.getElementById('signatureCanvas');
+    if (signatureCanvas && !isCanvasBlank(signatureCanvas)) {
+        const signatureData = signatureCanvas.toDataURL('image/png');
+        
+        doc.addImage(signatureData, 'PNG', 30, 200, 35, 10);
+        
+    }
+         doc.setFontSize(7);
+    doc.text(`${representanteLegal.toUpperCase()}`, 30, 220); 
+      doc.setFontSize(10);
+    doc.text(`${cedulaRepresentante.toUpperCase()}`, 30, 230); 
+    
+    
+      
     doc.save('cargo_a_cuenta.pdf');
-    alert('Cargo del representante legal generado exitosamente');
+    alert('Cargo a cuenta generado exitosamente');
 }   
+
+function generarContrato(tipoContrato) {
+    switch (tipoContrato) {
+        case 'natural':
+            // Generar contrato 1
+            break;
+        case 'juridica':
+            // Generar contrato 2
+            break;
+            case 'firma':
+            // Generar contrato 3
+            break;
+    
+        default:
+            break;
+    }
+}
 
 // Generar PDF para Vepagos
 function generarPDFVepagos() {
