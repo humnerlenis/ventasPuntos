@@ -542,7 +542,7 @@ function generarPDF() {
     } else if (currentPage.includes('vepagos')) {
         generarPDFVepagos();
     } else if (currentPage.includes('master')) {
-        generarPDFMaster();
+        generarPDFMaster1();
     } else if (currentPage.includes('credicard')) {
         generarPDFCredicard();
     } else {
@@ -1068,38 +1068,173 @@ function generarPDFVepagos() {
     alert('Recibo generado exitosamente');
 }
 
-// Generar PDF para Master
-function generarPDFMaster() {
+//Generar PDF para Master
+function generarPDFMaster1() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
-    
+    let imgData1= new Image();
+            imgData1.src = 'img/master/planilla_de_solicitud.png'; // Tu imagen en Base64
+            doc.addImage(imgData1, 'PNG', 0, 0, 216, 279); //carta es 216x279mm
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');   
+      const tipoColocacion = document.querySelector('select[name="modeloNegocio"]').value;
+    const tipoCliente = document.querySelector('input[name="tipoCliente"]:checked').value;
     const razonSocial = document.querySelector('input[name="razonSocial"]').value;
-    const rif = document.querySelector('input[name="rif"]').value;
-    const modelo = document.querySelector('input[name="modelo"]').value;
+    const tiporif = document.querySelector('select[name="tipoRif"]').value;
+    let rif = document.querySelector('input[name="rif"]').value;
+    const banco = document.querySelector('select[name="banco"]').value;
+    const codigoAfiliacion = document.querySelector('input[name="codigoAfiliacion"]').value;
+    let cuentaBancaria = document.querySelector('input[name="cuentaBancaria"]').value;
+    const actividadEconomica = document.querySelector('input[name="actividadEconomica"]').value;
+    const ciudad = document.querySelector('input[name="ciudad"]').value;
+    const estado = document.querySelector('input[name="estado"]').value;
+    const municipio = document.querySelector('input[name="municipio"]').value;
+    const codigoPostal = document.querySelector('input[name="codigoPostal"]').value;
+    const direccionFiscal = document.querySelector('input[name="direccionFiscal"]').value;
+    const telefono = document.querySelector('input[name="telefono"]').value;
+    const correo = document.querySelector('input[name="correo"]').value;
+    const nombreRegistroMercantil = document.querySelector('input[name="nombreRegistroMercantil"]').value;
+    const fechaRegistro = document.querySelector('input[name="fechaRegistro"]').value;
+    const nroRegistro = document.querySelector('input[name="nroRegistro"]').value;    
+    const numeroTomo = document.querySelector('input[name="numeroTomo"]').value;
+    const clausulaDelegatoria = document.querySelector('input[name="clausulaDelegatoria"]').value;
+    const ciudadRegistro = document.querySelector('input[name="ciudadRegistro"]').value;
+    const representanteLegal = tipoCliente === 'natural' ? razonSocial : document.querySelector('input[name="nombresRepresentante"]').value ;
+    const cargoRepresentante = tipoCliente === 'natural' ? "Dueño" : document.querySelector('input[name="cargoRepresentante"]').value;
+    const telefonoRepresentante =tipoCliente === 'natural' ? telefono : document.querySelector('input[name="telefonoRepresentante"]').value;
+    const correoRepresentante = tipoCliente === 'natural' ? correo :document.querySelector('input[name="correoRepresentante"]').value;
+    const cedulaRepresentante = tipoCliente === 'natural' ? rif.slice(0, -1) : document.querySelector('input[name="cedulaRepresentante"]').value;
+    const modeloEquipo = document.querySelector('select[name="modeloEquipo"]').value;
+    const cantidadEquipo = document.querySelector('input[name="cantidadEquipo"]').value;
+    const incluyeSim = document.querySelector('input[name="incluyeSim"]:checked').value;
+    const operadora = document.querySelector('select[name="operadora"]').value;
+   
+    const serialEquipo = document.querySelector('input[name="serialEquipo"]').value;
+    const serialSim = document.querySelector('input[name="serialSim"]').value;
+    const formaPago = document.querySelector('input[name="formaPago"]').value;
+   const fechaActual = new Date();
+
+    const dia = fechaActual.getDate();       // Día del mes (1-31)
+    const mes = fechaActual.getMonth() + 1;  // Mes (0-11, por eso sumamos 1)
+    const anio = fechaActual.getFullYear();
+/*   ######################################################
+    Aquí iría el código para escribir cada campo en la posición correcta de la planilla
+    ##############################################3#########*/
+        doc.text(`${String(dia).padStart(2, '0')}/ ${String(mes).padStart(2, '0')}/ ${anio}`, 185, 35.5 );
+        
     
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(16);
-    doc.text('SOLICITUD DE AUTORIZACIÓN DE VENTA - MASTER', 105, 20, { align: 'center' });
+    doc.text("X", 193, 40, );
+
+    doc.text(` ${banco.toUpperCase()}`, 31, 60);
+   
+    let distancia = 69.5; // Posición inicial para la primera letra
+    for (let caracter of codigoAfiliacion) {
+
+    doc.text(` ${caracter}`, distancia, 60); 
+    distancia += 4.34; // Incrementar la distancia para la siguiente letra
+    }
+    cuentaBancaria.replace(/[\s-]+/g, '');
+     distancia = 108.5; // Posición inicial para la primera letra
+    for (let caracter of cuentaBancaria) {
+
+    doc.text(` ${caracter}`, distancia, 60); 
+    distancia += 4.34; // Incrementar la distancia para la siguiente letra
+    }
+    doc.text(` ${tiporif}`, 21, 72);
+
+    //doc.text(`RIF: ${rif}`, 18, 66);
+    rif = rif.replace(/[\s-a-zA-Z]/g, '');
+        distancia = 26.7; // Posición inicial para la primera letra
+    for (let caracter of rif) {
+
+    doc.text(` ${caracter}`, distancia, 72); 
+    distancia += 4.34; // Incrementar la distancia para la siguiente letra
+    }
     
-    doc.setFontSize(12);
-    doc.setFont('helvetica', 'normal');
-    doc.text(`Razón Social: ${razonSocial}`, 20, 40);
-    doc.text(`RIF: ${rif}`, 20, 50);
-    doc.text(`Modelo de Equipo: ${modelo}`, 20, 60);
-    doc.text('Tipo de Venta: Contado', 20, 70);
-    doc.text('Marca: MASTER', 20, 80);
+    doc.text(`${razonSocial.toUpperCase().slice(0, 30)}`, 69, 72);
+
+    doc.text(`${actividadEconomica.toUpperCase().slice(0, 25)}`, 140, 72);
+    doc.text(`${ciudad.toUpperCase().slice(0, 25)}`, 21, 80);
+    doc.text(`${estado.toUpperCase().slice(0, 25)}`, 75, 80);
+    doc.text(`${municipio.toUpperCase().slice(0, 25)}`, 128, 80);
+    doc.text(`${codigoPostal.toUpperCase().slice(0, 6)}`, 180, 80);
+    doc.text(`${direccionFiscal.toUpperCase().slice(0, 100)}`, 21, 88);
+    //doc.text(`${telefono.toUpperCase().slice(0, 4)}`, 19, 100);
+    doc.text(`${telefono.toUpperCase().slice(0, 11)}`, 21, 105);
+    doc.text(`${correo.toUpperCase().slice(0, 30)}`, 132, 105);
+    doc.text(`${nombreRegistroMercantil.toUpperCase().slice(0, 50)}`, 21, 120);
+    let fechareg = fechaRegistro.replace(/^(\d{4})-(\d{2})-(\d{2})$/g,'$3/$2/$1');
     
-    // Agregar firma
+
+    //const fechaFormateada = `${diaR}/${mesR}/${anioR}`;
+    doc.text(`${fechareg}`, 21, 128);
+    doc.text(`${nroRegistro.toUpperCase().slice(0, 30)}`, 45, 128);    
+    doc.text(`${numeroTomo.toUpperCase().slice(0, 30)}`, 93, 128);
+    doc.text(`${clausulaDelegatoria.toUpperCase().slice(0, 30)}`, 136, 128);
+    doc.text(`${ciudadRegistro.toUpperCase().slice(0, 30)}`, 160, 128);
+    
+
+       
+   
+         
+       doc.setFontSize(8);
+        doc.text(`${cedulaRepresentante.slice(0, 10)}`, 21, 142);
+        doc.text(`${representanteLegal.toUpperCase().slice(0, 30)}`, 45, 142);
+        doc.text(`${cargoRepresentante.toUpperCase().slice(0, 30)}`, 93, 142);
+        doc.text(`${telefonoRepresentante.toUpperCase().slice(0, 11)}`, 126, 142);
+        doc.text(`${correoRepresentante.toUpperCase().slice(0, 30)}`, 153, 142);
+   
+    
+    doc.text(`${modeloEquipo.toUpperCase().slice(0, 30)}`, 22, 182);
+    doc.text(`${cantidadEquipo.toUpperCase().slice(0, 5)}`, 72, 181);
+
+        switch (incluyeSim) {
+        case "si":
+            switch (operadora) {
+                case "movistar":
+                    doc.text("X", 126, 181 );
+                    break;
+                case "digitel":
+                    doc.text("X", 88, 181 );
+                    break;
+                case "movilnet":
+                    doc.text("X", 110, 151 );
+                    break;
+                default:
+                    break;
+            }
+            break;
+        
+        default:
+            break;
+    }
+
+         doc.text(`${representanteLegal.toUpperCase().slice(0, 30)}, ${cedulaRepresentante.slice(0, 10)}`, 23, 253);
+        doc.text(`${ciudad.toUpperCase().slice(0, 25)}, ${String(dia).padStart(2, '0')}/ ${String(mes).padStart(2, '0')}/ ${anio}`, 148, 255);
+        
+        // Agregar firma si existe
     const signatureCanvas = document.getElementById('signatureCanvas');
     if (signatureCanvas && !isCanvasBlank(signatureCanvas)) {
         const signatureData = signatureCanvas.toDataURL('image/png');
-        doc.addImage(signatureData, 'PNG', 20, 150, 80, 30);
-        doc.text('Firma del Solicitante', 20, 190);
+       // doc.text(`${razonSocial.toUpperCase().slice(0, 30)}`, 65, 245);
+        //doc.text(`${rif.slice(0, 8)}`, 68, 256);
+        doc.addImage(signatureData, 'PNG', 72, 250, 35, 10);
+        
     }
+   
     
-    doc.save('solicitud_master.pdf');
-    alert('Solicitud generada exitosamente');
+     // Guardar el PDF
+        const razonSocialAbrv = razonSocial.substring(0, 20).replace(/[^a-zA-Z0-9]/g, '_');
+        doc.save(`planilla_master_${razonSocialAbrv || 'solicitud'}.pdf`);
+        
+        alert('Planilla Master generada exitosamente');
 }
+
+
+    
+
+
+
 
 // Generar PDF para Credicard
 function generarPDFCredicard() {
