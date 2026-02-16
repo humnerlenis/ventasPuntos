@@ -10,7 +10,12 @@ document.addEventListener('DOMContentLoaded', function() {
     setupEventListeners();
     setupQRScanner();
 });
-
+function obtenerMes(numeroMes) {
+   // Creamos una fecha ficticia (año, mes - 1, día)
+const fecha = new Date(2025, numeroMes - 1); 
+const nombreMes = fecha.toLocaleString('es-ES', { month: 'long' });
+return nombreMes.charAt(0).toUpperCase() + nombreMes.slice(1);
+}
 // Inicializar todos los formularios
 function initializeForms() {
     // Disglobal - Mostrar/ocultar secciones según tipo de cliente
@@ -812,7 +817,9 @@ function generarPlanillaUnicaDisglobal() {
     }
     
     // Guardar PDF
-    doc.save('planilla_unica_disglobal.pdf');
+    const razonSocialAbrv = razonSocial.substring(0, 30).replace(/[^a-zA-Z0-9]/g, '_');
+        doc.save(`planilla_unica_disglobal_${razonSocialAbrv || 'solicitud'}.pdf`);
+   // doc.save('planilla_unica_disglobal.pdf');
     alert('   Planilla Unica generada exitosamente');
 }
 
@@ -875,24 +882,7 @@ function generarCargoDisglobal() {
 
 function generarContratoDisglobal(tipoContrato) {
     /* datos necesarios para el contrato */
-    /* 
-    pag 1
-    nombre completo
-    ciudad de domicilio
-    RIF
-    pago mensual (mNTENIMIENTO)
-    pag 2
-    DIRECCION
-    TELEFONO
-    NOMBRE
-    CORREO
-    CIUDAD 
-    FECHA
-    modelo
-    serial equipo
-    serial simcard
-    banco    */
-
+   
      // Obtener datos del formulario
     const tipoColocacion = document.querySelector('select[name="modeloNegocio"]').value;
     const tipoCliente = document.querySelector('input[name="tipoCliente"]:checked').value;
@@ -904,7 +894,6 @@ function generarContratoDisglobal(tipoContrato) {
     const ciudad = document.querySelector('input[name="ciudad"]').value;
     const estado = document.querySelector('input[name="estado"]').value;
     
-    
     const direccionFiscal = document.querySelector('input[name="direccionFiscal"]').value;
     const telefono = document.querySelector('input[name="telefono"]').value;
     const correo = document.querySelector('input[name="correo"]').value;
@@ -914,23 +903,24 @@ function generarContratoDisglobal(tipoContrato) {
     const numeroTomo = document.querySelector('input[name="numeroTomo"]').value;
     const clausulaDelegatoria = document.querySelector('input[name="clausulaDelegatoria"]').value;
     const ciudadRegistro = document.querySelector('input[name="ciudadRegistro"]').value;
-    let representanteLegal = document.querySelector('input[name="nombresRepresentante"]').value;
+    const estadoRegistro = document.querySelector('input[name="estadoRegistro"]').value;
+    const representanteLegal = document.querySelector('input[name="nombresRepresentante"]').value;
     const cargoRepresentante = document.querySelector('input[name="cargoRepresentante"]').value;
     const telefonoRepresentante = document.querySelector('input[name="telefonoRepresentante"]').value;
     const correoRepresentante = document.querySelector('input[name="correoRepresentante"]').value;
     let cedulaRepresentante = document.querySelector('input[name="cedulaRepresentante"]').value;
     const modeloEquipo = document.querySelector('input[name="modeloEquipo"]').value;
-    
-    
-   
-      
-    
     const serialEquipo = document.querySelector('input[name="serialEquipo"]').value;
     const serialSim = document.querySelector('input[name="serialSim"]').value;
-   
-
-
-
+    const fechaActual = new Date();
+    const dia = fechaActual.getDate();       // const mes = fechaActual.getMonth() + 1;  // Mes (0-11, por eso sumamos 1)
+    const mes = fechaActual.toLocaleString('default', { month: 'long' });   
+    const anio = fechaActual.getFullYear();
+    let imgData1= new Image();
+    let imgData2= new Image();
+    let imgData3= new Image();
+    const signatureCanvas = document.getElementById('signatureCanvas');
+    const razonSocialAbrv = razonSocial.substring(0, 30).replace(/[^a-zA-Z0-9]/g, '_');
     const { jsPDF } = window.jspdf;
             const doc = new jsPDF(); 
 
@@ -939,11 +929,7 @@ function generarContratoDisglobal(tipoContrato) {
         
         case 'natural':
             // Generar contrato PN
-               
-                
             
-            
-            let imgData1= new Image();
             imgData1.src = 'img/disglobal/contrato_PN_1.png'; // Tu imagen en Base64
             doc.addImage(imgData1, 'PNG', 0, 0, 216, 279); //carta es 216x279mm
             doc.setFontSize(6);
@@ -962,7 +948,7 @@ function generarContratoDisglobal(tipoContrato) {
                 doc.text(`40$`, 195, 119.5);
                     
            doc.addPage();
-            let imgData2= new Image();
+            
             imgData2.src = 'img/disglobal/contrato_PN_2.png'; // Tu imagen en Base64
             doc.addImage(imgData2, 'PNG', 0, 0, 216, 279);  
             doc.setFontSize(6);
@@ -973,10 +959,8 @@ function generarContratoDisglobal(tipoContrato) {
              doc.text(`${representanteLegal.toUpperCase()}`, 146, 152.5); 
             doc.text(`${correo.toUpperCase()}`, 15, 155);
             doc.text(`${ciudad.toUpperCase()}`, 151, 157);
-            const fechaActual = new Date();
-            const dia = fechaActual.getDate();       // const mes = fechaActual.getMonth() + 1;  // Mes (0-11, por eso sumamos 1)
-            const mes = fechaActual.toLocaleString('default', { month: 'long' });   
-            const anio = fechaActual.getFullYear();
+            
+            
             doc.text(` ${dia} `, 190, 157);
             doc.text(`  ${mes.toUpperCase()} `, 20, 159.5);
             doc.text(` ### ${anio}`, 54, 159.5);
@@ -992,7 +976,7 @@ function generarContratoDisglobal(tipoContrato) {
             doc.text(` ### ${anio}`, 147.5, 195);
 
             // Agregar firma si existe
-            const signatureCanvas = document.getElementById('signatureCanvas');
+            
             if (signatureCanvas && !isCanvasBlank(signatureCanvas)) {
                 const signatureData = signatureCanvas.toDataURL('image/png');
                 
@@ -1000,20 +984,98 @@ function generarContratoDisglobal(tipoContrato) {
                 doc.addImage(signatureData, 'PNG', 137, 205, 35, 10);
                 
             }
-                doc.setFontSize(7);
+               
            
             
             
             
+            // Guardar PDF
             
-            doc.save('contrato_PN.pdf');
+            doc.save(`contrato_PN_disglobal_${razonSocialAbrv || 'solicitud'}.pdf`);
+           // doc.save('contrato_PN.pdf');
             alert('Contrato PN generado exitosamente');
             break;
         case 'juridica':
             // Generar contrato 2
             break;
             case 'firma':
-            // Generar contrato 3
+             
+            imgData1.src = 'img/disglobal/contrato_FP_1.png'; // Tu imagen en Base64
+            doc.addImage(imgData1, 'PNG', 0, 0, 216, 279); //carta es 216x279mm
+            doc.setFontSize(6);
+            doc.setFont('helvetica', 'normal');    
+            
+            
+                // Para persona natural, copiar datos de razón social al representante legal
+               
+                doc.text(`${razonSocial.toUpperCase()}`, 15, 29.5);  
+                doc.text(`${ciudad.toUpperCase()}`, 100, 29.5); 
+                doc.text(`${nombreRegistroMercantil.toUpperCase()}`, 160, 29.5);
+                doc.setFontSize(4);
+                doc.text(`${estadoRegistro.toUpperCase()}`, 190.5, 29.5);
+                doc.setFontSize(6);
+                doc.text(`${cedulaRepresentante.toUpperCase()}`, 85, 34);  
+                let fecha=fechaRegistro.split('-');
+                let diaR=fecha[2];
+                let mesR=fecha[1];
+                let anioR=fecha[0];
+                doc.text(`${diaR}`, 16.5, 31.5);
+                doc.text(`${obtenerMes(mesR)}`, 25, 31.5);
+                doc.text(`${anioR}`, 47, 31.5);
+                doc.text(`${nroRegistro}`, 66, 31.5);
+                doc.text(`${numeroTomo}`, 77, 31.5);
+                doc.text(`${representanteLegal.toUpperCase()}`, 100, 31.5);
+                doc.text(`${ciudad.toUpperCase()}`, 16, 34);
+
+                doc.text(`${tiporif.toUpperCase()}-${rif}`, 141, 34); 
+                doc.text(`CUARENTA`, 127, 122);
+                doc.text(`40$`, 16, 124);
+                    
+           doc.addPage();
+            
+            imgData2.src = 'img/disglobal/contrato_FP_2.png'; // Tu imagen en Base64
+            doc.addImage(imgData2, 'PNG', 0, 0, 216, 279);  
+            doc.setFontSize(6);
+            doc.setFont('helvetica', 'normal');
+
+            doc.text(`${direccionFiscal.toUpperCase()}`, 15, 166.5);
+            doc.text(`${telefono.toUpperCase()}`, 138, 166.5);
+             doc.text(`${representanteLegal.toUpperCase()}`, 15, 169); 
+            doc.text(`${correo.toUpperCase()}`, 69, 169);
+            doc.text(`${ciudad.toUpperCase()}`, 22, 173.8);
+            doc.text(` ${dia} `, 75, 173.8);
+            doc.text(`  ${mes.toUpperCase()} `, 95, 173.8);
+            doc.text(` ### ${anio}`, 128.5, 173.8);
+            doc.text(`${modeloEquipo.toUpperCase()}`, 30, 195);
+            doc.text(`${serialEquipo.toUpperCase()}`, 30, 197.5);
+            doc.text(`${serialSim.toUpperCase()}`, 30, 200);
+            doc.text(`${banco.toUpperCase()}`, 30, 202.4);
+            doc.setFontSize(4);
+            doc.text(`${ciudad.toUpperCase()}`, 80, 206.5);
+            doc.setFontSize(6);
+            doc.text(` ${dia} `, 102, 206.5);
+            doc.text(`  ${mes.toUpperCase()} `, 121, 206.5);
+            doc.text(` ### ${anio}`, 149, 206.5);
+
+            // Agregar firma si existe
+            
+            if (signatureCanvas && !isCanvasBlank(signatureCanvas)) {
+                const signatureData = signatureCanvas.toDataURL('image/png');
+                
+                doc.addImage(signatureData, 'PNG', 140, 179, 35, 10);
+                doc.addImage(signatureData, 'PNG', 140, 209, 35, 10);
+                
+            }
+                
+           
+            
+            
+            
+            // Guardar PDF
+            
+            doc.save(`contrato_FP_disglobal_${razonSocialAbrv || 'solicitud'}.pdf`);
+           // doc.save('contrato_PN.pdf');
+            alert('Contrato FP generado exitosamente');
             break;
     
         default:
