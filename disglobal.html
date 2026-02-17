@@ -48,8 +48,8 @@
                             <label for="modeloNegocio">Modelo de Negocio</label>
                             <select id="modeloNegocio" name="modeloNegocio" required>
                                 <option value=""></option>
-                                <option value="contado">Básico</option>
-                                <option value="financiado" selected>Financiado</option>
+                                <option value="contado" selected>Básico</option>
+                                <option value="financiado" >Financiado</option>
                                 <option value="comodato">Comodato</option>
                             </select>
                         </div>
@@ -68,26 +68,26 @@
                             <option value="venezuela">Banco de Venezuela (BDV)</option>
                             <option value="tesoro">Banco del Tesoro</option>
                             <option value="banfanb">Banco de la Fuerza Armada Nacional Bolivariana (Banfanb)</option>
-                            <option value="agricola">Banco Agrícola de Venezuela</option>
                             <option value="bdt">Banco Digital de los Trabajadores (BDT)</option>
-                            <!--option value="banesco">Banesco</option>
-                            <option value="mercantil">Mercantil Banco Universal</option>
-                            <option value="provincial">BBVA Provincial</option-->
                             <option value="bnc">Banco Nacional de Crédito (BNC)</option>
                             <option value="bancamiga">Bancamiga Banco Universal</option>
                             <option value="exterior">Banco Exterior</option>
                             <option value="bancaribe" selected>Bancaribe (Banco del Caribe)</option>
                             <option value="bfc">Banco Fondo Común (BFC)</option>
-                            <option value="bvc">Banco Venezolano de Crédito</option>
                             <option value="plaza">Banco Plaza</option>
                             <option value="banplus">Banplus Banco Universal</option>
                             <option value="activo">Activo Banco Universal</option>
-                            <!-- option value="caroni">Banco Caroní</option-->
-                            <option value="100porciento">100% Banco</option>
+                            <option value="caroni">Banco Caroní</option>
                             <option value="bancrecer">Bancrecer</option>
                             <option value="delsur">Del Sur Banco Universal</option>
                             <option value="sofitasa">Sofitasa Banco Universal</option>
                             <option value="r4">R4</option>
+                            <!--option value="banesco">Banesco</option>
+                            <option value="mercantil">Mercantil Banco Universal</option>
+                            <option value="bvc">Banco Venezolano de Crédito</option>
+                            <option value="agricola">Banco Agrícola de Venezuela</option>
+                            <option value="provincial">BBVA Provincial</option-->
+                            <!--option value="100porciento">100% Banco</option-->
                             <!--option value="n58">N58 Banco Digital </option-->
                             
                         </select>
@@ -103,8 +103,9 @@
                             <label>Tipo de RIF</label>
                             <select name="tipoRif">
                                 <option value="V">V</option>
-                                <option value="J">J</option>
                                 <option value="E">E</option>
+                                <option value="J">J</option>
+                                <option value="G">G</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -206,20 +207,36 @@
                 <!-- Datos del Representante Legal -->
                 <div class="form-section" id="representanteLegalSection">
                     <h3><i class="fas fa-user-tie"></i> Datos del Representante Legal</h3>
-                    
                     <div class="form-group">
-                        <label for="cedulaRepresentante" >Cédula</label>
-                        <input type="text" id="cedulaRepresentante" name="cedulaRepresentante" placeholder="V-12345678" required>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
                             <label for="nombresRepresentante">Nombres y Apellidos</label>
                             <input type="text" id="nombresRepresentante" name="nombresRepresentante" required>
                         </div>
+                    
+
+                    <div class="form-row">
+                        <div class="form-group">
+                        <label for="cedulaRepresentante" >RIF Representante Legal</label>
+                        <input type="text" id="cedulaRepresentante" name="cedulaRepresentante" placeholder="V-12345678" required>
+                    </div>
                         <div class="form-group">
                             <label for="cargoRepresentante">Cargo</label>
                             <input type="text" id="cargoRepresentante"   name="cargoRepresentante" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="nacionalidadRepresentante">Nacionalidad</label>
+                            <input type="text" id="nacionalidadRepresentante" name="nacionalidadRepresentante" >
+                        </div>
+                        <div class="form-group">
+                            <label for="facultadoPor">Facultado Por:</label>
+                            
+                            <select id="facultadoPor" name="facultadoPor">
+                                <option value=""></option>
+                                <option value="estatutos">Estatutos</option>
+                                <option value="asamblea">Asamblea de Accionistas</option>
+                                <option value="juntaDirectiva">Junta Directiva</option>
+                            </select>
                         </div>
                     </div>
 
@@ -248,6 +265,10 @@
                             <label for="cantidadEquipo">Cantidad</label>
                             <input type="number" id="cantidadEquipo"    name="cantidadEquipo" value="1" min="1" required>
                         </div>
+                         <div class="form-group">
+                            <label for="serialEquipo">Serial del Equipo</label>
+                            <input type="text" id="serialEquipo" name="serialEquipo" required>
+                        </div>
                     </div>
 
                     <div class="form-group">
@@ -265,11 +286,15 @@
                     <div class="form-group" id="operadoraGroup" style="display: none;">
                         <label for="operadora">Operadora</label>
                         <select id="operadora" name="operadora">
-                            <option value="">Seleccione...</option>
+                            <option value=""></option>
                             <option value="movistar">Movistar</option>
                             <option value="digitel">Digitel</option>
                             <option value="movilnet">Movilnet</option>
                         </select>
+                        <div class="form-group">
+                            <label for="serialSim">Serial del SIM Card</label>
+                            <input type="text" id="serialSim" name="serialSim" >
+                        </div>
                     </div>
 
                     <div class="form-group">
@@ -327,16 +352,7 @@
                 <div class="form-section">
                     <h3><i class="fas fa-clipboard-list"></i> Observaciones y Recepción</h3>
                     
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="serialEquipo">Serial del Equipo</label>
-                            <input type="text" id="serialEquipo" name="serialEquipo" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="serialSim">Serial del SIM Card</label>
-                            <input type="text" id="serialSim" name="serialSim">
-                        </div>
-                    </div>
+                    
 
                     <h4>Recepción de Equipo</h4>
                     <div class="form-row">

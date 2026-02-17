@@ -446,12 +446,12 @@ function validarFormularioDisglobal() {
     if (tipoCliente === 'juridica') {
         // Validar que el tipo de RIF sea J
         const tipoRif = document.querySelector('select[name="tipoRif"]');
-        if (tipoRif && tipoRif.value !== 'J') {
-            camposVacios.push('Tipo de RIF debe ser J para Persona Jurídica');
+        if (tipoRif && tipoRif.value !== 'J' && tipoRif.value !== 'G') {
+            camposVacios.push('Tipo de RIF debe ser J o G para Persona Jurídica');
             tipoRif.style.borderColor = '#ff4444';
             
             // Mostrar mensaje específico
-            alert('Para Persona Jurídica, el Tipo de RIF debe ser "J"');
+            alert('Para Persona Jurídica, el Tipo de RIF debe ser "J o G"');
         } else if (tipoRif) {
             tipoRif.style.borderColor = '';
         }
@@ -537,13 +537,14 @@ function validarFormularioDisglobal() {
 
 
 // Función para generar PDF según el aliado
-function generarPDF() {
+async function generarPDF() {
     const currentPage = window.location.pathname.split('/').pop();
     
     if (currentPage.includes('disglobal')) {
         //generarPDFDisglobal();
-        generarPlanillaUnicaDisglobal();
-        generarCargoDisglobal();
+       await generarPlanillaUnicaDisglobal(); 
+      
+        
     } else if (currentPage.includes('vepagos')) {
         generarPDFVepagos();
     } else if (currentPage.includes('master')) {
@@ -591,7 +592,7 @@ function generarPDFDisglobal() {
     alert('PDF generado exitosamente');
 }
 
-function generarPlanillaUnicaDisglobal() {
+async function generarPlanillaUnicaDisglobal() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
     
@@ -617,11 +618,11 @@ function generarPlanillaUnicaDisglobal() {
     const numeroTomo = document.querySelector('input[name="numeroTomo"]').value;
     const clausulaDelegatoria = document.querySelector('input[name="clausulaDelegatoria"]').value;
     const ciudadRegistro = document.querySelector('input[name="ciudadRegistro"]').value;
-    const representanteLegal = document.querySelector('input[name="nombresRepresentante"]').value;
+    let representanteLegal = document.querySelector('input[name="nombresRepresentante"]').value;
     const cargoRepresentante = document.querySelector('input[name="cargoRepresentante"]').value;
     const telefonoRepresentante = document.querySelector('input[name="telefonoRepresentante"]').value;
     const correoRepresentante = document.querySelector('input[name="correoRepresentante"]').value;
-    const cedulaRepresentante = document.querySelector('input[name="cedulaRepresentante"]').value;
+    let cedulaRepresentante = document.querySelector('input[name="cedulaRepresentante"]').value;
     const modeloEquipo = document.querySelector('input[name="modeloEquipo"]').value;
     const cantidadEquipo = document.querySelector('input[name="cantidadEquipo"]').value;
     const incluyeSim = document.querySelector('input[name="incluyeSim"]:checked').value;
@@ -641,7 +642,7 @@ function generarPlanillaUnicaDisglobal() {
 
     // Configurar documento
     let imgData= new Image();
-    imgData.src = 'img/disglobal/planilla_unica.png'; // Tu imagen en Base64
+    imgData.src = 'img/disglobal/planilla_unica1.png'; // Tu imagen en Base64
     doc.addImage(imgData, 'PNG', 0, 0, 210, 297); // 210x297mm es A4
     doc.setFont('helvetica');
     doc.setFontSize(7);
@@ -660,12 +661,14 @@ function generarPlanillaUnicaDisglobal() {
     switch (tipoColocacion ) {
         case "contado":
             doc.text("X", 110, 44, );
+             generarContratoDisglobal(tipoCliente);
             break;
         case "financiado":
             doc.text("X", 140, 44, );
             break;
         case "comodato":
             doc.text("X", 162, 44, );
+             generarContratoDisglobal("comodato");
             break;    
         default:
             break;
@@ -728,16 +731,16 @@ function generarPlanillaUnicaDisglobal() {
          doc.setFontSize(9);
        /* doc.text(`${razonSocial.toUpperCase().slice(0, 30)}`, 16, 132);
         doc.text(`${telefono.toUpperCase().slice(0, 11)}`, 123, 132);*/
-        doc.text(`${cedulaRepresentante.slice(0, 10)}`, 16, 132);
+        doc.text(`${cedulaRepresentante.slice(0, -1)}`, 16, 132);
         doc.text(`${representanteLegal.toUpperCase().slice(0, 30)}`, 40, 132);
-        doc.text(`${cargoRepresentante.toUpperCase().slice(0, 30)}`, 70, 132);
+        doc.text(`${cargoRepresentante.toUpperCase().slice(0, 30)}`, 85, 132);
         doc.text(`${telefonoRepresentante.toUpperCase().slice(0, 11)}`, 126, 132);
         doc.text(`${correoRepresentante.toUpperCase().slice(0, 30)}`, 153, 132);
         //seccion de representante legal al final del documento
         doc.setFontSize(7);
         doc.text(`${representanteLegal.toUpperCase().slice(0, 30)}`, 34, 221);
         doc.text(`${ciudad.toUpperCase().slice(0, 30)}`, 16, 225);
-        doc.text(`${cedulaRepresentante.slice(0, 10)}`, 100, 225);
+        doc.text(`${cedulaRepresentante.slice(0, -1)}`, 100, 225);
     }
 
     doc.text(`${modeloEquipo.toUpperCase().slice(0, 30)}`, 22, 147);
@@ -815,7 +818,53 @@ function generarPlanillaUnicaDisglobal() {
         doc.addImage(signatureData, 'PNG', 65, 258, 35, 10);
         
     }
+
+    /* generar cargo a cuenta */
+     doc.addPage();
+     let imgData1= new Image();
+    imgData1.src = 'img/disglobal/cargo_a_cuenta.png'; // Tu imagen en Base64
+    doc.addImage(imgData1, 'PNG', 0, 0, 210, 297); // 210x297mm es A4
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'normal');
+
+    if (tipoCliente === 'natural') {
+        // Para persona natural, copiar datos de razón social al representante legal
+        representanteLegal = document.querySelector('input[name="razonSocial"]').value
+        cedulaRepresentante = rif.slice(0, -1);
+        doc.text(`${representanteLegal.toUpperCase()}`, 30, 82);  
+        doc.text(`${tiporif.toUpperCase()}-${cedulaRepresentante.toUpperCase()}`, 120, 88);  
+        doc.text(`${razonSocial.toUpperCase()}`, 85, 107);  
+        doc.text(`${tiporif.toUpperCase()}-${rif}`, 60, 113); 
+        doc.text(`${cuentaBancaria}`, 37, 124);
+               
+    }else {
+        doc.text(`${representanteLegal.toUpperCase()}`, 30, 82);  
+        doc.text(`${cedulaRepresentante.toUpperCase().slice(0,-1)}`, 120, 88);  
+        doc.text(`${razonSocial.toUpperCase()}`, 85, 107);  
+        doc.text(`${tiporif.toUpperCase()}-${rif}`, 60, 113); 
+        doc.text(`${cuentaBancaria}`, 37, 124);
+     
+
+    }
+
+    // Agregar firma si existe
+    const signatureCanvas1 = document.getElementById('signatureCanvas');
+    if (signatureCanvas && !isCanvasBlank(signatureCanvas1)) {
+        const signatureData1 = signatureCanvas.toDataURL('image/png');
+        
+        doc.addImage(signatureData1, 'PNG', 30, 200, 35, 10);
+        
+    }
+         doc.setFontSize(7);
+    doc.text(`${representanteLegal.toUpperCase()}`, 30, 220); 
+      doc.setFontSize(10);
+    doc.text(`${cedulaRepresentante.toUpperCase()}`, 30, 230); 
     
+    
+      
+    
+
+    /* fin cargo a cuenta */
     // Guardar PDF
     const razonSocialAbrv = razonSocial.substring(0, 30).replace(/[^a-zA-Z0-9]/g, '_');
         doc.save(`planilla_unica_disglobal_${razonSocialAbrv || 'solicitud'}.pdf`);
@@ -823,7 +872,7 @@ function generarPlanillaUnicaDisglobal() {
     alert('   Planilla Unica generada exitosamente');
 }
 
-function generarCargoDisglobal() {
+async function generarCargoDisglobal() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();    
         
@@ -853,7 +902,7 @@ function generarCargoDisglobal() {
                
     }else {
         doc.text(`${representanteLegal.toUpperCase()}`, 30, 82);  
-        doc.text(`${cedulaRepresentante.toUpperCase()}`, 120, 88);  
+        doc.text(`${cedulaRepresentante.toUpperCase().slice(0,-1)}`, 120, 88);  
         doc.text(`${razonSocial.toUpperCase()}`, 85, 107);  
         doc.text(`${tiporif.toUpperCase()}-${rif}`, 60, 113); 
         doc.text(`${cuentaBancaria}`, 37, 124);
@@ -876,11 +925,13 @@ function generarCargoDisglobal() {
     
     
       
-    doc.save('cargo_a_cuenta.pdf');
+    await doc.save('cargo_a_cuenta.pdf');
     alert('Cargo a cuenta generado exitosamente');
+    
+    
 }   
 
-function generarContratoDisglobal(tipoContrato) {
+async function generarContratoDisglobal(tipoContrato) {
     /* datos necesarios para el contrato */
    
      // Obtener datos del formulario
@@ -904,11 +955,13 @@ function generarContratoDisglobal(tipoContrato) {
     const clausulaDelegatoria = document.querySelector('input[name="clausulaDelegatoria"]').value;
     const ciudadRegistro = document.querySelector('input[name="ciudadRegistro"]').value;
     const estadoRegistro = document.querySelector('input[name="estadoRegistro"]').value;
-    const representanteLegal = document.querySelector('input[name="nombresRepresentante"]').value;
+    let representanteLegal = document.querySelector('input[name="nombresRepresentante"]').value;
     const cargoRepresentante = document.querySelector('input[name="cargoRepresentante"]').value;
     const telefonoRepresentante = document.querySelector('input[name="telefonoRepresentante"]').value;
     const correoRepresentante = document.querySelector('input[name="correoRepresentante"]').value;
     let cedulaRepresentante = document.querySelector('input[name="cedulaRepresentante"]').value;
+    const nacionalidadRepresentante = document.querySelector('input[name="nacionalidadRepresentante"]').value;
+    const facultadoPor = document.querySelector('select[name="facultadoPor"]').value;
     const modeloEquipo = document.querySelector('input[name="modeloEquipo"]').value;
     const serialEquipo = document.querySelector('input[name="serialEquipo"]').value;
     const serialSim = document.querySelector('input[name="serialSim"]').value;
@@ -921,8 +974,13 @@ function generarContratoDisglobal(tipoContrato) {
     let imgData3= new Image();
     const signatureCanvas = document.getElementById('signatureCanvas');
     const razonSocialAbrv = razonSocial.substring(0, 30).replace(/[^a-zA-Z0-9]/g, '_');
+    let fecha=fechaRegistro.split('-');
+    let diaR=fecha[2];
+    let mesR=fecha[1];
+    let anioR=fecha[0];
+
     const { jsPDF } = window.jspdf;
-            const doc = new jsPDF(); 
+            const doc = new jsPDF({ compress: false }); 
 
     switch (tipoContrato) {
         
@@ -944,8 +1002,40 @@ function generarContratoDisglobal(tipoContrato) {
                 doc.text(`${cedulaRepresentante.toUpperCase()}`, 15, 32);  
                 
                 doc.text(`${tiporif.toUpperCase()}-${rif}`, 80, 32); 
-                doc.text(`CUARENTA`, 125, 119.5);
-                doc.text(`40$`, 195, 119.5);
+                switch (banco) {
+                    case "plaza":
+                        doc.text(`CUARENTA Y CUATRO`, 120, 119.5);
+                        doc.text(`44$`, 195, 119.5);
+                        break;
+                    case "bancrecer":
+                        doc.text(`CUARENTA Y CINCO`, 120, 119.5);
+                        doc.text(`45$`, 195, 119.5);
+                        break;
+
+                    case "bnc":
+                        doc.text(`CUARENTA Y CINCO`, 120, 119.5);
+                        doc.text(`45$`, 195, 119.5);
+                        break;
+                    case "delsur":
+                        doc.text(`CUARENTA Y TRES`, 120, 119.5);
+                        doc.text(`43$`, 195, 119.5);
+                        break;
+                    case "bfc":
+                        doc.text(`CUARENTA Y CINCO`, 120, 119.5);
+                        doc.text(`45$`, 195, 119.5);
+                        break;
+
+                    case "bancamiga":
+                        doc.text(`1,5% al 1,8%`, 120, 119.5);
+                        doc.text(`---`, 195, 119.5);
+                        break;
+                
+                    default:
+                        doc.text(`CUARENTA`, 120, 119.5);
+                        doc.text(`40$`, 195, 119.5);
+                        break;
+                }
+                
                     
            doc.addPage();
             
@@ -954,34 +1044,34 @@ function generarContratoDisglobal(tipoContrato) {
             doc.setFontSize(6);
             doc.setFont('helvetica', 'normal');
 
-            doc.text(`${direccionFiscal.toUpperCase()}`, 15, 152.5);
-            doc.text(`${telefono.toUpperCase()}`, 95, 152.5);
-             doc.text(`${representanteLegal.toUpperCase()}`, 146, 152.5); 
-            doc.text(`${correo.toUpperCase()}`, 15, 155);
-            doc.text(`${ciudad.toUpperCase()}`, 151, 157);
+            doc.text(`${direccionFiscal.toUpperCase()}`, 15, 164);
+            doc.text(`${telefono.toUpperCase()}`, 95, 164);
+             doc.text(`${representanteLegal.toUpperCase()}`, 146, 164); 
+            doc.text(`${correo.toUpperCase()}`, 15, 166.5);
+            doc.text(`${ciudad.toUpperCase()}`, 151, 169);
             
             
-            doc.text(` ${dia} `, 190, 157);
-            doc.text(`  ${mes.toUpperCase()} `, 20, 159.5);
-            doc.text(` ### ${anio}`, 54, 159.5);
-            doc.text(`${modeloEquipo.toUpperCase()}`, 30, 183);
-            doc.text(`${serialEquipo.toUpperCase()}`, 30, 185.6);
-            doc.text(`${serialSim.toUpperCase()}`, 30, 188);
-            doc.text(`${banco.toUpperCase()}`, 30, 190.4);
+            doc.text(` ${dia} `, 190, 169);
+            doc.text(`  ${mes.toUpperCase()} `, 20, 171.5);
+            doc.text(` ${anio}`, 54, 171.5);
+            doc.text(`${modeloEquipo.toUpperCase()}`, 30, 197.3);
+            doc.text(`${serialEquipo.toUpperCase()}`, 30, 199.8);
+            doc.text(`${serialSim.toUpperCase()}`, 30, 202.2);
+            doc.text(`${banco.toUpperCase()}`, 30, 204.9);
             doc.setFontSize(5);
-            doc.text(`${ciudad.toUpperCase()}`, 79.8, 195);
+            doc.text(`${ciudad.toUpperCase()}`, 79.8, 210);
             doc.setFontSize(6);
-            doc.text(` ${dia} `, 102, 195);
-            doc.text(`  ${mes.toUpperCase()} `, 120, 195);
-            doc.text(` ### ${anio}`, 147.5, 195);
+            doc.text(` ${dia} `, 102, 210);
+            doc.text(`  ${mes.toUpperCase()} `, 120, 210);
+            doc.text(` ${anio}`, 147.5, 210);
 
             // Agregar firma si existe
             
             if (signatureCanvas && !isCanvasBlank(signatureCanvas)) {
                 const signatureData = signatureCanvas.toDataURL('image/png');
                 
-                doc.addImage(signatureData, 'PNG', 137, 165, 35, 10);
-                doc.addImage(signatureData, 'PNG', 137, 205, 35, 10);
+                doc.addImage(signatureData, 'PNG', 137, 176, 35, 10);
+                doc.addImage(signatureData, 'PNG', 137, 220, 35, 10);
                 
             }
                
@@ -991,79 +1081,116 @@ function generarContratoDisglobal(tipoContrato) {
             
             // Guardar PDF
             
-            doc.save(`contrato_PN_disglobal_${razonSocialAbrv || 'solicitud'}.pdf`);
+          await  doc.save(`contrato_PN_disglobal_${razonSocialAbrv || 'solicitud'}.pdf`);
            // doc.save('contrato_PN.pdf');
             alert('Contrato PN generado exitosamente');
             break;
         case 'juridica':
-            // Generar contrato 2
-            break;
-            case 'firma':
-             
-            imgData1.src = 'img/disglobal/contrato_FP_1.png'; // Tu imagen en Base64
+            imgData1.src = 'img/disglobal/contrato_PJ_1.png'; // Tu imagen en Base64
             doc.addImage(imgData1, 'PNG', 0, 0, 216, 279); //carta es 216x279mm
             doc.setFontSize(6);
             doc.setFont('helvetica', 'normal');    
             
             
-                // Para persona natural, copiar datos de razón social al representante legal
                
-                doc.text(`${razonSocial.toUpperCase()}`, 15, 29.5);  
-                doc.text(`${ciudad.toUpperCase()}`, 100, 29.5); 
-                doc.text(`${nombreRegistroMercantil.toUpperCase()}`, 160, 29.5);
+               
+                doc.text(`${razonSocial.toUpperCase()}`, 30, 32);  
+                doc.text(`${ciudad.toUpperCase()}`, 151, 32); 
+                doc.text(`${nombreRegistroMercantil.toUpperCase()}`, 51, 34);
                 doc.setFontSize(4);
-                doc.text(`${estadoRegistro.toUpperCase()}`, 190.5, 29.5);
+                doc.text(`${estadoRegistro.toUpperCase()}`, 75, 34);
                 doc.setFontSize(6);
-                doc.text(`${cedulaRepresentante.toUpperCase()}`, 85, 34);  
-                let fecha=fechaRegistro.split('-');
-                let diaR=fecha[2];
-                let mesR=fecha[1];
-                let anioR=fecha[0];
-                doc.text(`${diaR}`, 16.5, 31.5);
-                doc.text(`${obtenerMes(mesR)}`, 25, 31.5);
-                doc.text(`${anioR}`, 47, 31.5);
-                doc.text(`${nroRegistro}`, 66, 31.5);
-                doc.text(`${numeroTomo}`, 77, 31.5);
-                doc.text(`${representanteLegal.toUpperCase()}`, 100, 31.5);
-                doc.text(`${ciudad.toUpperCase()}`, 16, 34);
+                doc.text(`${diaR}`, 95, 34);
+                doc.text(`${obtenerMes(mesR)}`, 101, 34);
+                doc.text(`${anioR.slice(2,4)}`, 124.5, 34);
+                doc.text(`${nroRegistro}`, 135, 34.5);
+                doc.setFontSize(4);
+                doc.text(`${numeroTomo}`, 145.5, 34.5);
+                doc.setFontSize(6);
+                doc.text(`${rif}`, 30, 36.5); 
+                doc.text(`${cargoRepresentante.toUpperCase()}`, 83, 36.5);
+                doc.text(`${representanteLegal.toUpperCase()}`, 120, 36.5);
+                doc.text(`${nacionalidadRepresentante.toUpperCase()}`, 47, 39);
+                doc.text(`${ciudad.toUpperCase()}`, 106, 39);
+                doc.text(`${cedulaRepresentante.toUpperCase().slice(0,-1)}`, 30, 41.5); //se le quita un digito al rif para colocar la cedula del representante legal 
+                doc.text(`${cedulaRepresentante.toUpperCase()}`, 88, 41.5)
+                doc.text(`${facultadoPor.toUpperCase()}`, 124.5, 41.5);
+                switch (banco) {
+                    case "plaza":
+                        doc.text(`CUARENTA Y CUATRO`, 47, 153);
+                        doc.text(`44$`, 123, 153);
+                        break;
+                    case "bancrecer":
+                        doc.text(`CUARENTA Y CINCO`, 47, 153);
+                        doc.text(`45$`, 123, 153);
+                        break;
 
-                doc.text(`${tiporif.toUpperCase()}-${rif}`, 141, 34); 
-                doc.text(`CUARENTA`, 127, 122);
-                doc.text(`40$`, 16, 124);
+                    case "bnc":
+                        doc.text(`CUARENTA Y CINCO`, 47, 153);
+                        doc.text(`45$`, 123, 153);
+                        break;
+                    case "delsur":
+                        doc.text(`CUARENTA Y TRES`, 47, 153);
+                        doc.text(`43$`, 123, 153);
+                        break;
+                    case "bfc":
+                        doc.text(`CUARENTA Y CINCO`, 47, 153);
+                        doc.text(`45$`, 123, 153);
+                        break;
+
+                    case "bancamiga":
+                        doc.text(`1,5% al 1,8%`, 47, 153);
+                        doc.text(`---`, 123, 153);
+                        break;
+                
+                    default:
+                        doc.text(`CUARENTA`, 47, 153);
+                        doc.text(`40$`, 123, 153);
+                        break;
+                }
+              
                     
            doc.addPage();
             
-            imgData2.src = 'img/disglobal/contrato_FP_2.png'; // Tu imagen en Base64
+            imgData2.src = 'img/disglobal/contrato_PJ_2.png'; // Tu imagen en Base64
             doc.addImage(imgData2, 'PNG', 0, 0, 216, 279);  
+
+          doc.addPage();
+            imgData3.src = 'img/disglobal/contrato_PJ_3.png'; // Tu imagen en Base64
+            doc.addImage(imgData3, 'PNG', 0, 0, 216, 279);  
+
+
             doc.setFontSize(6);
             doc.setFont('helvetica', 'normal');
 
-            doc.text(`${direccionFiscal.toUpperCase()}`, 15, 166.5);
-            doc.text(`${telefono.toUpperCase()}`, 138, 166.5);
-             doc.text(`${representanteLegal.toUpperCase()}`, 15, 169); 
-            doc.text(`${correo.toUpperCase()}`, 69, 169);
-            doc.text(`${ciudad.toUpperCase()}`, 22, 173.8);
-            doc.text(` ${dia} `, 75, 173.8);
-            doc.text(`  ${mes.toUpperCase()} `, 95, 173.8);
-            doc.text(` ### ${anio}`, 128.5, 173.8);
-            doc.text(`${modeloEquipo.toUpperCase()}`, 30, 195);
-            doc.text(`${serialEquipo.toUpperCase()}`, 30, 197.5);
-            doc.text(`${serialSim.toUpperCase()}`, 30, 200);
-            doc.text(`${banco.toUpperCase()}`, 30, 202.4);
-            doc.setFontSize(4);
-            doc.text(`${ciudad.toUpperCase()}`, 80, 206.5);
+            doc.text(`${direccionFiscal.toUpperCase()}`, 30, 90);
+            doc.text(`${telefono.toUpperCase()}`, 138, 90);
+             doc.text(`${representanteLegal.toUpperCase()}`, 45, 93); 
+            doc.text(`${correo.toUpperCase()}`, 106, 93);
+            doc.text(`${ciudad.toUpperCase()}`, 132, 98.5);
+            doc.text(` ${dia} `, 164, 98.5);
+            doc.text(` ${mes.toUpperCase()} `, 30, 101);
+            doc.text(`${anio.toString().slice(3,4)}`, 70, 101);
+            doc.text(`${modeloEquipo.toUpperCase()}`, 47, 122.5);
+            doc.text(`${serialEquipo.toUpperCase()}`, 47, 125);
+            doc.text(`${serialSim.toUpperCase()}`, 47, 127.3);
+            doc.text(`${banco.toUpperCase()}`, 47, 129.7);
+            doc.setFontSize(3);
+            doc.text(`${ciudad.toUpperCase()}`, 100, 137);
             doc.setFontSize(6);
-            doc.text(` ${dia} `, 102, 206.5);
-            doc.text(`  ${mes.toUpperCase()} `, 121, 206.5);
-            doc.text(` ### ${anio}`, 149, 206.5);
+            doc.text(` ${dia} `, 115, 137);
+            doc.setFontSize(3);
+            doc.text(`  ${mes.toUpperCase()} `, 133, 137);
+            doc.setFontSize(6);
+            doc.text(` ### ${anio}`, 148, 137);
 
             // Agregar firma si existe
             
             if (signatureCanvas && !isCanvasBlank(signatureCanvas)) {
                 const signatureData = signatureCanvas.toDataURL('image/png');
                 
-                doc.addImage(signatureData, 'PNG', 140, 179, 35, 10);
-                doc.addImage(signatureData, 'PNG', 140, 209, 35, 10);
+                doc.addImage(signatureData, 'PNG', 140, 105, 35, 10);
+                doc.addImage(signatureData, 'PNG', 140, 141, 35, 10);
                 
             }
                 
@@ -1073,11 +1200,237 @@ function generarContratoDisglobal(tipoContrato) {
             
             // Guardar PDF
             
-            doc.save(`contrato_FP_disglobal_${razonSocialAbrv || 'solicitud'}.pdf`);
+          await  doc.save(`contrato_PJ_disglobal_${razonSocialAbrv || 'solicitud'}.pdf`);
            // doc.save('contrato_PN.pdf');
-            alert('Contrato FP generado exitosamente');
+            alert('Contrato PJ generado exitosamente');
             break;
-    
+        case 'firma':
+             
+                imgData1.src = 'img/disglobal/contrato_FP_1.png'; // Tu imagen en Base64
+                doc.addImage(imgData1, 'PNG', 0, 0, 216, 279); //carta es 216x279mm
+                doc.setFontSize(6);
+                doc.setFont('helvetica', 'normal');    
+                
+                
+                    // Para persona natural, copiar datos de razón social al representante legal
+                
+                    doc.text(`${razonSocial.toUpperCase()}`, 15, 29.5);  
+                    doc.text(`${ciudad.toUpperCase()}`, 100, 29.5); 
+                    doc.text(`${nombreRegistroMercantil.toUpperCase()}`, 160, 29.5);
+                    doc.setFontSize(4);
+                    doc.text(`${estadoRegistro.toUpperCase()}`, 190.5, 29.5);
+                    doc.setFontSize(6);
+                    doc.text(`${cedulaRepresentante.toUpperCase().slice(0,-1)}`, 85, 34);  
+                    doc.text(`${diaR}`, 16.5, 31.5);
+                    doc.text(`${obtenerMes(mesR)}`, 25, 31.5);
+                    doc.text(`${anioR}`, 47, 31.5);
+                    doc.text(`${nroRegistro}`, 66, 31.5);
+                    doc.text(`${numeroTomo}`, 77, 31.5);
+                    doc.text(`${representanteLegal.toUpperCase()}`, 100, 31.5);
+                    doc.text(`${ciudad.toUpperCase()}`, 16, 34);
+
+                    doc.text(`${tiporif.toUpperCase()}-${rif}`, 141, 34); 
+                    switch (banco) {
+                    case "plaza":
+                        doc.text(`CUARENTA Y CUATRO`, 127, 122);
+                        doc.text(`44$`, 16, 124);
+                        break;
+                    case "bancrecer":
+                        doc.text(`CUARENTA Y CINCO`, 127, 122);
+                        doc.text(`45$`, 16, 124);
+                        break;
+
+                    case "bnc":
+                        doc.text(`CUARENTA Y CINCO`, 127, 122);
+                        doc.text(`45$`, 16, 124);
+                        break;
+                    case "delsur":
+                        doc.text(`CUARENTA Y TRES`, 127, 122);
+                        doc.text(`43$`, 16, 124);
+                        break;
+                    case "bfc":
+                        doc.text(`CUARENTA Y CINCO`, 127, 122);
+                        doc.text(`45$`, 16, 124);
+                        break;
+
+                    case "bancamiga":
+                        doc.text(`1,5% al 1,8%`, 127, 122);
+                        doc.text(`---`, 16, 124);
+                        break;
+                
+                    default:
+                        doc.text(`CUARENTA`, 127, 122);
+                        doc.text(`40$`, 16, 124);
+                        break;
+                }
+                    
+                        
+                doc.addPage();
+                
+                imgData2.src = 'img/disglobal/contrato_FP_2.png'; // Tu imagen en Base64
+                doc.addImage(imgData2, 'PNG', 0, 0, 216, 279);  
+                doc.setFontSize(6);
+                doc.setFont('helvetica', 'normal');
+
+                doc.text(`${direccionFiscal.toUpperCase()}`, 15, 166.5);
+                doc.text(`${telefono.toUpperCase()}`, 138, 166.5);
+                doc.text(`${representanteLegal.toUpperCase()}`, 15, 169); 
+                doc.text(`${correo.toUpperCase()}`, 69, 169);
+                doc.text(`${ciudad.toUpperCase()}`, 22, 173.8);
+                doc.text(` ${dia} `, 75, 173.8);
+                doc.text(`  ${mes.toUpperCase()} `, 95, 173.8);
+                doc.text(` ### ${anio}`, 128.5, 173.8);
+                doc.text(`${modeloEquipo.toUpperCase()}`, 30, 195);
+                doc.text(`${serialEquipo.toUpperCase()}`, 30, 197.5);
+                doc.text(`${serialSim.toUpperCase()}`, 30, 200);
+                doc.text(`${banco.toUpperCase()}`, 30, 202.4);
+                doc.setFontSize(4);
+                doc.text(`${ciudad.toUpperCase()}`, 80, 206.5);
+                doc.setFontSize(6);
+                doc.text(` ${dia} `, 102, 206.5);
+                doc.text(`  ${mes.toUpperCase()} `, 121, 206.5);
+                doc.text(` ### ${anio}`, 149, 206.5);
+
+                // Agregar firma si existe
+                
+                if (signatureCanvas && !isCanvasBlank(signatureCanvas)) {
+                    const signatureData = signatureCanvas.toDataURL('image/png');
+                    
+                    doc.addImage(signatureData, 'PNG', 140, 179, 35, 10);
+                    doc.addImage(signatureData, 'PNG', 140, 209, 35, 10);
+                    
+                }
+                    
+            
+                
+                
+                
+                // Guardar PDF
+                
+                await doc.save(`contrato_FP_disglobal_${razonSocialAbrv || 'solicitud'}.pdf`);
+            // doc.save('contrato_PN.pdf');
+                alert('Contrato FP generado exitosamente');
+            break;
+        case "comodato":
+                    imgData1.src = 'img/disglobal/contrato_comodato_1.png';
+                    doc.addImage(imgData1, 'PNG', 0, 0, 216, 279); //carta es 216x279mm
+                doc.setFontSize(6);
+                doc.setFont('helvetica', 'normal');
+
+                 doc.text(`${razonSocial.toUpperCase()}`, 68, 32.5);  
+                doc.text(`${ciudad.toUpperCase()}`, 151, 32.5); 
+                if (tipoCliente === 'natural') {
+
+                }else {
+                doc.text(`${nombreRegistroMercantil.toUpperCase()}`, 34, 35.5);
+                //doc.setFontSize(4);
+                doc.text(`${estadoRegistro.toUpperCase()}`, 68, 35.5);
+                doc.setFontSize(6);
+                doc.text(`${diaR} de ${obtenerMes(mesR).toUpperCase()}`, 102, 35.5);
+                
+                doc.text(`${anioR}`, 126, 35.5);
+                doc.text(`${nroRegistro}`, 141.3, 35.5);
+                //doc.setFontSize(4);
+                doc.text(`${numeroTomo}`, 155, 35.5);
+                doc.setFontSize(6);
+                doc.text(`${tiporif}-${rif}`, 30, 38.5); 
+                doc.text(`${cargoRepresentante.toUpperCase()}`, 68, 38.5);
+                doc.text(`${representanteLegal.toUpperCase()}`, 106, 38.5);
+                doc.text(`${nacionalidadRepresentante.toUpperCase()}`, 145, 38.5);
+                doc.text(`${ciudad.toUpperCase()}`, 30, 41.5);
+                doc.text(`${cedulaRepresentante.toUpperCase().slice(0,-1)}`, 88, 41.5); //se le quita un digito al rif para colocar la cedula del representante legal 
+                doc.text(`${cedulaRepresentante.toUpperCase()}`, 147, 41.5)
+                doc.text(`${facultadoPor.toUpperCase()}`, 30, 44.5);
+                }
+                switch (banco) {
+                    case "plaza":
+                        doc.text(`CUARENTA Y CUATRO`, 47, 153);
+                        doc.text(`44$`, 123, 153);
+                        break;
+                    case "bancrecer":
+                        doc.text(`CUARENTA Y CINCO`, 47, 153);
+                        doc.text(`45$`, 123, 153);
+                        break;
+
+                    case "bnc":
+                        doc.text(`CUARENTA Y CINCO`, 47, 153);
+                        doc.text(`45$`, 123, 153);
+                        break;
+                    case "delsur":
+                        doc.text(`CUARENTA Y TRES`, 47, 153);
+                        doc.text(`43$`, 123, 153);
+                        break;
+                    case "bfc":
+                        doc.text(`CUARENTA Y CINCO`, 47, 153);
+                        doc.text(`45$`, 123, 153);
+                        break;
+
+                    case "bancamiga":
+                        doc.text(`1,5% al 1,8%`, 47, 153);
+                        doc.text(`---`, 123, 153);
+                        break;
+                
+                    default:
+                        doc.text(`CUARENTA DOLARES`, 85, 159);
+                        //doc.text(`40$`, 123, 153);
+                        break;
+                }
+              
+           /*         
+           doc.addPage();
+            
+            imgData2.src = 'img/disglobal/contrato_comodato_2.png'; // Tu imagen en Base64
+            doc.addImage(imgData2, 'PNG', 0, 0, 216, 279);  
+
+          doc.addPage();
+            imgData3.src = 'img/disglobal/contrato_comodato_3.png'; // Tu imagen en Base64
+            doc.addImage(imgData3, 'PNG', 0, 0, 216, 279);  
+
+
+            doc.setFontSize(6);
+            doc.setFont('helvetica', 'normal');
+
+            doc.text(`${direccionFiscal.toUpperCase()}`, 30, 90);
+            doc.text(`${telefono.toUpperCase()}`, 138, 90);
+             doc.text(`${representanteLegal.toUpperCase()}`, 45, 93); 
+            doc.text(`${correo.toUpperCase()}`, 106, 93);
+            doc.text(`${ciudad.toUpperCase()}`, 132, 98.5);
+            doc.text(` ${dia} `, 164, 98.5);
+            doc.text(` ${mes.toUpperCase()} `, 30, 101);
+            doc.text(`${anio.toString().slice(3,4)}`, 70, 101);
+            doc.text(`${modeloEquipo.toUpperCase()}`, 47, 122.5);
+            doc.text(`${serialEquipo.toUpperCase()}`, 47, 125);
+            doc.text(`${serialSim.toUpperCase()}`, 47, 127.3);
+            doc.text(`${banco.toUpperCase()}`, 47, 129.7);
+            doc.setFontSize(3);
+            doc.text(`${ciudad.toUpperCase()}`, 100, 137);
+            doc.setFontSize(6);
+            doc.text(` ${dia} `, 115, 137);
+            doc.setFontSize(3);
+            doc.text(`  ${mes.toUpperCase()} `, 133, 137);
+            doc.setFontSize(6);
+            doc.text(` ### ${anio}`, 148, 137);
+
+            // Agregar firma si existe
+            
+            if (signatureCanvas && !isCanvasBlank(signatureCanvas)) {
+                const signatureData = signatureCanvas.toDataURL('image/png');
+                
+                doc.addImage(signatureData, 'PNG', 140, 105, 35, 10);
+                doc.addImage(signatureData, 'PNG', 140, 141, 35, 10);
+                
+            }
+                
+           
+            
+            */
+            
+            // Guardar PDF
+            
+           await doc.save(`contrato_comodato_disglobal_${razonSocialAbrv || 'solicitud'}.pdf`);
+           // doc.save('contrato_PN.pdf');
+            alert('Contrato comodato generado exitosamente');
+                
         default:
             break;
     }
