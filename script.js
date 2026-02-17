@@ -1320,63 +1320,81 @@ async function generarContratoDisglobal(tipoContrato) {
                  doc.text(`${razonSocial.toUpperCase()}`, 68, 32.5);  
                 doc.text(`${ciudad.toUpperCase()}`, 151, 32.5); 
                 if (tipoCliente === 'natural') {
-
+                    doc.text(`----------`, 34, 35.5);
+                    //doc.setFontSize(4);
+                    doc.text(`-------`, 68, 35.5);
+                    doc.setFontSize(6);
+                    doc.text(`--------`, 102, 35.5);
+                    
+                    doc.text(`-------`, 126, 35.5);
+                    doc.text(`-----`, 141.3, 35.5);
+                    //doc.setFontSize(4);
+                    doc.text(`-----`, 155, 35.5);
+                    doc.setFontSize(6);
+                    doc.text(`${tiporif}-${rif}`, 30, 38.5); 
+                    doc.text(`------`, 68, 38.5);
+                    doc.text(`----------`, 106, 38.5);
+                    doc.text(`---------`, 145, 38.5);
+                    doc.text(`${ciudad.toUpperCase()}`, 30, 41.5);
+                    doc.text(`${tiporif}-${rif.toUpperCase().slice(0,-1)}`, 89, 41.5); //se le quita un digito al rif para colocar la cedula del representante legal 
+                    doc.text(`${tiporif}-${rif}`, 147, 41.5)
+                    doc.text(`-------------`, 30, 44.5);
                 }else {
-                doc.text(`${nombreRegistroMercantil.toUpperCase()}`, 34, 35.5);
-                //doc.setFontSize(4);
-                doc.text(`${estadoRegistro.toUpperCase()}`, 68, 35.5);
-                doc.setFontSize(6);
-                doc.text(`${diaR} de ${obtenerMes(mesR).toUpperCase()}`, 102, 35.5);
-                
-                doc.text(`${anioR}`, 126, 35.5);
-                doc.text(`${nroRegistro}`, 141.3, 35.5);
-                //doc.setFontSize(4);
-                doc.text(`${numeroTomo}`, 155, 35.5);
-                doc.setFontSize(6);
-                doc.text(`${tiporif}-${rif}`, 30, 38.5); 
-                doc.text(`${cargoRepresentante.toUpperCase()}`, 68, 38.5);
-                doc.text(`${representanteLegal.toUpperCase()}`, 106, 38.5);
-                doc.text(`${nacionalidadRepresentante.toUpperCase()}`, 145, 38.5);
-                doc.text(`${ciudad.toUpperCase()}`, 30, 41.5);
-                doc.text(`${cedulaRepresentante.toUpperCase().slice(0,-1)}`, 88, 41.5); //se le quita un digito al rif para colocar la cedula del representante legal 
-                doc.text(`${cedulaRepresentante.toUpperCase()}`, 147, 41.5)
-                doc.text(`${facultadoPor.toUpperCase()}`, 30, 44.5);
-                }
-                switch (banco) {
-                    case "plaza":
-                        doc.text(`CUARENTA Y CUATRO`, 47, 153);
-                        doc.text(`44$`, 123, 153);
-                        break;
-                    case "bancrecer":
-                        doc.text(`CUARENTA Y CINCO`, 47, 153);
-                        doc.text(`45$`, 123, 153);
-                        break;
+                    doc.text(`${nombreRegistroMercantil.toUpperCase()}`, 34, 35.5);
+                    //doc.setFontSize(4);
+                    doc.text(`${estadoRegistro.toUpperCase()}`, 68, 35.5);
+                    doc.setFontSize(6);
+                    doc.text(`${diaR} de ${obtenerMes(mesR).toUpperCase()}`, 102, 35.5);
+                    
+                    doc.text(`${anioR}`, 126, 35.5);
+                    doc.text(`${nroRegistro}`, 141.3, 35.5);
+                    //doc.setFontSize(4);
+                    doc.text(`${numeroTomo}`, 155, 35.5);
+                    doc.setFontSize(6);
+                    doc.text(`${tiporif}-${rif}`, 30, 38.5); 
+                    doc.text(`${cargoRepresentante.toUpperCase()}`, 68, 38.5);
+                    doc.text(`${representanteLegal.toUpperCase()}`, 106, 38.5);
+                    doc.text(`${nacionalidadRepresentante.toUpperCase()}`, 145, 38.5);
+                    doc.text(`${ciudad.toUpperCase()}`, 30, 41.5);
+                    doc.text(`${cedulaRepresentante.toUpperCase().slice(0,-1)}`, 88, 41.5); //se le quita un digito al rif para colocar la cedula del representante legal 
+                    doc.text(`${cedulaRepresentante.toUpperCase()}`, 147, 41.5)
+                    doc.text(`${facultadoPor.toUpperCase()}`, 30, 44.5);
+                    }
+                    switch (banco) {
+                        case "plaza":
+                            doc.text(`CUARENTA Y CUATRO`, 47, 153);
+                            doc.text(`44$`, 123, 153);
+                            break;
+                        case "bancrecer":
+                            doc.text(`CUARENTA Y CINCO`, 47, 153);
+                            doc.text(`45$`, 123, 153);
+                            break;
 
-                    case "bnc":
-                        doc.text(`CUARENTA Y CINCO`, 47, 153);
-                        doc.text(`45$`, 123, 153);
-                        break;
-                    case "delsur":
-                        doc.text(`CUARENTA Y TRES`, 47, 153);
-                        doc.text(`43$`, 123, 153);
-                        break;
-                    case "bfc":
-                        doc.text(`CUARENTA Y CINCO`, 47, 153);
-                        doc.text(`45$`, 123, 153);
-                        break;
+                        case "bnc":
+                            doc.text(`CUARENTA Y CINCO`, 47, 153);
+                            doc.text(`45$`, 123, 153);
+                            break;
+                        case "delsur":
+                            doc.text(`CUARENTA Y TRES`, 47, 153);
+                            doc.text(`43$`, 123, 153);
+                            break;
+                        case "bfc":
+                            doc.text(`CUARENTA Y CINCO`, 47, 153);
+                            doc.text(`45$`, 123, 153);
+                            break;
 
-                    case "bancamiga":
-                        doc.text(`1,5% al 1,8%`, 47, 153);
-                        doc.text(`---`, 123, 153);
-                        break;
-                
-                    default:
-                        doc.text(`CUARENTA DOLARES`, 85, 159);
-                        //doc.text(`40$`, 123, 153);
-                        break;
+                        case "bancamiga":
+                            doc.text(`1,5% al 1,8%`, 47, 153);
+                            doc.text(`---`, 123, 153);
+                            break;
+                    
+                        default:
+                            doc.text(`CUARENTA DOLARES`, 85, 159);
+                            //doc.text(`40$`, 123, 153);
+                            break;
                 }
               
-           /*         
+                   
            doc.addPage();
             
             imgData2.src = 'img/disglobal/contrato_comodato_2.png'; // Tu imagen en Base64
@@ -1389,41 +1407,45 @@ async function generarContratoDisglobal(tipoContrato) {
 
             doc.setFontSize(6);
             doc.setFont('helvetica', 'normal');
+                if (tipoCliente === 'natural') {
+                    representanteLegal = document.querySelector('input[name="razonSocial"]').value;
+                }
 
-            doc.text(`${direccionFiscal.toUpperCase()}`, 30, 90);
-            doc.text(`${telefono.toUpperCase()}`, 138, 90);
-             doc.text(`${representanteLegal.toUpperCase()}`, 45, 93); 
-            doc.text(`${correo.toUpperCase()}`, 106, 93);
-            doc.text(`${ciudad.toUpperCase()}`, 132, 98.5);
-            doc.text(` ${dia} `, 164, 98.5);
-            doc.text(` ${mes.toUpperCase()} `, 30, 101);
-            doc.text(`${anio.toString().slice(3,4)}`, 70, 101);
-            doc.text(`${modeloEquipo.toUpperCase()}`, 47, 122.5);
-            doc.text(`${serialEquipo.toUpperCase()}`, 47, 125);
-            doc.text(`${serialSim.toUpperCase()}`, 47, 127.3);
-            doc.text(`${banco.toUpperCase()}`, 47, 129.7);
-            doc.setFontSize(3);
-            doc.text(`${ciudad.toUpperCase()}`, 100, 137);
+               
+            doc.text(`${direccionFiscal.toUpperCase()}`, 105, 82.5);
+            doc.text(`${telefono.toUpperCase()}`, 40, 85.5);
+             doc.text(`${representanteLegal.toUpperCase()}`, 100, 85.5); 
+            doc.text(`${correo.toUpperCase()}`, 30, 88.5);
+            doc.text(`${ciudad.toUpperCase()}`, 152, 91.5);
+            doc.text(` ${dia} `, 183, 91.5);
+            doc.text(` ${mes.toUpperCase()} `, 35, 94.5);
+            doc.text(`${anio.toString()}`, 68, 94.5);
+            doc.text(`${modeloEquipo.toUpperCase()}`, 45, 125.5);
+            doc.text(`${serialEquipo.toUpperCase()}`, 45, 128);
+            doc.text(`${serialSim.toUpperCase()}`, 45, 130.5);
+            doc.text(`${banco.toUpperCase()}`, 45, 133);
+            
+            doc.text(`${ciudad.toUpperCase()}`, 100, 142);
             doc.setFontSize(6);
-            doc.text(` ${dia} `, 115, 137);
-            doc.setFontSize(3);
-            doc.text(`  ${mes.toUpperCase()} `, 133, 137);
+            doc.text(` ${dia} `, 133, 142);
+            
+            doc.text(`  ${mes.toUpperCase()} `, 160, 142);
             doc.setFontSize(6);
-            doc.text(` ### ${anio}`, 148, 137);
-
+            doc.text(` ${anio}`, 185, 142);
+             
             // Agregar firma si existe
             
             if (signatureCanvas && !isCanvasBlank(signatureCanvas)) {
                 const signatureData = signatureCanvas.toDataURL('image/png');
                 
-                doc.addImage(signatureData, 'PNG', 140, 105, 35, 10);
-                doc.addImage(signatureData, 'PNG', 140, 141, 35, 10);
+                doc.addImage(signatureData, 'PNG', 140, 104, 35, 10);
+                doc.addImage(signatureData, 'PNG', 140, 151, 35, 10);
                 
             }
                 
            
             
-            */
+            
             
             // Guardar PDF
             
