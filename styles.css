@@ -134,10 +134,10 @@ main {
     color: white;
 }
 
-.disglobal-bg { background: linear-gradient(135deg, #3b82f6, #1e40af); }
-.vepagos-bg { background: linear-gradient(135deg, #10b981, #047857); }
-.master-bg { background: linear-gradient(135deg, #f59e0b, #b45309); }
-.credicard-bg { background: linear-gradient(135deg, #8b5cf6, #5b21b6); }
+.disglobal-bg { background: linear-gradient(135deg, #234985, #1e40af); }
+.vepagos-bg { background: linear-gradient(135deg,#2ae23a, #2aa148); }
+.master-bg { background: linear-gradient(135deg, #0caf79, #047857 ); }
+.credicard-bg { background: linear-gradient(135deg, #f59e0b, #b45309 ); }
 
 .card-content {
     padding: 16px;

@@ -206,7 +206,11 @@ function setupEventListeners() {
             generarPDF();
         }
     });
-    document.getElementById('enviarWhatsApp')?.addEventListener('click', enviarPorWhatsApp);
+    document.getElementById('enviarWhatsApp')?.addEventListener('click', function() {
+        if (validarFormularioDisglobal()) {
+            enviarPorWhatsApp();
+        }
+    });
     document.getElementById('qrScannerBtn')?.addEventListener('click', scanQR);
 }
 
@@ -537,12 +541,12 @@ function validarFormularioDisglobal() {
 
 
 // Función para generar PDF según el aliado
-async function generarPDF() {
+ function generarPDF() {
     const currentPage = window.location.pathname.split('/').pop();
     
     if (currentPage.includes('disglobal')) {
         //generarPDFDisglobal();
-       await generarPlanillaUnicaDisglobal(); 
+         generarPlanillaUnicaDisglobal(); 
       
         
     } else if (currentPage.includes('vepagos')) {
@@ -559,7 +563,7 @@ async function generarPDF() {
 // Generar PDF para Disglobal
 function generarPDFDisglobal() {
     const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
+    const doc = new jsPDF({ compress: true });
     
     // Obtener datos del formulario
     const tipoColocacion = document.querySelector('input[name="modeloNegocio"]').value;
@@ -592,9 +596,9 @@ function generarPDFDisglobal() {
     alert('PDF generado exitosamente');
 }
 
-async function generarPlanillaUnicaDisglobal() {
+ function generarPlanillaUnicaDisglobal() {
     const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
+    const doc = new jsPDF({ compress: true });
     
     // Obtener datos del formulario
     const tipoColocacion = document.querySelector('select[name="modeloNegocio"]').value;
@@ -872,9 +876,9 @@ async function generarPlanillaUnicaDisglobal() {
     alert('   Planilla Unica generada exitosamente');
 }
 
-async function generarCargoDisglobal() {
+ function generarCargoDisglobal() {
     const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();    
+    const doc = new jsPDF({ compress: true });    
         
     const tipoCliente = document.querySelector('input[name="tipoCliente"]:checked').value;
     let representanteLegal = document.querySelector('input[name="nombresRepresentante"]').value ;
@@ -925,13 +929,13 @@ async function generarCargoDisglobal() {
     
     
       
-    await doc.save('cargo_a_cuenta.pdf');
+     doc.save('cargo_a_cuenta.pdf');
     alert('Cargo a cuenta generado exitosamente');
     
     
 }   
 
-async function generarContratoDisglobal(tipoContrato) {
+ function generarContratoDisglobal(tipoContrato) {
     /* datos necesarios para el contrato */
    
      // Obtener datos del formulario
@@ -980,7 +984,7 @@ async function generarContratoDisglobal(tipoContrato) {
     let anioR=fecha[0];
 
     const { jsPDF } = window.jspdf;
-            const doc = new jsPDF({ compress: false }); 
+            const doc = new jsPDF({ compress: true }); 
 
     switch (tipoContrato) {
         
@@ -1081,7 +1085,7 @@ async function generarContratoDisglobal(tipoContrato) {
             
             // Guardar PDF
             
-          await  doc.save(`contrato_PN_disglobal_${razonSocialAbrv || 'solicitud'}.pdf`);
+            doc.save(`contrato_PN_disglobal_${razonSocialAbrv || 'solicitud'}.pdf`);
            // doc.save('contrato_PN.pdf');
             alert('Contrato PN generado exitosamente');
             break;
@@ -1200,7 +1204,7 @@ async function generarContratoDisglobal(tipoContrato) {
             
             // Guardar PDF
             
-          await  doc.save(`contrato_PJ_disglobal_${razonSocialAbrv || 'solicitud'}.pdf`);
+           doc.save(`contrato_PJ_disglobal_${razonSocialAbrv || 'solicitud'}.pdf`);
            // doc.save('contrato_PN.pdf');
             alert('Contrato PJ generado exitosamente');
             break;
@@ -1307,7 +1311,7 @@ async function generarContratoDisglobal(tipoContrato) {
                 
                 // Guardar PDF
                 
-                await doc.save(`contrato_FP_disglobal_${razonSocialAbrv || 'solicitud'}.pdf`);
+                 doc.save(`contrato_FP_disglobal_${razonSocialAbrv || 'solicitud'}.pdf`);
             // doc.save('contrato_PN.pdf');
                 alert('Contrato FP generado exitosamente');
             break;
@@ -1449,7 +1453,7 @@ async function generarContratoDisglobal(tipoContrato) {
             
             // Guardar PDF
             
-           await doc.save(`contrato_comodato_disglobal_${razonSocialAbrv || 'solicitud'}.pdf`);
+            doc.save(`contrato_comodato_disglobal_${razonSocialAbrv || 'solicitud'}.pdf`);
            // doc.save('contrato_PN.pdf');
             alert('Contrato comodato generado exitosamente');
                 
@@ -1461,7 +1465,7 @@ async function generarContratoDisglobal(tipoContrato) {
 // Generar PDF para Vepagos
 function generarPDFVepagos() {
     const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
+    const doc = new jsPDF({ compress: true });
     
     const tipoColocacion = document.querySelector('input[name="tipoColocacion"]:checked')?.value || 'contado';
     const comercio = document.querySelector('input[name="comercio"]').value;
@@ -1508,7 +1512,7 @@ function generarPDFVepagos() {
 //Generar PDF para Master
 function generarPDFMaster1() {
     const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
+    const doc = new jsPDF({ compress: true });
     let imgData1= new Image();
             imgData1.src = 'img/master/planilla_de_solicitud.png'; // Tu imagen en Base64
             doc.addImage(imgData1, 'PNG', 0, 0, 216, 279); //carta es 216x279mm
@@ -1676,7 +1680,7 @@ function generarPDFMaster1() {
 // Generar PDF para Credicard
 function generarPDFCredicard() {
     const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
+    const doc = new jsPDF({ compress: true });
     
     const modalidad = document.querySelector('input[name="modalidad"]:checked').value;
     const razonSocial = document.querySelector('input[name="razonSocial"]').value;
@@ -1706,13 +1710,60 @@ function generarPDFCredicard() {
 
 // Función para enviar por WhatsApp
 function enviarPorWhatsApp() {
+    // Obtener datos del formulario
+    const tipoColocacion = document.querySelector('select[name="modeloNegocio"]').value;
+    const codigoAfiliacion = document.querySelector('input[name="codigoAfiliado"]').value;
+    const razonSocial = document.querySelector('input[name="razonSocial"]').value;
+    const tiporif = document.querySelector('select[name="tipoRif"]').value;
+    let rif = document.querySelector('input[name="rif"]').value;
+    const banco = document.querySelector('select[name="banco"]').value;
+    let cuentaBancaria = document.querySelector('input[name="cuentaBancaria"]').value;
+    const actividadEconomica = document.querySelector('input[name="actividadEconomica"]').value;
+    
+    const direccionFiscal = document.querySelector('input[name="direccionFiscal"]').value;
+    const telefono = document.querySelector('input[name="telefono"]').value;
+    const correo = document.querySelector('input[name="correo"]').value;
+    
+    let representanteLegal = document.querySelector('input[name="nombresRepresentante"]').value;
+    
+    const telefonoRepresentante = document.querySelector('input[name="telefonoRepresentante"]').value;
+    const correoRepresentante = document.querySelector('input[name="correoRepresentante"]').value;
+    let cedulaRepresentante = document.querySelector('input[name="cedulaRepresentante"]').value;
+    const modeloEquipo = document.querySelector('input[name="modeloEquipo"]').value;
+    const cantidadEquipo = document.querySelector('input[name="cantidadEquipo"]').value;
+    
+    const operadora = document.querySelector('select[name="operadora"]').value;
+    
+    const serialEquipo = document.querySelector('input[name="serialEquipo"]').value;
+    const serialSim = document.querySelector('input[name="serialSim"]').value;
     const currentPage = window.location.pathname.split('/').pop();
     let mensaje = 'Hola, adjunto los documentos de la venta:\n\n';
-    
+    const fechaActual = new Date();
+    const dia = fechaActual.getDate();       // Día del mes (1-31)
+    const mes = fechaActual.getMonth() + 1;  // Mes (0-11, por eso sumamos 1)
+    const anio = fechaActual.getFullYear();
+   
     // Obtener datos básicos según la página
     if (currentPage.includes('disglobal')) {
         const razonSocial = document.querySelector('input[name="razonSocial"]').value;
-        mensaje += `*Disglobal*\nRazón Social: ${razonSocial}\n`;
+        mensaje += `*Disglobal*\n
+        Banco:${banco}\n 
+        Razón Social: ${razonSocial.toUpperCase()}\n 
+        Rif.: ${tiporif}-${rif}\n 
+        Código: ${codigoAfiliacion}\n 
+        Cuenta: ${cuentaBancaria}\n 
+        Modelo: ${modeloEquipo.toUpperCase()}\n 
+        Serial: ${serialEquipo.toUpperCase()}\n 
+        Operadora: ${operadora.toUpperCase()}\n 
+        SimCard: ${serialSim.toUpperCase()}\n 
+        Correo: ${correo.toUpperCase()}\n 
+        Teléfono: ${telefono}\n 
+        Dirección: ${direccionFiscal.toUpperCase()}\n 
+        Modalidad de venta: ${tipoColocacion.toUpperCase()}\n 
+        TASA: \n 
+        Fecha de envío: ${String(dia).padStart(2, '0')}/${String(mes).padStart(2, '0')}/${anio}\n 
+        Numero de referencia de transferencia
+        `;
     } else if (currentPage.includes('vepagos')) {
         const comercio = document.querySelector('input[name="comercio"]').value;
         mensaje += `*Vepagos*\nComercio: ${comercio}\n`;
