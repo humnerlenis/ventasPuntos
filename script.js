@@ -1719,7 +1719,9 @@ function enviarPorWhatsApp() {
     const banco = document.querySelector('select[name="banco"]').value;
     let cuentaBancaria = document.querySelector('input[name="cuentaBancaria"]').value;
     const actividadEconomica = document.querySelector('input[name="actividadEconomica"]').value;
-    
+    const ciudad = document.querySelector('input[name="ciudad"]').value;
+    const estado = document.querySelector('input[name="estado"]').value;
+    const zonaPostal = document.querySelector('input[name="codigoPostal"]').value;
     const direccionFiscal = document.querySelector('input[name="direccionFiscal"]').value;
     const telefono = document.querySelector('input[name="telefono"]').value;
     const correo = document.querySelector('input[name="correo"]').value;
@@ -1758,7 +1760,7 @@ function enviarPorWhatsApp() {
         SimCard: ${serialSim.toUpperCase()}\n
         Correo: ${correo.toUpperCase()}\n
         Teléfono: ${telefono}\n
-        Dirección: ${direccionFiscal.toUpperCase()}\n
+        Dirección: ${direccionFiscal.toUpperCase()} ${ciudad.toUpperCase()} ${estado.toUpperCase()} ZONA POSTAL ${zonaPostal}\n
         Modalidad de venta: ${tipoColocacion.toUpperCase()}\n
         TASA: \n
         Fecha de envío: ${String(dia).padStart(2, '0')}/${String(mes).padStart(2, '0')}/${anio}\n
