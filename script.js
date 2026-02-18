@@ -1747,22 +1747,22 @@ function enviarPorWhatsApp() {
     if (currentPage.includes('disglobal')) {
         const razonSocial = document.querySelector('input[name="razonSocial"]').value;
         mensaje += `*Disglobal*\n
-        Banco:${banco}\n 
-        Razón Social: ${razonSocial.toUpperCase()}\n 
-        Rif.: ${tiporif}-${rif}\n 
-        Código: ${codigoAfiliacion}\n 
-        Cuenta: ${cuentaBancaria}\n 
-        Modelo: ${modeloEquipo.toUpperCase()}\n 
-        Serial: ${serialEquipo.toUpperCase()}\n 
-        Operadora: ${operadora.toUpperCase()}\n 
-        SimCard: ${serialSim.toUpperCase()}\n 
-        Correo: ${correo.toUpperCase()}\n 
-        Teléfono: ${telefono}\n 
-        Dirección: ${direccionFiscal.toUpperCase()}\n 
-        Modalidad de venta: ${tipoColocacion.toUpperCase()}\n 
-        TASA: \n 
-        Fecha de envío: ${String(dia).padStart(2, '0')}/${String(mes).padStart(2, '0')}/${anio}\n 
-        Numero de referencia de transferencia
+        Banco:${banco.toUpperCase()}\n
+        Razón Social: ${razonSocial.toUpperCase()}\n
+        Rif.: ${tiporif}-${rif}\n
+        Código: ${codigoAfiliacion}\n
+        Cuenta: ${cuentaBancaria}\n
+        Modelo: ${modeloEquipo.toUpperCase()}\n
+        Serial: ${serialEquipo.toUpperCase()}\n
+        Operadora: ${operadora.toUpperCase()}\n
+        SimCard: ${serialSim.toUpperCase()}\n
+        Correo: ${correo.toUpperCase()}\n
+        Teléfono: ${telefono}\n
+        Dirección: ${direccionFiscal.toUpperCase()}\n
+        Modalidad de venta: ${tipoColocacion.toUpperCase()}\n
+        TASA: \n
+        Fecha de envío: ${String(dia).padStart(2, '0')}/${String(mes).padStart(2, '0')}/${anio}\n
+        Numero de referencia de transferencia:
         `;
     } else if (currentPage.includes('vepagos')) {
         const comercio = document.querySelector('input[name="comercio"]').value;
