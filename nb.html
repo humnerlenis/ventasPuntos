@@ -3,12 +3,166 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Freelancer P.O.S</title>
-    <script>
-        window.location.replace('ventaPuntos/index.html')
-    </script>
+    <title>Catálogo de Íconos - FontAwesome</title>
+    
+    <link rel="stylesheet" href="css/fontawesome-free-7.2.0-web/css/fontawesome.css">
+    
+    <!-- link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"-->
+
+    <style>
+        :root {
+            --primary: #4CAF50;
+            --bg: #f4f7f6;
+            --text: #333;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        header h1 {
+            color: var(--primary);
+        }
+        
+        /* Sistema de Cuadrícula (Grid) */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Tarjeta de cada Ícono */
+        .icon-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px 10px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .icon-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+        }
+        .icon-card i {
+            font-size: 2.5rem;
+            color: #2c3e50;
+            margin-bottom: 12px;
+        }
+        .icon-card span {
+            font-size: 0.8rem;
+            color: #666;
+            word-break: break-all;
+            font-family: monospace;
+        }
+
+        /* Interfaz de Respaldo (Por si hay bloqueos de CORS local) */
+        #fallback-ui {
+            display: none;
+            text-align: center;
+            background: #fff3cd;
+            color: #856404;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+    </style>
 </head>
 <body>
-    
+
+    <header>
+        <h1>Catálogo de Íconos</h1>
+        <p>Generado dinámicamente desde <code>fontawesome.css</code></p>
+    </header>
+
+    <div id="fallback-ui">
+        <p><b>Aviso de Seguridad del Navegador:</b> Para ver los íconos, por favor selecciona manualmente tu archivo <code>fontawesome.css</code> aquí abajo:</p>
+        <input type="file" id="file-input" accept=".css">
+    </div>
+
+    <div id="icon-grid" class="grid-container"></div>
+
+    <script>
+        // Función principal para procesar el texto del CSS
+        function renderizarIconos(cssText) {
+            const grid = document.getElementById('icon-grid');
+            grid.innerHTML = ''; // Limpiar cuadrícula
+
+            // Expresión regular para encontrar clases que definen variables --fa
+            // Busca patrones como: .fa-house { --fa: "\f015"; }
+            const regex = /\.([a-zA-Z0-9-]+)\s*\{\s*--fa:/g;
+            let match;
+            const vistos = new Set(); // Para evitar duplicados (ej: alias)
+
+            while ((match = regex.exec(cssText)) !== null) {
+                const nombreClase = match[1]; // ej: "fa-martini-glass-empty"
+                
+                if(!vistos.has(nombreClase)) {
+                    vistos.add(nombreClase);
+
+                    // Crear elementos HTML
+                    const card = document.createElement('div');
+                    card.className = 'icon-card';
+
+                    const icono = document.createElement('i');
+                    // Usamos fa-solid como estilo base y añadimos la clase extraída
+                    icono.className = `fa-solid ${nombreClase}`; 
+
+                    const etiqueta = document.createElement('span');
+                    etiqueta.textContent = `.${nombreClase}`;
+
+                    card.appendChild(icono);
+                    card.appendChild(etiqueta);
+                    grid.appendChild(card);
+                }
+            }
+        }
+
+        // Intentar cargar el archivo automáticamente
+        async function intentarCargaLocal() {
+            try {
+                // Esto funcionará si usas Live Server o un servidor local
+                const respuesta = await fetch('fontawesome.css');
+                if (respuesta.ok) {
+                    const textoCss = await respuesta.text();
+                    renderizarIconos(textoCss);
+                    return;
+                }
+            } catch (error) {
+                console.warn("No se pudo hacer fetch (probablemente CORS por protocolo file://)");
+            }
+            
+            // Si falla, mostramos el botón para subir el archivo manualmente
+            document.getElementById('fallback-ui').style.display = 'block';
+        }
+
+        // Listener para el input de archivo manual
+        document.getElementById('file-input').addEventListener('change', (evento) => {
+            const archivo = evento.target.files[0];
+            if(!archivo) return;
+            
+            const lector = new FileReader();
+            lector.onload = (e) => {
+                document.getElementById('fallback-ui').style.display = 'none';
+                renderizarIconos(e.target.result);
+            };
+            lector.readAsText(archivo);
+        });
+
+        // Iniciar
+        intentarCargaLocal();
+    </script>
 </body>
 </html>
