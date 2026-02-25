@@ -860,7 +860,7 @@ function generarPDFDisglobal() {
         
     }
          doc.setFontSize(7);
-    doc.text(`${representanteLegal.toUpperCase()}`, 30, 220); 
+    doc.text(`${representanteLegal.toUpperCase()}`, 25, 220); 
       doc.setFontSize(10);
     doc.text(`${cedulaRepresentante.toUpperCase()}`, 30, 230); 
     
