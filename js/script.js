@@ -699,7 +699,7 @@ function generarPDFDisglobal() {
     distancia += 4.35; // Incrementar la distancia para la siguiente letra
     }
     
-    doc.text(`${razonSocial.toUpperCase().slice(0, 30)}`, 65, 66);
+    doc.text(`${razonSocial.toUpperCase().slice(0, 40)}`, 65, 66);
     doc.text(`${actividadEconomica.toUpperCase().slice(0, 25)}`, 140, 66);
     doc.text(`${ciudad.toUpperCase().slice(0, 25)}`, 16, 76);
     doc.text(`${estado.toUpperCase().slice(0, 25)}`, 71, 76);
@@ -723,12 +723,12 @@ function generarPDFDisglobal() {
     if (tipoCliente === 'natural') {
         doc.setFontSize(9);
         doc.text(`${rif.slice(0, 8)}`, 16, 132);
-        doc.text(`${razonSocial.toUpperCase().slice(0, 30)}`, 36, 132);
+        doc.text(`${razonSocial.toUpperCase().slice(0, 40)}`, 36, 132);
         doc.text(`${telefono.toUpperCase().slice(0, 11)}`, 123, 132);
         doc.text(`${correo.toUpperCase().slice(0, 30)}`, 155, 132);
         //seccion de representante legal al final del documento
         doc.setFontSize(7);
-        doc.text(`${razonSocial.toUpperCase().slice(0, 30)}`, 34, 221);
+        doc.text(`${razonSocial.toUpperCase().slice(0, 40)}`, 34, 221);
         doc.text(`${ciudad.toUpperCase().slice(0, 30)}`, 16, 225);
         doc.text(`${rif.slice(0, 8)}`, 100, 225);
     } else {
@@ -736,13 +736,13 @@ function generarPDFDisglobal() {
        /* doc.text(`${razonSocial.toUpperCase().slice(0, 30)}`, 16, 132);
         doc.text(`${telefono.toUpperCase().slice(0, 11)}`, 123, 132);*/
         doc.text(`${cedulaRepresentante.slice(0, -1)}`, 16, 132);
-        doc.text(`${representanteLegal.toUpperCase().slice(0, 30)}`, 40, 132);
+        doc.text(`${representanteLegal.toUpperCase().slice(0, 40)}`, 40, 132);
         doc.text(`${cargoRepresentante.toUpperCase().slice(0, 30)}`, 85, 132);
         doc.text(`${telefonoRepresentante.toUpperCase().slice(0, 11)}`, 126, 132);
         doc.text(`${correoRepresentante.toUpperCase().slice(0, 30)}`, 153, 132);
         //seccion de representante legal al final del documento
         doc.setFontSize(7);
-        doc.text(`${representanteLegal.toUpperCase().slice(0, 30)}`, 34, 221);
+        doc.text(`${representanteLegal.toUpperCase().slice(0, 40)}`, 34, 221);
         doc.text(`${ciudad.toUpperCase().slice(0, 30)}`, 16, 225);
         doc.text(`${cedulaRepresentante.slice(0, -1)}`, 100, 225);
     }
@@ -817,7 +817,7 @@ function generarPDFDisglobal() {
     const signatureCanvas = document.getElementById('signatureCanvas');
     if (signatureCanvas && !isCanvasBlank(signatureCanvas)) {
         const signatureData = signatureCanvas.toDataURL('image/png');
-        doc.text(`${razonSocial.toUpperCase().slice(0, 30)}`, 65, 245);
+        doc.text(`${razonSocial.toUpperCase().slice(0, 40)}`, 65, 245);
         doc.text(`${rif.slice(0, 8)}`, 68, 256);
         doc.addImage(signatureData, 'PNG', 65, 258, 35, 10);
         
@@ -1672,11 +1672,6 @@ function generarPDFMaster1() {
 }
 
 
-    
-
-
-
-
 // Generar PDF para Credicard
 function generarPDFCredicard() {
     const { jsPDF } = window.jspdf;
@@ -1747,9 +1742,9 @@ function enviarPorWhatsApp() {
    
     // Obtener datos básicos según la página
     if (currentPage.includes('disglobal')) {
-        const razonSocial = document.querySelector('input[name="razonSocial"]').value;
+        //const razonSocial = document.querySelector('input[name="razonSocial"]').value;
         mensaje += `*Disglobal*\n
-        Banco:${banco.toUpperCase()}\n
+        Banco: ${banco.toUpperCase()}\n
         Razón Social: ${razonSocial.toUpperCase()}\n
         Rif.: ${tiporif}-${rif}\n
         Código: ${codigoAfiliacion}\n
