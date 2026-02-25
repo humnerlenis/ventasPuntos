@@ -563,7 +563,7 @@ function validarFormularioDisglobal() {
 // Generar PDF para Disglobal
 function generarPDFDisglobal() {
     const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({ compress: true });
+    const doc = new jsPDF({ compress: false });
     
     // Obtener datos del formulario
     const tipoColocacion = document.querySelector('input[name="modeloNegocio"]').value;
@@ -598,7 +598,7 @@ function generarPDFDisglobal() {
 
  function generarPlanillaUnicaDisglobal() {
     const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({ compress: true });
+    const doc = new jsPDF({ compress: false});
     
     // Obtener datos del formulario
     const tipoColocacion = document.querySelector('select[name="modeloNegocio"]').value;
@@ -878,7 +878,7 @@ function generarPDFDisglobal() {
 
  function generarCargoDisglobal() {
     const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({ compress: true });    
+    const doc = new jsPDF({ compress: false });    
         
     const tipoCliente = document.querySelector('input[name="tipoCliente"]:checked').value;
     let representanteLegal = document.querySelector('input[name="nombresRepresentante"]').value ;
@@ -984,7 +984,7 @@ function generarPDFDisglobal() {
     let anioR=fecha[0];
 
     const { jsPDF } = window.jspdf;
-            const doc = new jsPDF({ compress: true }); 
+            const doc = new jsPDF({ compress: false }); 
 
     switch (tipoContrato) {
         
@@ -1465,7 +1465,7 @@ function generarPDFDisglobal() {
 // Generar PDF para Vepagos
 function generarPDFVepagos() {
     const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({ compress: true });
+    const doc = new jsPDF({ compress: false });
     
     const tipoColocacion = document.querySelector('input[name="tipoColocacion"]:checked')?.value || 'contado';
     const comercio = document.querySelector('input[name="comercio"]').value;
@@ -1512,7 +1512,7 @@ function generarPDFVepagos() {
 //Generar PDF para Master
 function generarPDFMaster1() {
     const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({ compress: true });
+    const doc = new jsPDF({ compress: false });
     let imgData1= new Image();
             imgData1.src = 'img/master/planilla_de_solicitud.png'; // Tu imagen en Base64
             doc.addImage(imgData1, 'PNG', 0, 0, 216, 279); //carta es 216x279mm
