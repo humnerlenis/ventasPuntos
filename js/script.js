@@ -80,7 +80,7 @@ function initializeForms() {
     }
 
     // Vepagos - Mostrar/ocultar adendum según tipo de colocación
-    const tipoColocacionRadios = document.querySelectorAll('input[name="tipoColocacion"]');
+   /* const tipoColocacionRadios = document.querySelectorAll('input[name="tipoColocacion"]');
     const adendumSection = document.getElementById('adendumSection');
     
     if (tipoColocacionRadios.length && adendumSection) {
@@ -94,6 +94,31 @@ function initializeForms() {
             });
         });
     }
+    */
+
+    const tipoColocacion = document.getElementById("tipoColocacion");
+    const adendumSection = document.getElementById('adendumSection');
+    
+    if (tipoColocacion && adendumSection) {
+    
+    // 2. Creamos una función para manejar la lógica de visibilidad
+    const actualizarVisibilidad = () => {
+        const valorSeleccionado = tipoColocacion.value;
+        
+        if (valorSeleccionado === 'financiado') {
+            adendumSection.style.display = 'block';
+        } else {
+            adendumSection.style.display = 'none';
+        }
+    };
+
+    // 3. Escuchamos el cambio en el select
+    tipoColocacion.addEventListener('change', actualizarVisibilidad);
+
+    // 4. Ejecutamos la función una vez al cargar la página 
+    // por si el navegador recordó una selección previa
+    actualizarVisibilidad();
+}
 }
 
 // Inicializar pads de firma
