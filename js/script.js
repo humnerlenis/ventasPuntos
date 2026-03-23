@@ -18,19 +18,74 @@ return nombreMes.charAt(0).toUpperCase() + nombreMes.slice(1);
 }
 // Inicializar todos los formularios
 function initializeForms() {
+    const currentPage = window.location.pathname.split('/').pop();
+    const nacionalidadRepresentante = document.getElementById('nacionalidadRepresentante');
     // Disglobal - Mostrar/ocultar secciones según tipo de cliente
     const tipoClienteRadios = document.querySelectorAll('input[name="tipoCliente"]');
+
     if (tipoClienteRadios.length) {
         tipoClienteRadios.forEach(radio => {
             radio.addEventListener('change', function() {
                 const registroMercantil = document.getElementById('registroMercantilSection');
                 const representanteLegal = document.getElementById('representanteLegalSection');
+                
+                console.log(this.value);
+                
+                
+                if (currentPage.includes('disglobal')) {
+                   
                 if (this.value === 'natural') {
                     registroMercantil.style.display = 'none';
                     representanteLegal.style.display = 'none';
                 } else {
                     registroMercantil.style.display = 'block';
                     representanteLegal.style.display = 'block';
+                }
+                    
+                } else if (currentPage.includes('vepagos')) {
+                    if (this.value === 'natural') {
+                    
+                    representanteLegal.style.display = 'none';
+                } else {
+                    
+                    representanteLegal.style.display = 'block';
+                }
+                } else if (currentPage.includes('master')) {
+                  if (this.value === 'natural') {
+                    registroMercantil.style.display = 'none';
+                    representanteLegal.style.display = 'none';
+                    const tipoRif = document.getElementById('tipoRif');
+    
+                        if (tipoRif==='V') {
+                        
+                            // 2. Creamos una función para manejar la lógica de visibilidad
+                            const nacionalidad = () => {
+                                const valorSeleccionado = tipoColocacion.value;
+                                nacionalidadRepresentante
+                                if (valorSeleccionado === 'financiado') {
+                                    adendumSection.style.display = 'block';
+                                } else {
+                                    adendumSection.style.display = 'none';
+                                }
+                            };
+
+                            // 3. Escuchamos el cambio en el select
+                            tipoColocacion.addEventListener('change', nacionalidad);
+
+                            // 4. Ejecutamos la función una vez al cargar la página 
+                            // por si el navegador recordó una selección previa
+                            nacionalidad();
+                        }
+                    } else {
+                        registroMercantil.style.display = 'block';
+                        representanteLegal.style.display = 'block';
+                    }
+                    
+
+                } else if (currentPage.includes('credicard')) {
+                  // generarPDFCredicard();
+                } else {
+                   // alert('Seleccione un aliado para generar el PDF');
                 }
 
             });
@@ -101,25 +156,57 @@ function initializeForms() {
     
     if (tipoColocacion && adendumSection) {
     
-    // 2. Creamos una función para manejar la lógica de visibilidad
-    const actualizarVisibilidad = () => {
-        const valorSeleccionado = tipoColocacion.value;
-        
-        if (valorSeleccionado === 'financiado') {
-            adendumSection.style.display = 'block';
-        } else {
-            adendumSection.style.display = 'none';
+        // 2. Creamos una función para manejar la lógica de visibilidad
+        const actualizarVisibilidad = () => {
+            const valorSeleccionado = tipoColocacion.value;
+            
+            if (valorSeleccionado === 'financiado') {
+                adendumSection.style.display = 'block';
+            } else {
+                adendumSection.style.display = 'none';
+            }
+        };
+
+        // 3. Escuchamos el cambio en el select
+        tipoColocacion.addEventListener('change', actualizarVisibilidad);
+
+        // 4. Ejecutamos la función una vez al cargar la página 
+        // por si el navegador recordó una selección previa
+        actualizarVisibilidad();
+    }
+
+//MASTER cambio el codigo de afiliado a read only = true cuando es transred
+        if (currentPage.includes('master')) {
+                
+                    const plataforma= document.getElementById('plataforma');
+                    const codigoAfiliacion = document.getElementById('codigoAfiliacion');
+                      if (plataforma && codigoAfiliacion) {
+    
+                        // 2. Creamos una función para manejar la lógica de visibilidad
+                        const actualizarCodigo = () => {
+                            const valorSeleccionado = plataforma.value;
+                            
+                            if (valorSeleccionado === 'credicard') {
+                                codigoAfiliacion.removeAttribute('readOnly');
+                                
+                            } else if (valorSeleccionado === 'transred'){
+                                
+                                codigoAfiliacion.readOnly = true;
+                                codigoAfiliacion.value="";
+                            }
+                        };
+
+                        // 3. Escuchamos el cambio en el select
+                        plataforma.addEventListener('change', actualizarCodigo);
+
+                        // 4. Ejecutamos la función una vez al cargar la página 
+                        // por si el navegador recordó una selección previa
+                        actualizarCodigo();
+                    }
+
+                }
+
         }
-    };
-
-    // 3. Escuchamos el cambio en el select
-    tipoColocacion.addEventListener('change', actualizarVisibilidad);
-
-    // 4. Ejecutamos la función una vez al cargar la página 
-    // por si el navegador recordó una selección previa
-    actualizarVisibilidad();
-}
-}
 
 // Inicializar pads de firma
 function initializeSignaturePads() {
@@ -260,113 +347,11 @@ function scanQR() {
 }
 
 //######### VALIDACIONES PAG DISGLOBAL #########
-/*
-function validarFormularioDisglobal() {
-    const camposVacios = [];
-    const campos = document.querySelectorAll('#disglobalForm input:not([type="radio"]):not([type="checkbox"]), #disglobalForm select, #disglobalForm textarea');
-    
-    campos.forEach(campo => {
-        // Omitir campos ocultos o deshabilitados
-        if (campo.type === 'hidden' || campo.disabled) return;
-        
-        // Verificar si el campo está visible
-        const estilo = window.getComputedStyle(campo);
-        if (estilo.display === 'none' || estilo.visibility === 'hidden') return;
-        
-        // Validar que no esté vacío (solo si es requerido o queremos validar todos)
-        let valorVacio = false;
-        if (campo.tagName === 'SELECT') {
-            valorVacio = !campo.value || campo.value === '';
-        } else {
-            valorVacio = !campo.value.trim();
-        }
-        
-        if (valorVacio && campo.hasAttribute('required')) {
-            // Obtener nombre del campo para el mensaje
-            let nombreCampo = '';
-            const label = document.querySelector(`label[for="${campo.id}"]`);
-            if (label) {
-                nombreCampo = label.textContent.trim();
-            } else {
-                const parentDiv = campo.closest('.form-group');
-                if (parentDiv) {
-                    const parentLabel = parentDiv.querySelector('label');
-                    if (parentLabel) nombreCampo = parentLabel.textContent.trim();
-                }
-            }
-            
-            camposVacios.push(nombreCampo || campo.name || campo.id || 'Campo sin nombre');
-            campo.style.borderColor = '#ff4444';
-        } else {
-            campo.style.borderColor = '';
-        }
-    });
 
-    // Validaciones condicionales específicas
-    if (document.getElementById('simSi')?.checked) {
-        const operadora = document.getElementById('operadora');
-        if (operadora && (!operadora.value || !operadora.value.trim())) {
-            camposVacios.push('Operadora');
-            operadora.style.borderColor = '#ff4444';
-        }
-    }
-
-    if (document.getElementById('seguroSi')?.checked) {
-        const tarifaSeguro = document.getElementById('tarifaSeguro');
-        const frecuenciaCobro = document.getElementById('frecuenciaCobro');
-        const montoTarifa = document.getElementById('montoTarifa');
-        
-        if (tarifaSeguro && !tarifaSeguro.value.trim()) {
-            camposVacios.push('Tarifa del Seguro');
-            tarifaSeguro.style.borderColor = '#ff4444';
-        }
-        if (frecuenciaCobro && (!frecuenciaCobro.value || !frecuenciaCobro.value.trim())) {
-            camposVacios.push('Frecuencia de Cobro');
-            frecuenciaCobro.style.borderColor = '#ff4444';
-        }
-        if (montoTarifa && !montoTarifa.value.trim()) {
-            camposVacios.push('Monto de Tarifa');
-            montoTarifa.style.borderColor = '#ff4444';
-        }
-    }
-
-    if (document.getElementById('appsSi')?.checked) {
-        const nombreApp = document.getElementById('nombreApp');
-        if (nombreApp && !nombreApp.value.trim()) {
-            camposVacios.push('Nombre de la Aplicación');
-            nombreApp.style.borderColor = '#ff4444';
-        }
-    }
-
-    if (document.querySelector('input[name="tipoCliente"][value="juridica"]')?.checked) {
-        const camposRegistro = [
-            { id: 'nombreRegistroMercantil', nombre: 'Nombre del Registro Mercantil' },
-            { id: 'fechaRegistro', nombre: 'Fecha de Registro' },
-            { id: 'nroRegistro', nombre: 'Nro de Registro' },
-            { id: 'numeroTomo', nombre: 'Número de Tomo' },
-            { id: 'clausulaDelegatoria', nombre: 'Clausula Delegatoria' },
-            { id: 'ciudadRegistro', nombre: 'Ciudad de Registro' }
-        ];
-        
-        camposRegistro.forEach(campoInfo => {
-            const campo = document.getElementById(campoInfo.id);
-            if (campo && !campo.value.trim()) {
-                camposVacios.push(campoInfo.nombre);
-                campo.style.borderColor = '#ff4444';
-            }
-        });
-    }
-
-    if (camposVacios.length > 0) {
-        alert('Campos obligatorios vacíos:\n- ' + camposVacios.join('\n- '));
-        return false;
-    }
-    
-    return true;
-}*/
 
 function validarFormularioDisglobal() {
     const camposVacios = [];
+    let  campos = [];
     const tipoCliente = document.querySelector('input[name="tipoCliente"]:checked')?.value;
     if (tipoCliente === 'natural') {
         // Para persona natural, copiar datos de razón social al representante legal
@@ -387,8 +372,24 @@ function validarFormularioDisglobal() {
             correoRepresentante.value = correo;
         }
     }
+     const currentPage = window.location.pathname.split('/').pop();
+      if (currentPage.includes('disglobal')) {
+        //generarPDFDisglobal();
+        
+       campos = document.querySelectorAll('#disglobalForm input:not([type="radio"]):not([type="checkbox"]), #disglobalForm select, #disglobalForm textarea');
+        
+    } else if (currentPage.includes('vepagos')) {
+        campos = document.querySelectorAll('#vepagosForm input:not([type="radio"]):not([type="checkbox"]), #vepagosForm select, #vepagosForm textarea');
+    } else if (currentPage.includes('master')) {
+        campos = document.querySelectorAll('#masterForm input:not([type="radio"]):not([type="checkbox"]), #masterForm select, #masterForm textarea');
+       
+    } else if (currentPage.includes('credicard')) {
+        //generarPDFCredicard();
+    } else {
+        alert('Seleccione un aliado para generar el PDF');
+    }
 
-    const campos = document.querySelectorAll('#disglobalForm input:not([type="radio"]):not([type="checkbox"]), #disglobalForm select, #disglobalForm textarea');
+    
     
     campos.forEach(campo => {
         // Omitir campos ocultos o deshabilitados
@@ -586,6 +587,7 @@ function validarFormularioDisglobal() {
 }
 
 // Generar PDF para Disglobal
+/*
 function generarPDFDisglobal() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF({ compress: false });
@@ -620,6 +622,7 @@ function generarPDFDisglobal() {
     doc.save('contrato_disglobal.pdf');
     alert('PDF generado exitosamente');
 }
+*/
 
  function generarPlanillaUnicaDisglobal() {
     const { jsPDF } = window.jspdf;
@@ -648,6 +651,7 @@ function generarPDFDisglobal() {
     const clausulaDelegatoria = document.querySelector('input[name="clausulaDelegatoria"]').value;
     const ciudadRegistro = document.querySelector('input[name="ciudadRegistro"]').value;
     let representanteLegal = document.querySelector('input[name="nombresRepresentante"]').value;
+    const estadoCivil = document.querySelector('select[name="estadoCivil"]').value;
     const cargoRepresentante = document.querySelector('input[name="cargoRepresentante"]').value;
     const telefonoRepresentante = document.querySelector('input[name="telefonoRepresentante"]').value;
     const correoRepresentante = document.querySelector('input[name="correoRepresentante"]').value;
@@ -724,15 +728,15 @@ function generarPDFDisglobal() {
     distancia += 4.35; // Incrementar la distancia para la siguiente letra
     }
     
-    doc.text(`${razonSocial.toUpperCase().slice(0, 40)}`, 65, 66);
+    doc.text(`${razonSocial.toUpperCase().slice(0, 45)}`, 65, 66);
     doc.text(`${actividadEconomica.toUpperCase().slice(0, 25)}`, 140, 66);
     doc.text(`${ciudad.toUpperCase().slice(0, 25)}`, 16, 76);
     doc.text(`${estado.toUpperCase().slice(0, 25)}`, 71, 76);
     doc.text(`${municipio.toUpperCase().slice(0, 25)}`, 128, 76);
     doc.text(`${codigoPostal.toUpperCase().slice(0, 6)}`, 180, 76);
     doc.text(`${direccionFiscal.toUpperCase().slice(0, 100)}`, 16, 86);
-    doc.text(`${telefono.toUpperCase().slice(0, 4)}`, 19, 95);
-    doc.text(`${telefono.toUpperCase().slice(4, 11)}`, 40, 95);
+    doc.text(`${telefono.slice(0, 4)}`, 19, 95);
+    doc.text(`${telefono.slice(4, 12).replace(/[\s-]+/g, '')}`, 40, 95);
     doc.text(`${correo.toUpperCase().slice(0, 30)}`, 132, 95);
     doc.text(`${nombreRegistroMercantil.toUpperCase().slice(0, 50)}`, 16, 109);
     let fechareg = fechaRegistro.replace(/^(\d{4})-(\d{2})-(\d{2})$/g,'$3/$2/$1');
@@ -749,7 +753,7 @@ function generarPDFDisglobal() {
         doc.setFontSize(9);
         doc.text(`${rif.slice(0, 8)}`, 16, 132);
         doc.text(`${razonSocial.toUpperCase().slice(0, 40)}`, 36, 132);
-        doc.text(`${telefono.toUpperCase().slice(0, 11)}`, 123, 132);
+        doc.text(`${telefono}`, 123, 132);
         doc.text(`${correo.toUpperCase().slice(0, 30)}`, 155, 132);
         //seccion de representante legal al final del documento
         doc.setFontSize(7);
@@ -767,7 +771,8 @@ function generarPDFDisglobal() {
         doc.text(`${correoRepresentante.toUpperCase().slice(0, 30)}`, 153, 132);
         //seccion de representante legal al final del documento
         doc.setFontSize(7);
-        doc.text(`${representanteLegal.toUpperCase().slice(0, 40)}`, 34, 221);
+        doc.text(`${representanteLegal.toUpperCase().slice(0, 40)}`, 32, 221);
+        doc.text(`${estadoCivil.toUpperCase()}`, 142, 221);
         doc.text(`${ciudad.toUpperCase().slice(0, 30)}`, 16, 225);
         doc.text(`${cedulaRepresentante.slice(0, -1)}`, 100, 225);
     }
@@ -835,15 +840,30 @@ function generarPDFDisglobal() {
 
 
 
+     if (tipoCliente === 'natural') {
+        // Para persona natural, copiar datos de razón social al representante legal
+        representanteLegal = document.querySelector('input[name="razonSocial"]').value
+        cedulaRepresentante = rif.slice(0, -1);
+        doc.text(`${representanteLegal.toUpperCase()}`, 65, 245);  
+        doc.text(`${cedulaRepresentante}`, 68, 256);  
+        
+        
+               
+    }else {
+        doc.text(`${representanteLegal.toUpperCase()}`, 65, 245);  
+        doc.text(`${cedulaRepresentante}`, 68, 256);  
+        
+        
+     
 
+    }
 
 
     // Agregar firma si existe
     const signatureCanvas = document.getElementById('signatureCanvas');
     if (signatureCanvas && !isCanvasBlank(signatureCanvas)) {
         const signatureData = signatureCanvas.toDataURL('image/png');
-        doc.text(`${razonSocial.toUpperCase().slice(0, 40)}`, 65, 245);
-        doc.text(`${rif.slice(0, 8)}`, 68, 256);
+        
         doc.addImage(signatureData, 'PNG', 65, 258, 35, 10);
         
     }
@@ -861,7 +881,7 @@ function generarPDFDisglobal() {
         representanteLegal = document.querySelector('input[name="razonSocial"]').value
         cedulaRepresentante = rif.slice(0, -1);
         doc.text(`${representanteLegal.toUpperCase()}`, 30, 82);  
-        doc.text(`${tiporif.toUpperCase()}-${cedulaRepresentante.toUpperCase()}`, 120, 88);  
+        doc.text(`${tiporif.toUpperCase()}-${cedulaRepresentante}`, 120, 88);  
         doc.text(`${razonSocial.toUpperCase()}`, 85, 107);  
         doc.text(`${tiporif.toUpperCase()}-${rif}`, 60, 113); 
         doc.text(`${cuentaBancaria}`, 37, 124);
@@ -1492,45 +1512,334 @@ function generarPDFVepagos() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF({ compress: false });
     
-    const tipoColocacion = document.querySelector('input[name="tipoColocacion"]:checked')?.value || 'contado';
-    const comercio = document.querySelector('input[name="comercio"]').value;
-    const monto = document.querySelector('input[name="monto"]')?.value || '0';
+    // Obtener datos del formulario
+    const tipoColocacion = document.querySelector('select[name="tipoColocacion"]').value;
+    const tipoCliente = document.querySelector('input[name="tipoCliente"]:checked').value;
+    const razonSocial = document.querySelector('input[name="razonSocial"]').value;
+    const tiporif = document.querySelector('select[name="tipoRif"]').value;
+    let rif = document.querySelector('input[name="rif"]').value;
+    const banco = document.querySelector('select[name="banco"]').value;
+    let cuentaBancaria = document.querySelector('input[name="cuentaBancaria"]').value;
+    const codigoAfiliado =document.querySelector('input[name="codigoAfiliado"]').value;
+    const codOficina =document.querySelector('input[name="codOficina"]').value;
+    const regional =document.querySelector('input[name="regional"]').value;
+    const actividadEconomica = document.querySelector('input[name="actividadEconomica"]').value;
+    const ciudad = document.querySelector('input[name="ciudad"]').value;
+    const estado = document.querySelector('input[name="estado"]').value;
     
+    const telefono = document.querySelector('input[name="telefono"]').value;
+    const correo = document.querySelector('input[name="correo"]').value;
+    
+    let representanteLegal = document.querySelector('input[name="nombresRepresentante"]').value;
+    
+   
+    
+    let cedulaRepresentante = document.querySelector('input[name="cedulaRepresentante"]').value;
+    const modeloEquipo = document.querySelector('select[name="modeloEquipo"]').value;
+    const serialEquipo = document.querySelector('input[name="serialEquipo"]').value;
+  
+    const operadora = document.querySelector('select[name="operadora"]').value;
+    const metodoPago = document.querySelector('select[name="metodoPago"]').value;
+    const monto = document.querySelector('input[name="monto"]').value;
+    const plazoFinanciamiento = document.querySelector('input[name="plazoFinanciamiento"]').value;
+    const montoRestante = document.querySelector('input[name="montoRestante"]').value;
+    const cuotaDiaria = document.querySelector('input[name="cuotaDiaria"]').value;
+    const planServicio = document.querySelector('select[name="planServicio"]').value;
+    const signatureCanvas = document.getElementById('signatureCanvas');
+    const fechaActual = new Date();
+    const dia = fechaActual.getDate();       // Día del mes (1-31)
+    const mes = fechaActual.getMonth() + 1;  // Mes (0-11, por eso sumamos 1)
+    const anio = fechaActual.getFullYear();
+    // Configurar documento
+    let imgData= new Image();
+    let imgData2= new Image();
+    let imgData3= new Image();
+
+
+
+// RECIBO DE PAGO VEPAGOS
+
+    imgData.src = 'img/vepagos/PLANILLA_RECIBO _VENTAS.png'; // Tu imagen en Base64
+    doc.addImage(imgData, 'PNG', 0, 0, 210, 297); // 210x297mm es A4
+    doc.setFont('helvetica');
+    doc.setFontSize(11);
+
+    doc.text(`  ${String(dia).padStart(2, '0')}/${String(mes).padStart(2, '0')}/${anio}`, 160, 33.5, );
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(16);
-    doc.text('RECIBO DE PAGO VEPAGOS', 105, 20, { align: 'center' });
     
-    doc.setFontSize(12);
+    
+    
+    
     doc.setFont('helvetica', 'normal');
-    doc.text(`Comercio: ${comercio}`, 20, 40);
-    doc.text(`Tipo: ${tipoColocacion}`, 20, 50);
-    doc.text(`Monto: Bs. ${monto}`, 20, 60);
+    doc.text(`${razonSocial.toUpperCase()}`, 57, 39.5);
+    if (tipoCliente === 'natural'){
+        doc.text(`x`,36.5,43.5)
+        representanteLegal = document.querySelector('input[name="razonSocial"]').value
+        cedulaRepresentante = rif.slice(0, -1);
+        doc.setFontSize(9);
+        doc.text(`${representanteLegal.toUpperCase()}`, 135, 45);  
+        doc.setFontSize(12);
+        doc.text(`${tiporif.toUpperCase()}-${cedulaRepresentante.toUpperCase()}`, 70, 50.5); 
+    } else{
+        doc.text(`x`,28.5,43.5)
+        doc.text(`${representanteLegal.toUpperCase()}`, 135, 45);  
+        doc.text(`${cedulaRepresentante.toUpperCase()}`, 70, 50.5);  
+    }
+
+    doc.text(` ${rif}`, 43, 45);
+    doc.text(` ${codigoAfiliado}`, 145, 50.5);
+     doc.text(`${correo.toUpperCase().slice(0, 30)}`, 50, 56);
+     doc.text(`${telefono}`, 135, 56);
+     cuentaBancaria.replace(/[\s-]+/g, '');
+    let distancia = 50; // Posición inicial para la primera letra
+    for (let caracter of cuentaBancaria) {
+
+    doc.text(` ${caracter}`, distancia, 61.8); 
+    distancia += 7.10; // Incrementar la distancia para la siguiente letra
+    }
+    doc.text(`${codOficina}`, 78, 67.5);
+
+    switch (planServicio) {
+        case "vx1":
+            doc.text(`x`,52,84.5)
+            break;
+        case "vx2":
+
+            doc.text(`x`,64.2,84.5)
+            break;
+        case "vx3":
+
+            doc.text(`x`,76.5,84.5)
+            break;
+        default:
+            break;
+    }
+
+     switch (operadora) {
+        case "movistar":
+            doc.text("X", 125, 84.5 );
+            break;
+        case "digitel":
+            doc.text("X", 140, 84.5 );
+            break;
+        case "movilnet":
+            doc.text("X", 158, 84.5 );
+            break;
+        case "ninguna":
+            doc.setFontSize(9);
+            doc.text("Ninguna X", 160, 84.5 );
+            break;    
+        default:
+            break;
+    }
+    doc.setFontSize(12);
+    switch (banco) {
+        case "venezuela":
+            doc.text(`x`,48.5,90);
+            break;
+        case "mercantil":
+            doc.text(`x`,68,90);
+            break;
+        case "banplus":
+             doc.text(`x`,86.5,90);
+            break;
+        case "tesoro":
+             doc.text(`x`,105,90);
+            break;
+        case "fondocomun":
+             doc.text(`x`,133,90);
+            break;
+        case "bdt":
+             doc.text(`x`,149,90);
+            break;
+        case "plaza":
+             doc.text(`x`,166,90);
+            break;
+        case "activo":
+            doc.text(`x`,28.7,96);
+            break;
+        case "delsur":
+            doc.text(`x`,46.8,96);
+            break;
+        case "bancrecer":
+            doc.text(`x`,70,96);
+            break;
+        case "r4":
+            doc.text(`x`,80.5,96);
+            break;
+        case "100banco":
+            doc.text(`x`,106.5,96);
+            break;
+        case "provincial":
+            doc.text(`x`,129.5,96);
+            break;
+        case "bancaribe":
+            doc.text(`x`,153.5,96);
+            break;     
+        case "banesco":
+            doc.setFontSize(9);
+            doc.text(`Banesco X`,159.5,96);
+            doc.setFontSize(12);
+            break;            
+
+        default:
+            break;
+    }
+     
+    switch (modeloEquipo) {
+        case "7210":
+            doc.text(`x`,39.5,101.5);
+            break;
+        case "A50":
+               doc.text(`x`,53.5,101.5);     
+                    break;
+        case "A920":
+                doc.text(`x`,69,101.5);    
+                    break;
+        case "A8900":
+                doc.setFontSize(9);
+                doc.text(`A8900 X`,162,102); 
+                doc.setFontSize(12);   
+                    break;
+        case "T1":
+               doc.text(`x`,92.5,101.5);     
+                    break;
+        case "6210":
+                doc.text(`x`,106,101.5);    
+                    break;
+        case "8210":
+                doc.setFontSize(9);
+                doc.text(`8210 X`,162,102); 
+                doc.setFontSize(12);   
+                    break;
+        case "9220":
+                doc.text(`x`,118.5,101.5);    
+                    break;
+        case "Q2":
+                doc.text(`x`,138.5,101.5);    
+                    break;
+        case "Q3":
+                doc.text(`x`,157.5,101.5);
+                    break;            
+    
+        default:
+            break;
+    }
+
+    switch (metodoPago) {
+        case "efectivo":
+            doc.text(`x`,58.5,115.5)
+            break;
+        case "transferencia":
+                 doc.text(`x`,86,115.5)   
+                    break;
+        case "debito":
+                 doc.text(`x`,105.5,115.5)   
+                    break;
+        case "pago_movil":
+                 doc.text(`x`,131,115.5)   
+                    break;
+        case "banesco_panama":
+                    doc.text(`x`,46.5,120.5)
+                    break;
+        case "zelle":
+                    doc.setFontSize(9);
+                    doc.text(`Zelle X`,52,120.5)
+                    doc.setFontSize(12);
+                    break;
+        default:
+            break;
+    }
+
+
+    doc.text(`${monto}`, 163, 116);
+    
+    
+    
+    
+    // Agregar firma
+    
+    if (signatureCanvas && !isCanvasBlank(signatureCanvas)) {
+        const signatureData = signatureCanvas.toDataURL('image/png');
+        doc.addImage(signatureData, 'PNG', 129, 135, 35, 10);
+        //doc.text('Firma', 20, 190);
+    }
+
+//AUTORIZACIONDE-DOMICILIACION-VEPAGOS
+        doc.addPage();
+            
+            imgData2.src = 'img/vepagos/AUTORIZACIONDE-DOMICILIACION-VEPAGOS.PNG'; // Tu imagen en Base64
+            doc.addImage(imgData2, 'PNG', 0, 0, 216, 279); 
+        doc.setFontSize(12);
+
+     if (tipoCliente === 'natural'){
+        
+        representanteLegal = document.querySelector('input[name="razonSocial"]').value
+        cedulaRepresentante = rif.slice(0, -1);
+        
+        doc.text(`${representanteLegal.toUpperCase()}`, 38, 65);  
+        
+        doc.text(`${tiporif.toUpperCase()}-${cedulaRepresentante.toUpperCase()}`, 65, 71.5); 
+        doc.text(`${representanteLegal.toUpperCase()}`, 34, 85); 
+        doc.text(`${tiporif.toUpperCase()}-${rif}`, 135, 85);
+    } else{
+        
+        doc.text(`${representanteLegal.toUpperCase()}`, 38, 65);   
+        doc.text(`${cedulaRepresentante.toUpperCase()}`, 65, 71.5);  
+        doc.text(`${razonSocial.toUpperCase()}`, 34, 85); 
+        doc.text(`${tiporif.toUpperCase()}-${rif}`, 135, 85);
+    }
+    doc.text(`${banco.toUpperCase()}`, 50, 91);  
+    cuentaBancaria = document.querySelector('input[name="cuentaBancaria"]').value;
+    doc.text(`${cuentaBancaria}`, 100, 98);  
+    doc.text(`  ${String(dia).padStart(2, '0')}`, 50, 141, );
+    doc.text(`  ${obtenerMes(mes)}`, 70, 141 );
+    doc.text(`  ${String(anio).slice(2,4)}`, 138, 141, );
+
+    if (signatureCanvas && !isCanvasBlank(signatureCanvas)) {
+        const signatureData = signatureCanvas.toDataURL('image/png');
+        doc.addImage(signatureData, 'PNG', 50, 180, 35, 10);
+        
+    }
+
     
     // Si es financiado, generar adendum
     if (tipoColocacion === 'financiado') {
-        doc.addPage();
-        doc.setFontSize(16);
-        doc.text('ADENDUM FINANCIAMIENTO', 105, 20, { align: 'center' });
+        doc.addPage(); 
+        imgData3.src = 'img/vepagos/ADENDUM_INICIAL_60.png'; // Tu imagen en Base64
+            doc.addImage(imgData3, 'PNG', 0, 0, 216, 279); 
+        doc.setFontSize(12);
         
         const plazo = document.querySelector('input[name="plazoFinanciamiento"]').value;
-        const tasa = document.querySelector('input[name="tasaInteres"]').value;
-        const cuota = document.querySelector('input[name="cuotaMensual"]').value;
+        const montoRestante = document.querySelector('input[name="montoRestante"]').value;
+        const cuotaDiaria = document.querySelector('input[name="cuotaDiaria"]').value;
         
         doc.setFontSize(12);
-        doc.text(`Plazo: ${plazo} meses`, 20, 40);
-        doc.text(`Tasa de Interés: ${tasa}%`, 20, 50);
-        doc.text(`Cuota Mensual: Bs. ${cuota}`, 20, 60);
-    }
-    
-    // Agregar firma
-    const signatureCanvas = document.getElementById('signatureCanvas');
-    if (signatureCanvas && !isCanvasBlank(signatureCanvas)) {
+        doc.text(`${razonSocial.toUpperCase()}`, 102, 62);
+       // doc.text(`${fechaActual}`, 34, 80);
+        doc.text(`  ${String(dia).padStart(2, '0')}/${String(mes).padStart(2, '0')}/${anio}`, 60, 82 );
+        //doc.text(`${plazo}`, 20, 40);
+        doc.text(`USD ${montoRestante}`, 140, 138);
+        doc.text(`USD ${cuotaDiaria}`, 60, 158);
+        doc.setFontSize(9);
+        doc.text(`${ciudad.toUpperCase()}`, 55, 220);
+        doc.text(`  ${String(dia).padStart(2, '0')}`, 98, 220 );
+        doc.text(`  ${obtenerMes(mes)}`, 140, 220 );
+        doc.text(`  ${String(anio).slice(2,4)}`, 175, 220 );
+        //doc.text(`${plazo}`, 20, 40);
+
+
+         if (signatureCanvas && !isCanvasBlank(signatureCanvas)) {
         const signatureData = signatureCanvas.toDataURL('image/png');
-        doc.addImage(signatureData, 'PNG', 20, 150, 80, 30);
-        doc.text('Firma', 20, 190);
+        doc.addImage(signatureData, 'PNG', 160, 240, 35, 10);
+        
     }
-    
-    doc.save('recibo_vepagos.pdf');
+    }
+
+   
+
+     const razonSocialAbrv = razonSocial.substring(0, 30).replace(/[^a-zA-Z0-9]/g, '_');
+    doc.save(`recibo_vepagos_${razonSocialAbrv || 'solicitud'}.pdf`);
     alert('Recibo generado exitosamente');
 }
 
@@ -1545,6 +1854,7 @@ function generarPDFMaster1() {
             doc.setFont('helvetica', 'normal');   
       const tipoColocacion = document.querySelector('select[name="modeloNegocio"]').value;
     const tipoCliente = document.querySelector('input[name="tipoCliente"]:checked').value;
+    const plataforma= document.getElementById('plataforma').value;
     const razonSocial = document.querySelector('input[name="razonSocial"]').value;
     const tiporif = document.querySelector('select[name="tipoRif"]').value;
     let rif = document.querySelector('input[name="rif"]').value;
@@ -1645,7 +1955,7 @@ function generarPDFMaster1() {
          
        doc.setFontSize(8);
         doc.text(`${cedulaRepresentante.slice(0, 10)}`, 21, 142);
-        doc.text(`${representanteLegal.toUpperCase().slice(0, 30)}`, 45, 142);
+        doc.text(`${representanteLegal.toUpperCase().slice(0, 45)}`, 45, 142);
         doc.text(`${cargoRepresentante.toUpperCase().slice(0, 30)}`, 93, 142);
         doc.text(`${telefonoRepresentante.toUpperCase().slice(0, 11)}`, 126, 142);
         doc.text(`${correoRepresentante.toUpperCase().slice(0, 30)}`, 153, 142);
@@ -1675,7 +1985,7 @@ function generarPDFMaster1() {
             break;
     }
 
-         doc.text(`${representanteLegal.toUpperCase().slice(0, 30)}, ${cedulaRepresentante.slice(0, 10)}`, 23, 253);
+         doc.text(`${representanteLegal.toUpperCase().slice(0, 45)}, ${cedulaRepresentante.slice(0, 10)}`, 23, 253);
         doc.text(`${ciudad.toUpperCase().slice(0, 25)}, ${String(dia).padStart(2, '0')}/ ${String(mes).padStart(2, '0')}/ ${anio}`, 148, 255);
         
         // Agregar firma si existe
@@ -1687,7 +1997,32 @@ function generarPDFMaster1() {
         doc.addImage(signatureData, 'PNG', 72, 250, 35, 10);
         
     }
-   
+   // ############## cargo a cuenta ##################
+   doc.addPage();
+     let imgData2= new Image();
+    imgData2.src = 'img/master/cargo_a_cuenta.png'; // Tu imagen en Base64
+    doc.addImage(imgData2, 'PNG', 0, 0, 210, 297); // 210x297mm es A4
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'normal');
+
+    doc.text(`${representanteLegal.toUpperCase()}`, 45, 14);
+
+    /*
+    hay que validar que se habilite la nacionalidad cuando sea persona natural y el tipo de rif sea E
+    los datos del cliente se pueden cargar en los campos nombre cedula telefono y correo solo para que se agrege la nacionalidad
+    */
+
+
+
+
+
+
+
+
+
+
+
+
     
      // Guardar el PDF
         const razonSocialAbrv = razonSocial.substring(0, 20).replace(/[^a-zA-Z0-9]/g, '_');
@@ -1731,73 +2066,141 @@ function generarPDFCredicard() {
 // Función para enviar por WhatsApp
 function enviarPorWhatsApp() {
     // Obtener datos del formulario
-    const tipoColocacion = document.querySelector('select[name="modeloNegocio"]').value;
-    const codigoAfiliacion = document.querySelector('input[name="codigoAfiliado"]').value;
-    const razonSocial = document.querySelector('input[name="razonSocial"]').value;
-    const tiporif = document.querySelector('select[name="tipoRif"]').value;
-    let rif = document.querySelector('input[name="rif"]').value;
-    const banco = document.querySelector('select[name="banco"]').value;
-    let cuentaBancaria = document.querySelector('input[name="cuentaBancaria"]').value;
-    const actividadEconomica = document.querySelector('input[name="actividadEconomica"]').value;
-    const ciudad = document.querySelector('input[name="ciudad"]').value;
-    const estado = document.querySelector('input[name="estado"]').value;
-    const zonaPostal = document.querySelector('input[name="codigoPostal"]').value;
-    const direccionFiscal = document.querySelector('input[name="direccionFiscal"]').value;
-    const telefono = document.querySelector('input[name="telefono"]').value;
-    const correo = document.querySelector('input[name="correo"]').value;
-    
-    let representanteLegal = document.querySelector('input[name="nombresRepresentante"]').value;
-    
-    const telefonoRepresentante = document.querySelector('input[name="telefonoRepresentante"]').value;
-    const correoRepresentante = document.querySelector('input[name="correoRepresentante"]').value;
-    let cedulaRepresentante = document.querySelector('input[name="cedulaRepresentante"]').value;
-    const modeloEquipo = document.querySelector('input[name="modeloEquipo"]').value;
-    const cantidadEquipo = document.querySelector('input[name="cantidadEquipo"]').value;
-    
-    const operadora = document.querySelector('select[name="operadora"]').value;
-    
-    const serialEquipo = document.querySelector('input[name="serialEquipo"]').value;
-    const serialSim = document.querySelector('input[name="serialSim"]').value;
-    const currentPage = window.location.pathname.split('/').pop();
-    let mensaje = 'Hola, adjunto los documentos de la venta:\n\n';
+     const currentPage = window.location.pathname.split('/').pop();
+      let mensaje = '';
     const fechaActual = new Date();
     const dia = fechaActual.getDate();       // Día del mes (1-31)
     const mes = fechaActual.getMonth() + 1;  // Mes (0-11, por eso sumamos 1)
     const anio = fechaActual.getFullYear();
+
+  
+   
    
     // Obtener datos básicos según la página
     if (currentPage.includes('disglobal')) {
-        //const razonSocial = document.querySelector('input[name="razonSocial"]').value;
-        mensaje += `*Disglobal*\n
-        Banco: ${banco.toUpperCase()}\n
-        Razón Social: ${razonSocial.toUpperCase()}\n
-        Rif.: ${tiporif}-${rif}\n
-        Código: ${codigoAfiliacion}\n
-        Cuenta: ${cuentaBancaria}\n
-        Modelo: ${modeloEquipo.toUpperCase()}\n
-        Serial: ${serialEquipo.toUpperCase()}\n
-        Operadora: ${operadora.toUpperCase()}\n
-        SimCard: ${serialSim.toUpperCase()}\n
-        Correo: ${correo.toUpperCase()}\n
-        Teléfono: ${telefono}\n
-        Dirección: ${direccionFiscal.toUpperCase()} ${ciudad.toUpperCase()} ${estado.toUpperCase()} ZONA POSTAL ${zonaPostal}\n
-        Modalidad de venta: ${tipoColocacion.toUpperCase()}\n
-        TASA: \n
-        Fecha de envío: ${String(dia).padStart(2, '0')}/${String(mes).padStart(2, '0')}/${anio}\n
-        Numero de referencia de transferencia:
+         const tipoColocacion = document.querySelector('select[name="modeloNegocio"]').value;
+        const codigoAfiliacion = document.querySelector('input[name="codigoAfiliado"]').value;
+        const razonSocial = document.querySelector('input[name="razonSocial"]').value;
+        const tiporif = document.querySelector('select[name="tipoRif"]').value;
+        let rif = document.querySelector('input[name="rif"]').value;
+        const banco = document.querySelector('select[name="banco"]').value;
+        let cuentaBancaria = document.querySelector('input[name="cuentaBancaria"]').value;
+        const actividadEconomica = document.querySelector('input[name="actividadEconomica"]').value;
+        const ciudad = document.querySelector('input[name="ciudad"]').value;
+        const estado = document.querySelector('input[name="estado"]').value;
+        const zonaPostal = document.querySelector('input[name="codigoPostal"]').value;
+        const direccionFiscal = document.querySelector('input[name="direccionFiscal"]').value;
+        const telefono = document.querySelector('input[name="telefono"]').value;
+        const correo = document.querySelector('input[name="correo"]').value;
+        
+        let representanteLegal = document.querySelector('input[name="nombresRepresentante"]').value;
+        
+        const telefonoRepresentante = document.querySelector('input[name="telefonoRepresentante"]').value;
+        const correoRepresentante = document.querySelector('input[name="correoRepresentante"]').value;
+        let cedulaRepresentante = document.querySelector('input[name="cedulaRepresentante"]').value;
+        const modeloEquipo = document.querySelector('input[name="modeloEquipo"]').value;
+        const cantidadEquipo = document.querySelector('input[name="cantidadEquipo"]').value;
+        
+        const operadora = document.querySelector('select[name="operadora"]').value;
+        
+        const serialEquipo = document.querySelector('input[name="serialEquipo"]').value;
+        const serialSim = document.querySelector('input[name="serialSim"]').value;
+
+        mensaje += `*Disglobal*
+        \nBanco: ${banco.toUpperCase()}
+        \nRazón Social: ${razonSocial.toUpperCase()}
+        \nRif.: ${tiporif}-${rif}
+        \nCódigo: ${codigoAfiliacion}
+        \nCuenta: ${cuentaBancaria}
+        \nModelo: ${modeloEquipo.toUpperCase()}
+        \nSerial: ${serialEquipo.toUpperCase()}
+        \nOperadora: ${operadora.toUpperCase()}
+        \nSimCard: ${serialSim.toUpperCase()}
+        \nCorreo: ${correo.toUpperCase()}
+        \nTeléfono: ${telefono}
+        \nDirección: ${direccionFiscal.toUpperCase()} ${ciudad.toUpperCase()} ${estado.toUpperCase()} ZONA POSTAL ${zonaPostal}
+        \nModalidad de venta: ${tipoColocacion.toUpperCase()}
+        \nTASA: 
+        \nFecha de envío: ${String(dia).padStart(2, '0')}/${String(mes).padStart(2, '0')}/${anio}
+        \nNumero de referencia de transferencia:
         `;
     } else if (currentPage.includes('vepagos')) {
-        const comercio = document.querySelector('input[name="comercio"]').value;
-        mensaje += `*Vepagos*\nComercio: ${comercio}\n`;
+       const razonSocial = document.querySelector('input[name="razonSocial"]').value;
+        const tiporif = document.querySelector('select[name="tipoRif"]').value;
+        
+        let rif = document.querySelector('input[name="rif"]').value;
+        const representanteLegal = document.querySelector('input[name="nombresRepresentante"]').value;
+        const tipoCliente = document.querySelector('input[name="tipoCliente"]:checked').value; 
+        const banco = document.querySelector('select[name="banco"]').value;
+        let cuentaBancaria = document.querySelector('input[name="cuentaBancaria"]').value;
+        const codOficina = document.querySelector('input[name="codOficina"]').value;
+        const regional = document.querySelector('input[name="regional"]').value;
+        const estado = document.querySelector('input[name="estado"]').value;
+        const telefono = document.querySelector('input[name="telefono"]').value;
+        const correo = document.querySelector('input[name="correo"]').value;
+        const actividadEconomica = document.querySelector('input[name="actividadEconomica"]').value;
+        const modeloEquipo = document.querySelector('select[name="modeloEquipo"]').value;
+        const formaPago = document.querySelector('select[name="metodoPago"]').value;
+        const serialEquipo = document.querySelector('input[name="serialEquipo"]').value;
+        const operadora = document.querySelector('select[name="operadora"]').value;
+        const codigoAfiliacion = document.querySelector('input[name="codigoAfiliado"]').value;
+        const tipoColocacion = document.querySelector('select[name="tipoColocacion"]').value;
+
+          mensaje += `
+        PLANTILLA ÚNICA 
+        \nAliado: VEPAGOS
+        \nComercio: ${razonSocial.toUpperCase()}
+        \nRIF: ${tiporif}-${rif}
+        \nREPRESENTANTE: ${tipoCliente === "natural" ? razonSocial.toUpperCase() : representanteLegal.toUpperCase()}
+        \nBanco: ${banco.toUpperCase()}
+        \nCuenta Bancaria: ${cuentaBancaria}
+        \nCod Oficina:${codOficina}
+        \nRegional: ${regional}
+        \nEstado: ${estado.toUpperCase()}
+        \nTeléfono: ${telefono}
+        \nCorreo Electrónico: ${correo}
+        \nEconómica: ${actividadEconomica.toUpperCase()} 
+        \nModelo del Equipo: ${modeloEquipo.toUpperCase()}
+        \nCantidad de Equipo: 1
+        \nMétodo de Pago: ${formaPago.toUpperCase()}
+        \nSerial del Equipo: ${serialEquipo.toUpperCase()}
+        \nOperadora: ${operadora.toUpperCase()}
+        \nCódigo de Afiliación: ${codigoAfiliacion}
+        \nModalidad de venta: ${tipoColocacion.toUpperCase()}
+        \nTerminal: 
+        
+        
+        `; 
+      
+
     } else if (currentPage.includes('master')) {
-        const razonSocial = document.querySelector('input[name="razonSocial"]').value;
-        mensaje += `*Master*\nRazón Social: ${razonSocial}\n`;
+        
+        mensaje += `
+        SOLICITUD DE AUTORIZACIÓN DE VENTA
+        \nTipo de venta:  
+        \nRazón social: 
+        \nRif: 
+        \nBanco:  
+        \nCódigo afiliación: 
+        \nCantidad equipo:  
+        \nModelo:  
+        \nSerial del equipo:  
+        \nOperador: 
+        \nSerial de la simcard: 
+        \nCorreo:  
+        \nTeléfono: 
+        \nNúmero de cuenta:  
+        \nDirección completa del rif con su zona postal:  
+        \nMarca: MASTER
+        \nForma de pago:  
+        \nCobro Mantenimiento: 
+        `;
     } else if (currentPage.includes('credicard')) {
         const razonSocial = document.querySelector('input[name="razonSocial"]').value;
         mensaje += `*Credicard*\nRazón Social: ${razonSocial}\n`;
     }
     
-    mensaje += '\nLos documentos PDF se adjuntan por separado.';
+    //mensaje += '\nLos documentos PDF se adjuntan por separado.';
     
     // Codificar mensaje para URL
     const mensajeCodificado = encodeURIComponent(mensaje);

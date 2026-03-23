@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>Vepagos - Registro de Ventas</title>
     <link rel="stylesheet" href="css/styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
    <link rel="stylesheet" href="css/fontawesome-free-7.2.0-web/css/fontawesome.css">
 <body>
     <div class="container">
@@ -15,7 +15,7 @@
                 <i class="fas fa-credit-card logo-icon"></i>
                 <h1>Vepagos</h1>
             </div>
-            <p class="subtitle">Registro de ventas - Planilla Única</p>
+            <p class="subtitle">Registro de ventas - Recibo</p>
         </header>
 
         <main>
@@ -28,9 +28,9 @@
                         <label class="radio-label">
                             <input type="radio" name="tipoCliente" value="natural" > Persona Natural
                         </label>
-                        <label class="radio-label">
+                        <!--label class="radio-label">
                             <input type="radio" name="tipoCliente" value="firma"> Firma Personal
-                        </label>
+                        </label-->
                         <label class="radio-label">
                             <input type="radio" name="tipoCliente" value="juridica" checked> Persona Jurídica
                         </label>
@@ -47,9 +47,9 @@
                         <div class="form-group">
                             <label for="tipoColocacion">Tipo de Colocación</label>
                             <select id="tipoColocacion" name="tipoColocacion" required>
-                                <option value=""></option>
+                                <option value="" ></option>
                                 <option value="contado" selected>Contado</option>
-                                <option value="financiado" >Financiado</option>
+                                <option value="financiado" selected>Financiado</option>
                                 <option value="comodato">Comodato</option>
                             </select>
                         </div>
@@ -57,7 +57,7 @@
                         <div class="form-group">
                             <label>Banco</label>
                             <select name="banco" required>
-                                <option value="">Seleccione un banco...</option>
+                                <option value=""></option>
                                 <option value="venezuela">Venezuela</option>
                                 <option value="mercantil">Mercantil</option>
                                 <option value="banplus">Banplus</option>
@@ -71,6 +71,7 @@
                                 <option value="r4">R4</option>
                                 <option value="100banco">100% Banco</option>
                                 <option value="provincial">Provincial</option>
+                                <option value="bancaribe">Bancaribe</option>
                                 <option value="banesco">Banesco</option>
                             </select>
                         </div>
@@ -82,7 +83,7 @@
 
                         <div class="form-group">
                                 <label for="codigoAfiliado">Codigo de Afiliado</label>
-                                <input type="text" id="codigoAfiliado" name="codigoAfiliado" placeholder="12345678"  >
+                                <input type="text" id="codigoAfiliado" name="codigoAfiliado" placeholder="12345678" value="12345678" >
                         </div>
 
 
@@ -92,15 +93,15 @@
                             <input type="text" name="codOficina"  >
                         </div>
                         <div class="form-group">
-                            <label>Regional</label>
-                            <input type="text" name="regional"  >
+                            <label for="regional">Regional</label>
+                            <input type="text" id="regional" name="regional"  >
                         </div>
                     </div>
                     
                     <div class="form-row">
                         <div class="form-group">
                             <label>Tipo de RIF</label>
-                            <select name="tipoRif">
+                            <select name="tipoRif" required>
                                 <option value="V">V</option>
                                 <option value="V">E</option>
                                 <option value="J">J</option>
@@ -109,11 +110,11 @@
                         </div>
                         <div class="form-group">
                             <label>Número de RIF</label>
-                            <input type="text" name="rif" placeholder="123456789" required>
+                            <input type="text" name="rif" placeholder="123456789" required value="123456789">
                         </div>
                         <div class="form-group">
-                            <label>Comercio</label>
-                            <input type="text" name="comercio" placeholder="Nombre del comercio" required>
+                            <label for="razonSocial">Razón Social</label>
+                        <input type="text" id="razonSocial" name="razonSocial" placeholder="Nombre de la empresa" required value="Nombre de la empresa">
                         </div>
                     </div>
                     <div class="form-group">
@@ -145,63 +146,10 @@
                     </div>
 
 
-
-
-
-                      
-
-
-                   
-
-                    
-
-                    
-
-
                 </div>
 
 
-                <!-- Datos del Registro Mercantil (se desactiva para persona natural) -->
-                <div class="form-section" id="registroMercantilSection">
-                    <h3><i class="fas fa-book"></i> Datos del Registro Mercantil</h3>
-                    
-                    <div class="form-group">
-                        <label for="nombreRegistroMercantil">Nombre del Registro Mercantil</label>
-                        <input type="text" id="nombreRegistroMercantil" name="nombreRegistroMercantil">
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="fechaRegistro">Fecha de Registro</label>
-                            <input type="date" id="fechaRegistro" name="fechaRegistro">
-                        </div>
-                        <div class="form-group">
-                            <label for="nroRegistro">Nro de Registro</label>
-                            <input type="text" id="nroRegistro" name="nroRegistro">
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="numeroTomo">Número de Tomo</label>
-                            <input type="text" id="numeroTomo" name="numeroTomo">
-                        </div>
-                        <div class="form-group">
-                            <label for="clausulaDelegatoria">Clausula Delegatoria</label>
-                            <input type="text" id="clausulaDelegatoria" name="clausulaDelegatoria">
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                        <label for="ciudadRegistro">Ciudad de Registro</label>
-                        <input type="text" id="ciudadRegistro" name="ciudadRegistro">
-                    </div>
-                    <div class="form-group">
-                        <label for="estadoRegistro">Estado de Registro</label>
-                        <input type="text" id="estadoRegistro" name="estadoRegistro">
-                    </div>
-                    </div>
-                </div>
+                
 
                 <!-- Datos del Representante Legal -->
                 <div class="form-section" id="representanteLegalSection">
@@ -214,85 +162,80 @@
 
                     <div class="form-row">
                         <div class="form-group">
-                        <label for="cedulaRepresentante" >Cédula del Representante Legal</label>
-                        <input type="text" id="cedulaRepresentante" name="cedulaRepresentante" placeholder="V-12345678" required>
+                            <label for="cedulaRepresentante" >Cédula del Representante Legal</label>
+                            <input type="text" id="cedulaRepresentante" name="cedulaRepresentante" placeholder="V-12345678" required>
+                        </div>
+                               
                     </div>
-                        <!-- div class="form-group">
-                            <label for="cargoRepresentante">Cargo</label>
-                            <input type="text" id="cargoRepresentante"   name="cargoRepresentante" required>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="nacionalidadRepresentante">Nacionalidad</label>
-                            <input type="text" id="nacionalidadRepresentante" name="nacionalidadRepresentante" >
-                        </div>
-                        <div class="form-group">
-                            <label for="facultadoPor">Facultado Por:</label>
-                            
-                            <select id="facultadoPor" name="facultadoPor">
-                                <option value=""></option>
-                                <option value="estatutos">Estatutos</option>
-                                <option value="asamblea">Asamblea de Accionistas</option>
-                                <option value="juntaDirectiva">Junta Directiva</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="telefonoRepresentante">Teléfono</label>
-                            <input type="tel" id="telefonoRepresentante" name="telefonoRepresentante" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="correoRepresentante">Correo</label>
-                            <input type="email" id="correoRepresentante" name="correoRepresentante" required>
-                        </div>
-                    </div-->
                 </div>
 
                 <!-- Datos del Equipo -->
                 <div class="form-section">
                     <h3><i class="fas fa-mobile-alt"></i> Datos del Equipo</h3>
-                    
-                    <div class="form-group">
-                        <label>Modelo del Equipo</label>
-                        <input type="text" name="modeloEquipo" required>
-                    </div>
+                  <div class="form-row"> 
+                        <div class="form-group">
+                            <label>Modelo del Equipo</label>
+                            
+                            <select id="modeloEquipo" name="modeloEquipo" required>
+                                <option value="7210">7210</option>
+                                <option value="A50">A50</option>
+                                <option value="A920">A920</option>
+                                <option value="A8900">A8900</option>
+                                <option value="T1">T1</option>
+                                <option value="6210">6210</option>
+                                <option value="8210">8210</option>
+                                <option value="9220">9220</option>
+                                <option value="Q2">Q2</option>
+                                <option value="Q3">Q3</option>
+                            </select>
+                            
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Serial del Equipo</label>
+                            <input type="text" name="serialEquipo" value="9" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="planServicio">Plan de Servicio</label>
+                            <select id="planServicio" name="planServicio" required>
+                                <option value=""></option>
+                                <option value="vx1" selected>Vx1</option>
+                                <option value="vx2" >Vx2</option>
+                                <option value="vx3">Vx3</option>
+                            </select>
+                        </div>
 
-                    
 
-                    <div class="form-group">
-                        <label>Método de Pago</label>
-                        <select name="metodoPago" required>
-                            <option value="">Seleccione...</option>
-                            <option value="efectivo">Efectivo</option>
-                            <option value="transferencia">Transferencia</option>
-                            <option value="debito">Débito</option>
-                            <option value="pago_movil">Pago Móvil</option>
-                            <option value="banesco_panama">Banesco Panamá</option>
-                            <option value="zelle">Zelle</option>
-                        </select>
-                    </div>
+                        <div class="form-group">
+                            <label>Operadora</label>
+                            <select name="operadora" required>
+                                <option value="ninguna">Ninguna</option>
+                                <option value="digitel">Digitel</option>
+                                <option value="movistar">Movistar</option>
+                                <option value="movilnet">Movilnet</option>
+                            </select>
+                        </div>
+                    </div> 
 
-                    <div class="form-group">
-                        <label>Monto</label>
-                        <input type="text" name="monto" placeholder="0.00" required>
-                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Método de Pago</label>
+                            <select name="metodoPago" required>
+                                <option value="">Seleccione...</option>
+                                <option value="efectivo">Efectivo</option>
+                                <option value="transferencia">Transferencia</option>
+                                <option value="debito">Débito</option>
+                                <option value="pago_movil">Pago Móvil</option>
+                                <option value="banesco_panama">Banesco Panamá</option>
+                                <option value="zelle">Zelle</option>
+                            </select>
+                        </div>
 
-                    <div class="form-group">
-                        <label>Serial del Equipo</label>
-                        <input type="text" name="serialEquipo" value="9" required>
-                    </div>
+                        <div class="form-group">
+                            <label>Monto</label>
+                            <input type="text" name="monto" placeholder="0.00" required>
+                        </div>
 
-                    <div class="form-group">
-                        <label>Operadora</label>
-                        <select name="operadora" required>
-                            <option value="ninguna">Ninguna</option>
-                            <option value="digitel">Digitel</option>
-                            <option value="movistar">Movistar</option>
-                            <option value="movilnet">Movilnet</option>
-                        </select>
                     </div>
 
                     
@@ -305,7 +248,7 @@
                     
                     <div class="form-group">
                         <label>Plazo de Financiamiento (dias)</label>
-                        <input type="number" name="plazoFinanciamiento" min="30" max="180" value="90">
+                        <input type="number" name="plazoFinanciamiento" min="30" max="180" value="90" readonly>
                     </div>
                     
                     <div class="form-group">
@@ -332,15 +275,7 @@
                         </div>
                     </div>
 
-                    <div class="fingerprint-container">
-                        <label>Huella Dactilar</label>
-                        <canvas id="fingerprintCanvas" width="200" height="200" class="fingerprint-canvas"></canvas>
-                        <div class="signature-controls">
-                            <button type="button" class="btn-secondary" id="clearFingerprint">
-                                <i class="fas fa-eraser"></i> Limpiar
-                            </button>
-                        </div>
-                    </div>
+                    
                 </div>
 
                 <!-- Acciones -->
@@ -356,7 +291,7 @@
         </main>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="js/jspdf.umd.min.js"></script>
     <script src="js/script.js"></script>
 </body>
 </html>
