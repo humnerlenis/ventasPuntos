@@ -22,12 +22,21 @@ function initializeForms() {
     const nacionalidadRepresentante = document.getElementById('nacionalidadRepresentante');
     // Disglobal - Mostrar/ocultar secciones según tipo de cliente
     const tipoClienteRadios = document.querySelectorAll('input[name="tipoCliente"]');
+     const registroMercantil = document.getElementById('registroMercantilSection');
+    const representanteLegal = document.getElementById('representanteLegalSection');
+    const razonSocial = document.querySelector('input[name="razonSocial"]').value;
+    const tiporif = document.querySelector('select[name="tipoRif"]').value;
+    const rif = document.querySelector('input[name="rif"]').value; 
+    const nombreRepresentante = document.querySelector('input[name="nombresRepresentante"]');
+    const cedulaRepresentante = document.querySelector('input[name="cedulaRepresentante"]');
+    const cargoRepresentante = document.querySelector('input[name="cargoRepresentante"]').value;
+    const telefonoRepresentante = document.querySelector('input[name="telefonoRepresentante"]').value;
+    const correoRepresentante = document.querySelector('input[name="correoRepresentante"]').value;
 
     if (tipoClienteRadios.length) {
         tipoClienteRadios.forEach(radio => {
             radio.addEventListener('change', function() {
-                const registroMercantil = document.getElementById('registroMercantilSection');
-                const representanteLegal = document.getElementById('representanteLegalSection');
+                 
                 
                 console.log(this.value);
                 
@@ -35,8 +44,38 @@ function initializeForms() {
                 if (currentPage.includes('disglobal')) {
                    
                 if (this.value === 'natural') {
-                    registroMercantil.style.display = 'none';
-                    representanteLegal.style.display = 'none';
+                    //registroMercantil.style.display = 'none';
+                    //representanteLegal.style.display = 'none';
+                    // manejo de la nacionalidad del representante legal para persona natural
+                    
+                    
+                       
+
+                        
+                               
+                            // 2. Creamos una función para manejar la lógica de la nacionalidad del representante
+                            const nacionalidad = () => {
+                                
+
+                                if (tipoRif==='V') {
+                                    nacionalidadRepresentante.value= 'VENEZOLANO';
+                                } else if (tipoRif==='E') {
+                                    // logica para extranjeros
+                                    registroMercantil.style.display = 'block';
+                                representanteLegal.style.display = 'block';
+
+                                }
+                                
+                            };
+
+                            // 3. Escuchamos el cambio en el select
+                            tipoRif.addEventListener('change', nacionalidad);
+
+                            // 4. Ejecutamos la función una vez al cargar la página 
+                            // por si el navegador recordó una selección previa
+                            nacionalidad();
+
+
                 } else {
                     registroMercantil.style.display = 'block';
                     representanteLegal.style.display = 'block';
@@ -54,28 +93,7 @@ function initializeForms() {
                   if (this.value === 'natural') {
                     registroMercantil.style.display = 'none';
                     representanteLegal.style.display = 'none';
-                    const tipoRif = document.getElementById('tipoRif');
-    
-                        if (tipoRif==='V') {
-                        
-                            // 2. Creamos una función para manejar la lógica de visibilidad
-                            const nacionalidad = () => {
-                                const valorSeleccionado = tipoColocacion.value;
-                                nacionalidadRepresentante
-                                if (valorSeleccionado === 'financiado') {
-                                    adendumSection.style.display = 'block';
-                                } else {
-                                    adendumSection.style.display = 'none';
-                                }
-                            };
-
-                            // 3. Escuchamos el cambio en el select
-                            tipoColocacion.addEventListener('change', nacionalidad);
-
-                            // 4. Ejecutamos la función una vez al cargar la página 
-                            // por si el navegador recordó una selección previa
-                            nacionalidad();
-                        }
+                    
                     } else {
                         registroMercantil.style.display = 'block';
                         representanteLegal.style.display = 'block';
@@ -1559,7 +1577,7 @@ function generarPDFVepagos() {
 
 // RECIBO DE PAGO VEPAGOS
 
-    imgData.src = 'img/vepagos/PLANILLA_RECIBO _VENTAS.png'; // Tu imagen en Base64
+    imgData.src = 'img/vepagos/PLANILLA_RECIBO_VENTAS.png'; // Tu imagen en Base64
     doc.addImage(imgData, 'PNG', 0, 0, 210, 297); // 210x297mm es A4
     doc.setFont('helvetica');
     doc.setFontSize(11);
