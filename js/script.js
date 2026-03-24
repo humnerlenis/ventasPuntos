@@ -349,13 +349,13 @@ function setupEventListeners() {
                         if  (tipoCliente === 'natural' || tipoCliente === 'firma') {
                             
                             if (!razonSocial || !razonSocial.value.trim()) {
-                                    
+                                    razonSocial.focus();
                                     Swal.fire({
                                         title: "Error en la Validación",
                                         text: "Debe ingresar la Razón Social antes de continuar.",
                                         icon: "error"
                                     });
-                                    razonSocial.focus();
+                                    
                                 } else {
                                     nombresRepresentante.value = razonSocial.value;
                                             cedulaRepresentante.value = rif.slice(0, -1); // Asumiendo que el RIF termina con una letra, se quita para la cédula
