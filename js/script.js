@@ -19,20 +19,9 @@ return nombreMes.charAt(0).toUpperCase() + nombreMes.slice(1);
 // Inicializar todos los formularios
 function initializeForms() {
     const currentPage = window.location.pathname.split('/').pop();
-    const nacionalidadRepresentante = document.getElementById('nacionalidadRepresentante');
-    // Disglobal - Mostrar/ocultar secciones según tipo de cliente
     const tipoClienteRadios = document.querySelectorAll('input[name="tipoCliente"]');
-     const registroMercantil = document.getElementById('registroMercantilSection');
-    const representanteLegal = document.getElementById('representanteLegalSection');
-    const razonSocial = document.querySelector('input[name="razonSocial"]').value;
-    const tiporif = document.querySelector('select[name="tipoRif"]').value;
-    const rif = document.querySelector('input[name="rif"]').value; 
-    const nombreRepresentante = document.querySelector('input[name="nombresRepresentante"]');
-    const cedulaRepresentante = document.querySelector('input[name="cedulaRepresentante"]');
-    const cargoRepresentante = document.querySelector('input[name="cargoRepresentante"]').value;
-    const telefonoRepresentante = document.querySelector('input[name="telefonoRepresentante"]').value;
-    const correoRepresentante = document.querySelector('input[name="correoRepresentante"]').value;
-
+    const registroMercantil = document.getElementById('registroMercantilSection');
+                    const representanteLegal = document.getElementById('representanteLegalSection');
     if (tipoClienteRadios.length) {
         tipoClienteRadios.forEach(radio => {
             radio.addEventListener('change', function() {
@@ -42,38 +31,11 @@ function initializeForms() {
                 
                 
                 if (currentPage.includes('disglobal')) {
-                   
+                  
+
                 if (this.value === 'natural') {
-                    //registroMercantil.style.display = 'none';
-                    //representanteLegal.style.display = 'none';
-                    // manejo de la nacionalidad del representante legal para persona natural
+                    registroMercantil.style.display = 'none';
                     
-                    
-                       
-
-                        
-                               
-                            // 2. Creamos una función para manejar la lógica de la nacionalidad del representante
-                            const nacionalidad = () => {
-                                
-
-                                if (tipoRif==='V') {
-                                    nacionalidadRepresentante.value= 'VENEZOLANO';
-                                } else if (tipoRif==='E') {
-                                    // logica para extranjeros
-                                    registroMercantil.style.display = 'block';
-                                representanteLegal.style.display = 'block';
-
-                                }
-                                
-                            };
-
-                            // 3. Escuchamos el cambio en el select
-                            tipoRif.addEventListener('change', nacionalidad);
-
-                            // 4. Ejecutamos la función una vez al cargar la página 
-                            // por si el navegador recordó una selección previa
-                            nacionalidad();
 
 
                 } else {
@@ -92,7 +54,7 @@ function initializeForms() {
                 } else if (currentPage.includes('master')) {
                   if (this.value === 'natural') {
                     registroMercantil.style.display = 'none';
-                    representanteLegal.style.display = 'none';
+                    //representanteLegal.style.display = 'none';
                     
                     } else {
                         registroMercantil.style.display = 'block';
@@ -109,6 +71,10 @@ function initializeForms() {
             });
         });
     }
+
+
+
+
 
     // Disglobal - Mostrar/ocultar operadora según SIM
     const simSi = document.getElementById('simSi');
@@ -193,7 +159,7 @@ function initializeForms() {
         actualizarVisibilidad();
     }
 
-//MASTER cambio el codigo de afiliado a read only = true cuando es transred
+    //MASTER cambio el codigo de afiliado a read only = true cuando es transred
         if (currentPage.includes('master')) {
                 
                     const plataforma= document.getElementById('plataforma');
@@ -224,7 +190,14 @@ function initializeForms() {
 
                 }
 
-        }
+      // autocompletar datos de representante legal
+
+       
+       
+                            // 2. Creamos una función para manejar la lógica de la nacionalidad del representante
+                            
+
+}
 
 // Inicializar pads de firma
 function initializeSignaturePads() {
@@ -332,6 +305,8 @@ function clearCanvas(canvas) {
 function setupEventListeners() {
     // Botones de generar PDF
     document.getElementById('generarPDF')?.addEventListener('click', function() {
+        console.log("boton clicqueado");
+        
         if (validarFormularioDisglobal()) {
             generarPDF();
         }
@@ -342,6 +317,63 @@ function setupEventListeners() {
         }
     });
     document.getElementById('qrScannerBtn')?.addEventListener('click', scanQR);
+
+    // Validación al enfocar el campo nombreRepresentante
+    //const nombresRepresentante = document.getElementById('nombresRepresentante');
+     const nacionalidadRepresentante = document.getElementById('nacionalidadRepresentante');
+        const razonSocial = document.querySelector('input[name="razonSocial"]');
+        const tipoRif = document.querySelector('select[name="tipoRif"]');
+        const rif = document.querySelector('input[name="rif"]').value; 
+        //const telefono = document.querySelector('input[name="telefono"]').value;
+        const telefono = document.getElementById('telefono');
+        
+        //const correo = document.querySelector('input[name="correo"]').value;
+        const correo = document.getElementById('correo');
+        
+        
+        const nombresRepresentante = document.querySelector('input[name="nombresRepresentante"]');
+        const cedulaRepresentante = document.querySelector('input[name="cedulaRepresentante"]');
+        const cargoRepresentante = document.querySelector('input[name="cargoRepresentante"]');
+        const telefonoRepresentante = document.querySelector('input[name="telefonoRepresentante"]');
+        const correoRepresentante = document.querySelector('input[name="correoRepresentante"]');    
+        
+                if (razonSocial && nombresRepresentante) {
+        nombresRepresentante.addEventListener('focus', function() {
+            const razonSocial = document.querySelector('input[name="razonSocial"]');
+            //console.log(tipoRif);
+            
+            if (!razonSocial || !razonSocial.value.trim()) {
+                alert('Debe ingresar la Razón Social antes de continuar.');
+                razonSocial.focus();
+            } else {
+                 nombresRepresentante.value = razonSocial.value;
+                        cedulaRepresentante.value = rif.slice(0, -1); // Asumiendo que el RIF termina con una letra, se quita para la cédula
+                       if (cargoRepresentante) {
+                            cargoRepresentante.value = 'DUEÑO';
+                        }
+                        if (telefonoRepresentante) {
+                            telefonoRepresentante.value = telefono.value;
+                        }
+                        if (correoRepresentante) {
+                            correoRepresentante.value = correo.value;
+                        }
+
+                        if (nacionalidadRepresentante) {
+                        
+                                
+
+                                if (tipoRif.value ==='V') {
+                                    nacionalidadRepresentante.value= 'VENEZOLANO';
+                                } 
+                                
+                           
+
+                            
+                        }
+            }
+        });
+    }
+    
 }
 
 // Función para escanear QR (simulada)
@@ -371,7 +403,7 @@ function validarFormularioDisglobal() {
     const camposVacios = [];
     let  campos = [];
     const tipoCliente = document.querySelector('input[name="tipoCliente"]:checked')?.value;
-    if (tipoCliente === 'natural') {
+    
         // Para persona natural, copiar datos de razón social al representante legal
         const razonSocial = document.querySelector('input[name="razonSocial"]');
         let rif = document.querySelector('input[name="rif"]').value ;
@@ -382,14 +414,9 @@ function validarFormularioDisglobal() {
         const cargoRepresentante = document.getElementById('cargoRepresentante');
         const telefonoRepresentante = document.getElementById('telefonoRepresentante');
         const correoRepresentante = document.getElementById('correoRepresentante');
-        if (razonSocial && nombresRepresentante) {   
-            nombresRepresentante.value = razonSocial.value;
-            cedulaRepresentante.value = rif.slice(0, -1); // Asumiendo que el RIF termina con una letra, se quita para la cédula
-            cargoRepresentante.value = 'DUEÑO';
-            telefonoRepresentante.value = telefono;
-            correoRepresentante.value = correo;
-        }
-    }
+        
+    
+
      const currentPage = window.location.pathname.split('/').pop();
       if (currentPage.includes('disglobal')) {
         //generarPDFDisglobal();
@@ -397,6 +424,12 @@ function validarFormularioDisglobal() {
        campos = document.querySelectorAll('#disglobalForm input:not([type="radio"]):not([type="checkbox"]), #disglobalForm select, #disglobalForm textarea');
         
     } else if (currentPage.includes('vepagos')) {
+        if (razonSocial && nombresRepresentante) {   
+            nombresRepresentante.value = razonSocial.value;
+            cedulaRepresentante.value = rif.slice(0, -1); // Asumiendo que el RIF termina con una letra, se quita para la cédula
+            
+            
+        }
         campos = document.querySelectorAll('#vepagosForm input:not([type="radio"]):not([type="checkbox"]), #vepagosForm select, #vepagosForm textarea');
     } else if (currentPage.includes('master')) {
         campos = document.querySelectorAll('#masterForm input:not([type="radio"]):not([type="checkbox"]), #masterForm select, #masterForm textarea');
