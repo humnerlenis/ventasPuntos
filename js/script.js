@@ -323,7 +323,7 @@ function setupEventListeners() {
     document.getElementById('qrScannerBtn')?.addEventListener('click', scanQR);
 
     // Validación al enfocar el campo nombreRepresentante
-    //const nombresRepresentante = document.getElementById('nombresRepresentante');
+    const tipoCliente = document.querySelector('input[name="tipoCliente"]:checked')?.value;
      const nacionalidadRepresentante = document.getElementById('nacionalidadRepresentante');
         const razonSocial = document.querySelector('input[name="razonSocial"]');
         const tipoRif = document.querySelector('select[name="tipoRif"]');
@@ -340,47 +340,48 @@ function setupEventListeners() {
         const cargoRepresentante = document.querySelector('input[name="cargoRepresentante"]');
         const telefonoRepresentante = document.querySelector('input[name="telefonoRepresentante"]');
         const correoRepresentante = document.querySelector('input[name="correoRepresentante"]');    
-        
+        if (tipoCliente === 'natural' || tipoCliente === 'firma') {
                 if (razonSocial && nombresRepresentante) {
-        nombresRepresentante.addEventListener('focus', function() {
-            const razonSocial = document.querySelector('input[name="razonSocial"]');
-            //console.log(tipoRif);
-            
-            if (!razonSocial || !razonSocial.value.trim()) {
-                
-                Swal.fire({
-                    title: "Error en la Validación",
-                    text: "Debe ingresar la Razón Social antes de continuar.",
-                    icon: "error"
-                });
-                razonSocial.focus();
-            } else {
-                 nombresRepresentante.value = razonSocial.value;
-                        cedulaRepresentante.value = rif.slice(0, -1); // Asumiendo que el RIF termina con una letra, se quita para la cédula
-                       if (cargoRepresentante) {
-                            cargoRepresentante.value = 'DUEÑO';
-                        }
-                        if (telefonoRepresentante) {
-                            telefonoRepresentante.value = telefono.value;
-                        }
-                        if (correoRepresentante) {
-                            correoRepresentante.value = correo.value;
-                        }
-
-                        if (nacionalidadRepresentante) {
+                    nombresRepresentante.addEventListener('focus', function() {
+                        const razonSocial = document.querySelector('input[name="razonSocial"]');
+                        //console.log(tipoRif);
                         
-                                
-
-                                if (tipoRif.value ==='V') {
-                                    nacionalidadRepresentante.value= 'VENEZOLANO';
-                                } 
-                                
-                           
-
+                        if (!razonSocial || !razonSocial.value.trim()) {
                             
+                            Swal.fire({
+                                title: "Error en la Validación",
+                                text: "Debe ingresar la Razón Social antes de continuar.",
+                                icon: "error"
+                            });
+                            razonSocial.focus();
+                        } else {
+                            nombresRepresentante.value = razonSocial.value;
+                                    cedulaRepresentante.value = rif.slice(0, -1); // Asumiendo que el RIF termina con una letra, se quita para la cédula
+                                if (cargoRepresentante) {
+                                        cargoRepresentante.value = 'DUEÑO';
+                                    }
+                                    if (telefonoRepresentante) {
+                                        telefonoRepresentante.value = telefono.value;
+                                    }
+                                    if (correoRepresentante) {
+                                        correoRepresentante.value = correo.value;
+                                    }
+
+                                    if (nacionalidadRepresentante) {
+                                    
+                                            
+
+                                            if (tipoRif.value ==='V') {
+                                                nacionalidadRepresentante.value= 'VENEZOLANO';
+                                            } 
+                                            
+                                    
+
+                                        
+                                    }
                         }
-            }
-        });
+                    });
+                }
     }
     
 }
