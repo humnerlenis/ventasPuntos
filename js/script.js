@@ -1973,7 +1973,7 @@ function generarPDFMaster1() {
             doc.addImage(imgData1, 'PNG', 0, 0, 216, 279); //carta es 216x279mm
             doc.setFontSize(10);
             doc.setFont('helvetica', 'normal');   
-      const tipoColocacion = document.querySelector('select[name="modeloNegocio"]').value;
+      //const tipoColocacion = document.querySelector('select[name="modeloNegocio"]').value;
     const tipoCliente = document.querySelector('input[name="tipoCliente"]:checked').value;
     const plataforma= document.getElementById('plataforma').value;
     const razonSocial = document.querySelector('input[name="razonSocial"]').value;
@@ -1996,11 +1996,17 @@ function generarPDFMaster1() {
     const numeroTomo = document.querySelector('input[name="numeroTomo"]').value;
     const clausulaDelegatoria = document.querySelector('input[name="clausulaDelegatoria"]').value;
     const ciudadRegistro = document.querySelector('input[name="ciudadRegistro"]').value;
-    const representanteLegal = tipoCliente === 'natural' ? razonSocial : document.querySelector('input[name="nombresRepresentante"]').value ;
+   /* const representanteLegal = tipoCliente === 'natural' ? razonSocial : document.querySelector('input[name="nombresRepresentante"]').value ;
     const cargoRepresentante = tipoCliente === 'natural' ? "Dueño" : document.querySelector('input[name="cargoRepresentante"]').value;
     const telefonoRepresentante =tipoCliente === 'natural' ? telefono : document.querySelector('input[name="telefonoRepresentante"]').value;
     const correoRepresentante = tipoCliente === 'natural' ? correo :document.querySelector('input[name="correoRepresentante"]').value;
-    const cedulaRepresentante = tipoCliente === 'natural' ? rif.slice(0, -1) : document.querySelector('input[name="cedulaRepresentante"]').value;
+    const cedulaRepresentante = tipoCliente === 'natural' ? rif.slice(0, -1) : document.querySelector('input[name="cedulaRepresentante"]').value;*/
+    const representanteLegal = document.querySelector('input[name="nombresRepresentante"]').value;
+    const cargoRepresentante = document.querySelector('input[name="cargoRepresentante"]').value;
+    const telefonoRepresentante = document.querySelector('input[name="telefonoRepresentante"]').value;
+    const correoRepresentante = document.querySelector('input[name="correoRepresentante"]').value;
+    const cedulaRepresentante = document.querySelector('input[name="cedulaRepresentante"]').value;
+    const nacionalidadRepresentante = document.querySelector('input[name="nacionalidadRepresentante"]').value;
     const modeloEquipo = document.querySelector('select[name="modeloEquipo"]').value;
     const cantidadEquipo = document.querySelector('input[name="cantidadEquipo"]').value;
     const incluyeSim = document.querySelector('input[name="incluyeSim"]:checked').value;
@@ -2126,7 +2132,32 @@ function generarPDFMaster1() {
     doc.setFontSize(12);
     doc.setFont('helvetica', 'normal');
 
-    doc.text(`${representanteLegal.toUpperCase()}`, 45, 14);
+    doc.text(`${representanteLegal.toUpperCase()}`, 65, 65);
+    doc.text(`${nacionalidadRepresentante.toUpperCase()}`, 30, 73.5);
+    doc.text(`${cedulaRepresentante}`, 160, 80.5);
+    doc.text(`${ciudad.toUpperCase()}`, 30, 80.5);
+    doc.text(`${razonSocial.toUpperCase()}`, 55, 103);
+    doc.text(`${tiporif.toUpperCase()}-${rif}`, 87, 110.5);
+    doc.setFontSize(10);
+    doc.text(`${cuentaBancaria}`, 50, 125);
+
+
+    
+    if (signatureCanvas && !isCanvasBlank(signatureCanvas)) {
+        const signatureData = signatureCanvas.toDataURL('image/png');
+       // doc.text(`${razonSocial.toUpperCase().slice(0, 30)}`, 65, 245);
+        //doc.text(`${rif.slice(0, 8)}`, 68, 256);
+        doc.addImage(signatureData, 'PNG', 33, 208, 35, 10);
+        
+    }
+
+
+    doc.setFontSize(9);
+    doc.text(`${representanteLegal.toUpperCase()}`, 30, 230);
+    doc.setFontSize(11);
+    doc.text(`${cedulaRepresentante.slice(0, 10)}`, 33, 237);
+
+
 
     /*
     hay que validar que se habilite la nacionalidad cuando sea persona natural y el tipo de rif sea E
