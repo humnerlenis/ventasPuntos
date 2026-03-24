@@ -65,7 +65,11 @@ function initializeForms() {
                 } else if (currentPage.includes('credicard')) {
                   // generarPDFCredicard();
                 } else {
-                   // alert('Seleccione un aliado para generar el PDF');
+                    Swal.fire({
+                       title: "Error en la Validación",
+                       text: "Seleccione un aliado para generar el PDF",
+                       icon: "error"
+                   });
                 }
 
             });
@@ -343,7 +347,12 @@ function setupEventListeners() {
             //console.log(tipoRif);
             
             if (!razonSocial || !razonSocial.value.trim()) {
-                alert('Debe ingresar la Razón Social antes de continuar.');
+                
+                Swal.fire({
+                    title: "Error en la Validación",
+                    text: "Debe ingresar la Razón Social antes de continuar.",
+                    icon: "error"
+                });
                 razonSocial.focus();
             } else {
                  nombresRepresentante.value = razonSocial.value;
@@ -379,8 +388,12 @@ function setupEventListeners() {
 // Función para escanear QR (simulada)
 function scanQR() {
     // Simular escaneo de QR
-    alert('Por favor, escanee el código QR del RIF');
-    
+     Swal.fire({
+  title: "Escaneo de QR",
+  text: "proximamente..!",
+  icon: "success"
+});
+    /*
     // Aquí iría la lógica real de escaneo
     // Por ahora simulamos datos
     setTimeout(() => {
@@ -394,6 +407,7 @@ function scanQR() {
         
         alert('Datos del RIF cargados exitosamente');
     }, 2000);
+    */
 }
 
 //######### VALIDACIONES PAG DISGLOBAL #########
@@ -437,7 +451,11 @@ function validarFormularioDisglobal() {
     } else if (currentPage.includes('credicard')) {
         //generarPDFCredicard();
     } else {
-        alert('Seleccione un aliado para generar el PDF');
+        Swal.fire({
+            title: "Error en la Validación",
+            text: "Seleccione un aliado para generar el PDF",
+            icon: "error"
+        });
     }
 
     
@@ -532,7 +550,11 @@ function validarFormularioDisglobal() {
             tipoRif.style.borderColor = '#ff4444';
             
             // Mostrar mensaje específico
-            alert('Para Persona Jurídica, el Tipo de RIF debe ser "J o G"');
+             Swal.fire({
+                title: "Error en la Validación",
+                text: "Para Persona Jurídica, el Tipo de RIF debe ser 'J o G'",
+                icon: "error"
+            });
         } else if (tipoRif) {
             tipoRif.style.borderColor = '';
         }
@@ -578,7 +600,11 @@ function validarFormularioDisglobal() {
         if (tipoRif && tipoRif.value !== 'V' && tipoRif.value !== 'E') {
             camposVacios.push('Tipo de RIF debe ser V o E para Persona Natural o Firma Personal');
             tipoRif.style.borderColor = '#ff4444';
-            alert('Para Persona Natural o Firma Personal, el Tipo de RIF debe ser "V" o "E"');
+           Swal.fire({
+                title: "Error en la Validación",
+                text: "Para Persona Natural o Firma Personal, el Tipo de RIF debe ser 'V' o 'E'",
+                icon: "error"
+            });
         } else if (tipoRif) {
             tipoRif.style.borderColor = '';
         }
@@ -597,12 +623,20 @@ function validarFormularioDisglobal() {
         if (!/^\d+$/.test(rifValue)) {
             camposVacios.push('RIF (solo números, sin letras ni guiones)');
             rifInput.style.borderColor = '#ff4444';
-            alert('El RIF debe contener solo números');
+            Swal.fire({
+                title: "Error en la Validación",
+                text: "El RIF debe contener solo números",
+                icon: "error"
+            });
         }
     }
 
     if (camposVacios.length > 0) {
-        alert('Campos obligatorios vacíos o incorrectos:\n- ' + camposVacios.join('\n- '));
+         Swal.fire({
+            title: "Error en la Validación",
+            html: "Campos obligatorios vacíos o incorrectos:<br>- " + camposVacios.join('<br>- '),
+            icon: "error"
+        });
         return false;
     }
     
@@ -633,7 +667,11 @@ function validarFormularioDisglobal() {
     } else if (currentPage.includes('credicard')) {
         generarPDFCredicard();
     } else {
-        alert('Seleccione un aliado para generar el PDF');
+         Swal.fire({
+            title: "Generacion de planillas PDF",
+            text: "Seleccione un aliado para generar el PDF",
+            icon: "error"
+        });
     }
 }
 
@@ -671,7 +709,7 @@ function generarPDFDisglobal() {
     
     // Guardar PDF
     doc.save('contrato_disglobal.pdf');
-    alert('PDF generado exitosamente');
+    
 }
 */
 
@@ -969,7 +1007,11 @@ function generarPDFDisglobal() {
     const razonSocialAbrv = razonSocial.substring(0, 30).replace(/[^a-zA-Z0-9]/g, '_');
         doc.save(`planilla_unica_disglobal_${razonSocialAbrv || 'solicitud'}.pdf`);
    // doc.save('planilla_unica_disglobal.pdf');
-    alert('   Planilla Unica generada exitosamente');
+    Swal.fire({
+  title: "Venta con Disglobal",
+  text: "Planilla Unica generada exitosamente!",
+  icon: "success"
+});
 }
 
  function generarCargoDisglobal() {
@@ -1026,7 +1068,11 @@ function generarPDFDisglobal() {
     
       
      doc.save('cargo_a_cuenta.pdf');
-    alert('Cargo a cuenta generado exitosamente');
+     Swal.fire({
+  title: "Venta con Disglobal",
+  text: "Cargo a cuenta Generado exitosamente!",
+  icon: "success"
+});
     
     
 }   
@@ -1183,7 +1229,11 @@ function generarPDFDisglobal() {
             
             doc.save(`contrato_PN_disglobal_${razonSocialAbrv || 'solicitud'}.pdf`);
            // doc.save('contrato_PN.pdf');
-            alert('Contrato PN generado exitosamente');
+            Swal.fire({
+                title: "Venta con Disglobal",
+                text: "Contrato PN generado exitosamente!",
+                icon: "success"
+                });
             break;
         case 'juridica':
             imgData1.src = 'img/disglobal/contrato_PJ_1.png'; // Tu imagen en Base64
@@ -1302,7 +1352,11 @@ function generarPDFDisglobal() {
             
            doc.save(`contrato_PJ_disglobal_${razonSocialAbrv || 'solicitud'}.pdf`);
            // doc.save('contrato_PN.pdf');
-            alert('Contrato PJ generado exitosamente');
+            Swal.fire({
+                title: "Venta con Disglobal!",
+                text: "Contrato PJ generado exitosamente!",
+                icon: "success"
+                });
             break;
         case 'firma':
              
@@ -1409,7 +1463,11 @@ function generarPDFDisglobal() {
                 
                  doc.save(`contrato_FP_disglobal_${razonSocialAbrv || 'solicitud'}.pdf`);
             // doc.save('contrato_PN.pdf');
-                alert('Contrato FP generado exitosamente');
+                Swal.fire({
+                    title: "Venta con Disglobal",
+                    text: "Contrato FP generado exitosamente!",
+                    icon: "success"
+                    });
             break;
         case "comodato":
                     imgData1.src = 'img/disglobal/contrato_comodato_1.png';
@@ -1551,7 +1609,11 @@ function generarPDFDisglobal() {
             
             doc.save(`contrato_comodato_disglobal_${razonSocialAbrv || 'solicitud'}.pdf`);
            // doc.save('contrato_PN.pdf');
-            alert('Contrato comodato generado exitosamente');
+            Swal.fire({
+                title: "Venta con Disglobal!",
+                text: "Contrato comodato generado exitosamente!",
+                icon: "success"
+                });
                 
         default:
             break;
@@ -1891,7 +1953,11 @@ function generarPDFVepagos() {
 
      const razonSocialAbrv = razonSocial.substring(0, 30).replace(/[^a-zA-Z0-9]/g, '_');
     doc.save(`recibo_vepagos_${razonSocialAbrv || 'solicitud'}.pdf`);
-    alert('Recibo generado exitosamente');
+     Swal.fire({
+  title: "Venta con Vepagos!",
+  text: "Recibo y planillas generadas exitosamente!",
+  icon: "success"
+});
 }
 
 //Generar PDF para Master
@@ -2079,7 +2145,11 @@ function generarPDFMaster1() {
         const razonSocialAbrv = razonSocial.substring(0, 20).replace(/[^a-zA-Z0-9]/g, '_');
         doc.save(`planilla_master_${razonSocialAbrv || 'solicitud'}.pdf`);
         
-        alert('Planilla Master generada exitosamente');
+         Swal.fire({
+            title: "Venta con Master",
+            text: "Planilla generada exitosamente!",
+            icon: "success"
+            });
 }
 
 
@@ -2111,7 +2181,12 @@ function generarPDFCredicard() {
     }
     
     doc.save('contrato_credicard.pdf');
-    alert('Contrato generado exitosamente');
+     Swal.fire({
+  title: "Venta con Credicard",
+  text: "Contrato generado exitosamente!",
+  icon: "success"
+});
+    
 }
 
 // Función para enviar por WhatsApp
