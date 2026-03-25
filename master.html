@@ -166,7 +166,7 @@
                     
                     <div class="form-group">
                         <label for="nombreRegistroMercantil">Nombre del Registro Mercantil</label>
-                        <input type="text" id="nombreRegistroMercantil" name="nombreRegistroMercantil">
+                        <input type="text" id="nombreRegistroMercantil" name="nombreRegistroMercantil" placeholder="Colocar la abreviatura del nombre" >
                     </div>
 
                     <div class="form-row">
@@ -206,8 +206,8 @@
                             <input type="text" id="nombresRepresentante" name="nombresRepresentante" required>
                         </div>
                         <div class="form-group">
-                            <label for="cedulaRepresentante" >Cédula</label>
-                            <input type="text" id="cedulaRepresentante" name="cedulaRepresentante" placeholder="V-12345678" required>
+                            <label for="cedulaRepresentante" >Rif Representante</label>
+                            <input type="text" id="cedulaRepresentante" name="cedulaRepresentante" placeholder="V-123456789" required>
                         </div>
                         
                     </div>
@@ -222,6 +222,16 @@
                             <input type="text" id="cargoRepresentante"   name="cargoRepresentante" required>
                         </div>
                     </div>
+                     <div class="form-group">
+                            <label for="facultadoPor">Facultado Por:</label>
+                            
+                            <select id="facultadoPor" name="facultadoPor">
+                                <option value=""></option>
+                                <option value="estatutos">Estatutos</option>
+                                <option value="asamblea">Asamblea de Accionistas</option>
+                                <option value="juntaDirectiva">Junta Directiva</option>
+                            </select>
+                        </div>
 
                     <div class="form-row">
                         <div class="form-group">

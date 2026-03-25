@@ -2011,7 +2011,7 @@ function generarPDFMaster1() {
     const cantidadEquipo = document.querySelector('input[name="cantidadEquipo"]').value;
     const incluyeSim = document.querySelector('input[name="incluyeSim"]:checked').value;
     const operadora = document.querySelector('select[name="operadora"]').value;
-   
+    const facultadoPor = document.querySelector('select[name="facultadoPor"]').value;
     const serialEquipo = document.querySelector('input[name="serialEquipo"]').value;
     const serialSim = document.querySelector('input[name="serialSim"]').value;
     const formaPago = document.querySelector('input[name="formaPago"]').value;
@@ -2081,7 +2081,7 @@ function generarPDFMaster1() {
    
          
        doc.setFontSize(8);
-        doc.text(`${cedulaRepresentante.slice(0, 10)}`, 21, 142);
+        doc.text(`${cedulaRepresentante.replace(/[\s-a-zA-Z]/g, '').slice(0, -1)}`, 21, 142);
         doc.text(`${representanteLegal.toUpperCase().slice(0, 45)}`, 45, 142);
         doc.text(`${cargoRepresentante.toUpperCase().slice(0, 30)}`, 93, 142);
         doc.text(`${telefonoRepresentante.toUpperCase().slice(0, 11)}`, 126, 142);
@@ -2112,7 +2112,7 @@ function generarPDFMaster1() {
             break;
     }
 
-         doc.text(`${representanteLegal.toUpperCase().slice(0, 45)}, ${cedulaRepresentante.slice(0, 10)}`, 23, 253);
+         doc.text(`${representanteLegal.toUpperCase().slice(0, 45)}, ${cedulaRepresentante.replace(/[\s-a-zA-Z]/g, '').slice(0, -1)}`, 23, 253);
         doc.text(`${ciudad.toUpperCase().slice(0, 25)}, ${String(dia).padStart(2, '0')}/ ${String(mes).padStart(2, '0')}/ ${anio}`, 148, 255);
         
         // Agregar firma si existe
@@ -2124,6 +2124,7 @@ function generarPDFMaster1() {
         doc.addImage(signatureData, 'PNG', 72, 250, 35, 10);
         
     }
+    
    // ############## cargo a cuenta ##################
    doc.addPage();
      let imgData2= new Image();
@@ -2134,7 +2135,7 @@ function generarPDFMaster1() {
 
     doc.text(`${representanteLegal.toUpperCase()}`, 65, 65);
     doc.text(`${nacionalidadRepresentante.toUpperCase()}`, 30, 73.5);
-    doc.text(`${cedulaRepresentante}`, 160, 80.5);
+    doc.text(`${cedulaRepresentante.replace(/[\s-a-zA-Z]/g, '').slice(0, -1)}`, 160, 80.5);
     doc.text(`${ciudad.toUpperCase()}`, 30, 80.5);
     doc.text(`${razonSocial.toUpperCase()}`, 55, 103);
     doc.text(`${tiporif.toUpperCase()}-${rif}`, 87, 110.5);
@@ -2153,16 +2154,114 @@ function generarPDFMaster1() {
 
 
     doc.setFontSize(9);
-    doc.text(`${representanteLegal.toUpperCase()}`, 30, 230);
+    doc.text(`${representanteLegal.toUpperCase()}`, 32, 230);
     doc.setFontSize(11);
     doc.text(`${cedulaRepresentante.slice(0, 10)}`, 33, 237);
 
 
 
-    /*
-    hay que validar que se habilite la nacionalidad cuando sea persona natural y el tipo de rif sea E
-    los datos del cliente se pueden cargar en los campos nombre cedula telefono y correo solo para que se agrege la nacionalidad
-    */
+   // ############## contrato ##################
+   
+   doc.addPage();
+     let imgData3= new Image();
+    imgData3.src = 'img/master/CTTO1.png'; // Tu imagen en Base64
+    doc.addImage(imgData3, 'PNG', 0, 0, 210, 297); // 210x297mm es A4
+    doc.setFontSize(7);
+    doc.setFont('helvetica', 'normal');
+    //doc.setTextColor("#ff0000"); 
+    doc.setTextColor(255, 0, 0); 
+    doc.text(`${razonSocial.toUpperCase()}`, 124, 37);
+    doc.text(`${ciudad.toUpperCase()}`, 10, 41);
+    doc.text(`${nombreRegistroMercantil.toUpperCase() || '--------'}`, 75, 41);
+    doc.text(`${ciudadRegistro.toUpperCase()|| '--------'}`, 94, 41);
+    doc.text(`${fechareg.slice(0, 2)} de ${obtenerMes(fechareg.slice(3,5))}`, 130, 41);
+    doc.text(`${fechareg.slice(6, 10)}`, 157, 41);
+
+    doc.text(`${nroRegistro.toUpperCase()|| '--------'}`, 178, 41);    
+    doc.text(`${numeroTomo.toUpperCase()|| '--------'}`, 189.5, 41);
+    doc.text(`${tiporif.toUpperCase()}-${rif}`, 96, 45.5);
+    doc.text(`${cargoRepresentante.toUpperCase()}`, 165, 45.5);
+    doc.text(`${representanteLegal.toUpperCase()}`, 10, 50);
+    doc.text(`${nacionalidadRepresentante.toUpperCase()}`, 65, 50);
+    doc.text(`${ciudad.toUpperCase()}`, 120, 50);
+    doc.text(`${cedulaRepresentante.replace(/[\s-a-zA-Z]/g, '').slice(0, 10)}`, 186, 50);
+    
+    doc.text(`${cedulaRepresentante}`, 102, 54.5);
+    doc.text(`${facultadoPor.toUpperCase()}`, 152, 54.5);
+    
+
+
+
+
+
+
+
+
+     doc.addPage();
+     let imgData4= new Image();
+    imgData4.src = 'img/master/CTTO2.png'; // Tu imagen en Base64
+    doc.addImage(imgData4, 'PNG', 0, 0, 210, 297); // 210x297mm es A4
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+
+    doc.text(`CUARENTA`, 28, 90.5);
+    doc.text(`40`, 124, 90.5);
+
+
+
+
+
+
+
+
+
+
+
+     doc.addPage();
+     let imgData5= new Image();
+    imgData5.src = 'img/master/CTTO3.png'; // Tu imagen en Base64
+    doc.addImage(imgData5, 'PNG', 0, 0, 210, 297); // 210x297mm es A4
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`${direccionFiscal.toUpperCase()}`, 28, 37);
+    doc.text(`${telefonoRepresentante.toUpperCase().slice(0, 11)}`, 28, 41);
+    doc.text(`${representanteLegal.toUpperCase()}`, 28, 45.5);
+    doc.text(`${correoRepresentante.toUpperCase().slice(0, 30)}`, 43, 50);
+    doc.setFontSize(8);
+    doc.text(`${dia}`, 134, 63.5);
+    doc.text(`${obtenerMes(mes)}`, 159, 63.5);
+    doc.text(`${String(anio).slice(2,4)}`, 181.5, 63.5);
+      
+
+    if (signatureCanvas && !isCanvasBlank(signatureCanvas)) {
+        const signatureData = signatureCanvas.toDataURL('image/png');
+       
+        doc.addImage(signatureData, 'PNG', 95, 75, 35, 10);
+        
+    }
+
+    /*  ######################################################
+                Anexo A
+            intificacin del equipo
+    #######################################################*/
+    doc.setFontSize(12);
+    doc.text(`WIZARD|SUNMI`, 23, 217);
+    doc.text(`${modeloEquipo}`, 24, 221.5);
+    doc.text(`${serialEquipo.toUpperCase()}`, 23, 225.5);
+    doc.text(`${serialSim.toUpperCase()}`, 38, 230);
+    doc.text(`${operadora.toUpperCase()}`, 49, 234.5);
+    doc.text(`${dia}`, 140, 252.5);
+    doc.text(`${obtenerMes(mes)}`, 177, 252.5);
+    doc.text(`${String(anio).slice(2,4)}`, 19, 257);
+
+    if (signatureCanvas && !isCanvasBlank(signatureCanvas)) {
+        const signatureData = signatureCanvas.toDataURL('image/png');
+       
+        doc.addImage(signatureData, 'PNG', 98, 273, 35, 10);
+        
+    }
+
+
 
 
 
