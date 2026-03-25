@@ -2178,7 +2178,7 @@ function generarPDFMaster1() {
     doc.text(`${fechareg.slice(6, 10)}`, 157, 41);
 
     doc.text(`${nroRegistro.toUpperCase()|| '--------'}`, 178, 41);    
-    doc.text(`${numeroTomo.toUpperCase()|| '--------'}`, 189.5, 41);
+    doc.text(`${numeroTomo.toUpperCase()|| '--------'}`, 190.5, 41);
     doc.text(`${tiporif.toUpperCase()}-${rif}`, 96, 45.5);
     doc.text(`${cargoRepresentante.toUpperCase()}`, 165, 45.5);
     doc.text(`${representanteLegal.toUpperCase()}`, 10, 50);
