@@ -2169,7 +2169,7 @@ function generarPDFMaster1() {
     doc.setFontSize(7);
     doc.setFont('helvetica', 'normal');
     //doc.setTextColor("#ff0000"); 
-    doc.setTextColor(255, 0, 0); 
+    //doc.setTextColor(255, 0, 0); 
     doc.text(`${razonSocial.toUpperCase()}`, 124, 37);
     doc.text(`${ciudad.toUpperCase()}`, 10, 41);
     doc.text(`${nombreRegistroMercantil.toUpperCase() || '--------'}`, 75, 41);
