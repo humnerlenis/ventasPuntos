@@ -1,0 +1,2483 @@
+
+// Variables globales para firmas
+let signaturePad, fingerprintPad;
+let isDrawing = false;
+let lastX = 0, lastY = 0;
+
+// Inicialización cuando el DOM está listo
+document.addEventListener('DOMContentLoaded', function() {
+    initializeForms();
+    initializeSignaturePads();
+    setupEventListeners();
+    setupQRScanner();
+});
+function obtenerMes(numeroMes) {
+   // Creamos una fecha ficticia (año, mes - 1, día)
+const fecha = new Date(2025, numeroMes - 1); 
+const nombreMes = fecha.toLocaleString('es-ES', { month: 'long' });
+return nombreMes.charAt(0).toUpperCase() + nombreMes.slice(1);
+}
+// Inicializar todos los formularios
+function initializeForms() {
+    const currentPage = window.location.pathname.split('/').pop();
+    const tipoClienteRadios = document.querySelectorAll('input[name="tipoCliente"]');
+    const registroMercantil = document.getElementById('registroMercantilSection');
+                    const representanteLegal = document.getElementById('representanteLegalSection');
+    if (tipoClienteRadios.length) {
+        tipoClienteRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                 
+                
+                console.log(this.value);
+                
+                
+                if (currentPage.includes('disglobal')) {
+                  
+
+                if (this.value === 'natural') {
+                    registroMercantil.style.display = 'none';
+                    
+
+
+                } else {
+                    registroMercantil.style.display = 'block';
+                    representanteLegal.style.display = 'block';
+                }
+                    
+                } else if (currentPage.includes('vepagos')) {
+                    if (this.value === 'natural') {
+                    
+                    representanteLegal.style.display = 'none';
+                } else {
+                    
+                    representanteLegal.style.display = 'block';
+                }
+                } else if (currentPage.includes('master')) {
+                  if (this.value === 'natural') {
+                    registroMercantil.style.display = 'none';
+                    //representanteLegal.style.display = 'none';
+                    
+                    } else {
+                        registroMercantil.style.display = 'block';
+                        representanteLegal.style.display = 'block';
+                    }
+                    
+
+                } else if (currentPage.includes('credicard')) {
+                  // generarPDFCredicard();
+                } else {
+                    Swal.fire({
+                       title: "Error en la Validación",
+                       text: "Seleccione un aliado para generar el PDF",
+                       icon: "error"
+                   });
+                }
+
+            });
+        });
+    }
+
+
+
+
+
+    // Disglobal - Mostrar/ocultar operadora según SIM
+    const simSi = document.getElementById('simSi');
+    const simNo = document.getElementById('simNo');
+    const operadoraGroup = document.getElementById('operadoraGroup');
+
+    if (simSi && simNo && operadoraGroup) {
+        simSi.addEventListener('change', function() {
+            operadoraGroup.style.display = 'block';
+        });
+        simNo.addEventListener('change', function() {
+            operadoraGroup.style.display = 'none';
+        });
+    }
+
+    // Disglobal - Mostrar/ocultar tarifa seguro
+    const seguroSi = document.getElementById('seguroSi');
+    const seguroNo = document.getElementById('seguroNo');
+    const tarifaSeguroGroup = document.getElementById('tarifaSeguroGroup');
+
+    if (seguroSi && seguroNo && tarifaSeguroGroup) {
+        seguroSi.addEventListener('change', function() {
+            tarifaSeguroGroup.style.display = 'block';
+        });
+        seguroNo.addEventListener('change', function() {
+            tarifaSeguroGroup.style.display = 'none';
+        });
+    }
+
+    // Disglobal - Mostrar/ocultar nombre de app adicional
+    const appsSi = document.getElementById('appsSi');
+    const appsNo = document.getElementById('appsNo');
+    const nombreAppGroup = document.getElementById('nombreAppGroup');
+
+    if (appsSi && appsNo && nombreAppGroup) {
+        appsSi.addEventListener('change', function() {
+            nombreAppGroup.style.display = 'block';
+        });
+        appsNo.addEventListener('change', function() {
+            nombreAppGroup.style.display = 'none';
+        });
+    }
+
+    // Vepagos - Mostrar/ocultar adendum según tipo de colocación
+   /* const tipoColocacionRadios = document.querySelectorAll('input[name="tipoColocacion"]');
+    const adendumSection = document.getElementById('adendumSection');
+    
+    if (tipoColocacionRadios.length && adendumSection) {
+        tipoColocacionRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                if (this.value === 'financiado') {
+                    adendumSection.style.display = 'block';
+                } else {
+                    adendumSection.style.display = 'none';
+                }
+            });
+        });
+    }
+    */
+
+    const tipoColocacion = document.getElementById("tipoColocacion");
+    const adendumSection = document.getElementById('adendumSection');
+    
+    if (tipoColocacion && adendumSection) {
+    
+        // 2. Creamos una función para manejar la lógica de visibilidad
+        const actualizarVisibilidad = () => {
+            const valorSeleccionado = tipoColocacion.value;
+            
+            if (valorSeleccionado === 'financiado') {
+                adendumSection.style.display = 'block';
+            } else {
+                adendumSection.style.display = 'none';
+            }
+        };
+
+        // 3. Escuchamos el cambio en el select
+        tipoColocacion.addEventListener('change', actualizarVisibilidad);
+
+        // 4. Ejecutamos la función una vez al cargar la página 
+        // por si el navegador recordó una selección previa
+        actualizarVisibilidad();
+    }
+
+    //MASTER cambio el codigo de afiliado a read only = true cuando es transred
+        if (currentPage.includes('master')) {
+                
+                    const plataforma= document.getElementById('plataforma');
+                    const codigoAfiliacion = document.getElementById('codigoAfiliacion');
+                      if (plataforma && codigoAfiliacion) {
+    
+                        // 2. Creamos una función para manejar la lógica de visibilidad
+                        const actualizarCodigo = () => {
+                            const valorSeleccionado = plataforma.value;
+                            
+                            if (valorSeleccionado === 'credicard') {
+                                codigoAfiliacion.removeAttribute('readOnly');
+                                
+                            } else if (valorSeleccionado === 'transred'){
+                                
+                                codigoAfiliacion.readOnly = true;
+                                codigoAfiliacion.value="";
+                            }
+                        };
+
+                        // 3. Escuchamos el cambio en el select
+                        plataforma.addEventListener('change', actualizarCodigo);
+
+                        // 4. Ejecutamos la función una vez al cargar la página 
+                        // por si el navegador recordó una selección previa
+                        actualizarCodigo();
+                    }
+
+                }
+
+      // autocompletar datos de representante legal
+
+       
+       
+                            // 2. Creamos una función para manejar la lógica de la nacionalidad del representante
+                            
+
+}
+
+// Inicializar pads de firma
+function initializeSignaturePads() {
+    const signatureCanvas = document.getElementById('signatureCanvas');
+    const fingerprintCanvas = document.getElementById('fingerprintCanvas');
+
+    if (signatureCanvas) {
+        setupCanvas(signatureCanvas);
+        document.getElementById('clearSignature')?.addEventListener('click', () => clearCanvas(signatureCanvas));
+    }
+
+    if (fingerprintCanvas) {
+        setupCanvas(fingerprintCanvas);
+        document.getElementById('clearFingerprint')?.addEventListener('click', () => clearCanvas(fingerprintCanvas));
+    }
+}
+
+// Configurar canvas para dibujo
+function setupCanvas(canvas) {
+    const ctx = canvas.getContext('2d');
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 2;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+
+    // Eventos para mouse
+    canvas.addEventListener('mousedown', startDrawing);
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('mouseup', stopDrawing);
+    canvas.addEventListener('mouseleave', stopDrawing);
+
+    // Eventos para touch
+    canvas.addEventListener('touchstart', handleTouchStart);
+    canvas.addEventListener('touchmove', handleTouchMove);
+    canvas.addEventListener('touchend', stopDrawing);
+}
+
+// Funciones de dibujo
+function startDrawing(e) {
+    isDrawing = true;
+    const pos = getCoordinates(e);
+    lastX = pos.x;
+    lastY = pos.y;
+}
+
+function draw(e) {
+    if (!isDrawing) return;
+    e.preventDefault();
+
+    const canvas = e.target;
+    const ctx = canvas.getContext('2d');
+    const pos = getCoordinates(e);
+
+    ctx.beginPath();
+    ctx.moveTo(lastX, lastY);
+    ctx.lineTo(pos.x, pos.y);
+    ctx.stroke();
+
+    lastX = pos.x;
+    lastY = pos.y;
+}
+
+function stopDrawing() {
+    isDrawing = false;
+}
+
+function getCoordinates(e) {
+    const canvas = e.target;
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+
+    let clientX, clientY;
+
+    if (e.touches) {
+        clientX = e.touches[0].clientX;
+        clientY = e.touches[0].clientY;
+    } else {
+        clientX = e.clientX;
+        clientY = e.clientY;
+    }
+
+    return {
+        x: (clientX - rect.left) * scaleX,
+        y: (clientY - rect.top) * scaleY
+    };
+}
+
+function handleTouchStart(e) {
+    e.preventDefault();
+    startDrawing(e);
+}
+
+function handleTouchMove(e) {
+    e.preventDefault();
+    draw(e);
+}
+
+function clearCanvas(canvas) {
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+// Configurar event listeners generales
+function setupEventListeners() {
+    // Botones de generar PDF
+    document.getElementById('generarPDF')?.addEventListener('click', function() {
+        console.log("boton clicqueado");
+        
+        if (validarFormularioDisglobal()) {
+            generarPDF();
+        }
+    });
+    document.getElementById('enviarWhatsApp')?.addEventListener('click', function() {
+        if (validarFormularioDisglobal()) {
+            enviarPorWhatsApp();
+        }
+    });
+    document.getElementById('qrScannerBtn')?.addEventListener('click', scanQR);
+
+    // Validación al enfocar el campo nombreRepresentante
+   
+     const nacionalidadRepresentante = document.getElementById('nacionalidadRepresentante');
+        const razonSocial = document.querySelector('input[name="razonSocial"]');
+        const tipoRif = document.querySelector('select[name="tipoRif"]');
+        const rif = document.querySelector('input[name="rif"]').value; 
+        //const telefono = document.querySelector('input[name="telefono"]').value;
+        const telefono = document.getElementById('telefono');
+        
+        //const correo = document.querySelector('input[name="correo"]').value;
+        const correo = document.getElementById('correo');
+        
+        
+        const nombresRepresentante = document.querySelector('input[name="nombresRepresentante"]');
+        const cedulaRepresentante = document.querySelector('input[name="cedulaRepresentante"]');
+        const cargoRepresentante = document.querySelector('input[name="cargoRepresentante"]');
+        const telefonoRepresentante = document.querySelector('input[name="telefonoRepresentante"]');
+        const correoRepresentante = document.querySelector('input[name="correoRepresentante"]');    
+        
+                if (razonSocial && nombresRepresentante) {
+                    nombresRepresentante.addEventListener('focus', function() {
+                         const tipoCliente = document.querySelector('input[name="tipoCliente"]:checked')?.value;
+                        const razonSocial = document.querySelector('input[name="razonSocial"]');
+                        //console.log(tipoRif);
+                        if  (tipoCliente === 'natural' || tipoCliente === 'firma') {
+                            
+                            if (!razonSocial || !razonSocial.value.trim()) {
+                                    razonSocial.focus();
+                                    Swal.fire({
+                                        title: "Error en la Validación",
+                                        text: "Debe ingresar la Razón Social antes de continuar.",
+                                        icon: "error"
+                                    });
+                                    
+                                } else {
+                                    nombresRepresentante.value = razonSocial.value;
+                                            cedulaRepresentante.value = rif.slice(0, -1); // Asumiendo que el RIF termina con una letra, se quita para la cédula
+                                        if (cargoRepresentante) {
+                                                cargoRepresentante.value = 'DUEÑO';
+                                            }
+                                            if (telefonoRepresentante) {
+                                                telefonoRepresentante.value = telefono.value;
+                                            }
+                                            if (correoRepresentante) {
+                                                correoRepresentante.value = correo.value;
+                                            }
+
+                                            if (nacionalidadRepresentante) {
+                                            
+                                                    
+
+                                                    if (tipoRif.value ==='V') {
+                                                        nacionalidadRepresentante.value= 'VENEZOLANO';
+                                                    } 
+                                                    
+                                            
+
+                                                
+                                            }
+                                    }
+                        }
+                    });
+                
+    }
+    
+}
+
+// Función para escanear QR (simulada)
+function scanQR() {
+    // Simular escaneo de QR
+     Swal.fire({
+  title: "Escaneo de QR",
+  text: "proximamente..!",
+  icon: "success"
+});
+    /*
+    // Aquí iría la lógica real de escaneo
+    // Por ahora simulamos datos
+    setTimeout(() => {
+        const razonSocial = document.querySelector('input[name="razonSocial"]');
+        const rif = document.querySelector('input[name="rif"]');
+        const direccion = document.querySelector('textarea[name="direccion"], input[name="direccionFiscal"]');
+        
+        if (razonSocial) razonSocial.value = 'COMERCIO EJEMPLO CA';
+        if (rif) rif.value = 'J-123456789';
+        if (direccion) direccion.value = 'Av. Principal, Edif. Comercial, Piso 1, Caracas 1010';
+        
+        alert('Datos del RIF cargados exitosamente');
+    }, 2000);
+    */
+}
+
+//######### VALIDACIONES PAG DISGLOBAL #########
+
+
+function validarFormularioDisglobal() {
+    const camposVacios = [];
+    let  campos = [];
+    const tipoCliente = document.querySelector('input[name="tipoCliente"]:checked')?.value;
+    
+        // Para persona natural, copiar datos de razón social al representante legal
+        const razonSocial = document.querySelector('input[name="razonSocial"]');
+        let rif = document.querySelector('input[name="rif"]').value ;
+        const telefono = document.querySelector('input[name="telefono"]').value;
+        const correo = document.querySelector('input[name="correo"]').value; 
+        const nombresRepresentante = document.getElementById('nombresRepresentante');
+        const cedulaRepresentante = document.getElementById('cedulaRepresentante');
+        const cargoRepresentante = document.getElementById('cargoRepresentante');
+        const telefonoRepresentante = document.getElementById('telefonoRepresentante');
+        const correoRepresentante = document.getElementById('correoRepresentante');
+        
+    
+
+     const currentPage = window.location.pathname.split('/').pop();
+      if (currentPage.includes('disglobal')) {
+        //generarPDFDisglobal();
+        
+       campos = document.querySelectorAll('#disglobalForm input:not([type="radio"]):not([type="checkbox"]), #disglobalForm select, #disglobalForm textarea');
+        
+    } else if (currentPage.includes('vepagos')) {
+        if (razonSocial && nombresRepresentante) {   
+            nombresRepresentante.value = razonSocial.value;
+            cedulaRepresentante.value = rif.slice(0, -1); // Asumiendo que el RIF termina con una letra, se quita para la cédula
+            
+            
+        }
+        campos = document.querySelectorAll('#vepagosForm input:not([type="radio"]):not([type="checkbox"]), #vepagosForm select, #vepagosForm textarea');
+    } else if (currentPage.includes('master')) {
+        campos = document.querySelectorAll('#masterForm input:not([type="radio"]):not([type="checkbox"]), #masterForm select, #masterForm textarea');
+       
+    } else if (currentPage.includes('credicard')) {
+        //generarPDFCredicard();
+    } else {
+        Swal.fire({
+            title: "Error en la Validación",
+            text: "Seleccione un aliado para generar el PDF",
+            icon: "error"
+        });
+    }
+
+    
+    
+    campos.forEach(campo => {
+        // Omitir campos ocultos o deshabilitados
+        if (campo.type === 'hidden' || campo.disabled) return;
+        
+        // Verificar si el campo está visible
+        const estilo = window.getComputedStyle(campo);
+        if (estilo.display === 'none' || estilo.visibility === 'hidden') return;
+        
+        // Validar que no esté vacío (solo si es requerido o queremos validar todos)
+        let valorVacio = false;
+        if (campo.tagName === 'SELECT') {
+            valorVacio = !campo.value || campo.value === '';
+        } else {
+            valorVacio = !campo.value.trim();
+        }
+        
+        if (valorVacio && campo.hasAttribute('required')) {
+            // Obtener nombre del campo para el mensaje
+            let nombreCampo = '';
+            const label = document.querySelector(`label[for="${campo.id}"]`);
+            if (label) {
+                nombreCampo = label.textContent.trim();
+            } else {
+                const parentDiv = campo.closest('.form-group');
+                if (parentDiv) {
+                    const parentLabel = parentDiv.querySelector('label');
+                    if (parentLabel) nombreCampo = parentLabel.textContent.trim();
+                }
+            }
+            
+            camposVacios.push(nombreCampo || campo.name || campo.id || 'Campo sin nombre');
+            campo.style.borderColor = '#ff4444';
+        } else {
+            campo.style.borderColor = '';
+        }
+    });
+
+    // Validaciones condicionales específicas
+    if (document.getElementById('simSi')?.checked) {
+        // Validar operadora
+        const operadora = document.getElementById('operadora');
+        if (operadora && (!operadora.value || !operadora.value.trim())) {
+            camposVacios.push('Operadora');
+            operadora.style.borderColor = '#ff4444';
+        }
+        
+        // Validar serial del SIM Card
+        const serialSim = document.getElementById('serialSim');
+        if (serialSim && !serialSim.value.trim()) {
+            camposVacios.push('Serial del SIM Card');
+            serialSim.style.borderColor = '#ff4444';
+        }
+    }
+
+    if (document.getElementById('seguroSi')?.checked) {
+        const tarifaSeguro = document.getElementById('tarifaSeguro');
+        const frecuenciaCobro = document.getElementById('frecuenciaCobro');
+        const montoTarifa = document.getElementById('montoTarifa');
+        
+        if (tarifaSeguro && !tarifaSeguro.value.trim()) {
+            camposVacios.push('Tarifa del Seguro');
+            tarifaSeguro.style.borderColor = '#ff4444';
+        }
+        if (frecuenciaCobro && (!frecuenciaCobro.value || !frecuenciaCobro.value.trim())) {
+            camposVacios.push('Frecuencia de Cobro');
+            frecuenciaCobro.style.borderColor = '#ff4444';
+        }
+        if (montoTarifa && !montoTarifa.value.trim()) {
+            camposVacios.push('Monto de Tarifa');
+            montoTarifa.style.borderColor = '#ff4444';
+        }
+    }
+
+    if (document.getElementById('appsSi')?.checked) {
+        const nombreApp = document.getElementById('nombreApp');
+        if (nombreApp && !nombreApp.value.trim()) {
+            camposVacios.push('Nombre de la Aplicación');
+            nombreApp.style.borderColor = '#ff4444';
+        }
+    }
+
+    // Validación específica para Persona Jurídica
+    if (tipoCliente === 'juridica') {
+        // Validar que el tipo de RIF sea J
+        const tipoRif = document.querySelector('select[name="tipoRif"]');
+        if (tipoRif && tipoRif.value !== 'J' && tipoRif.value !== 'G') {
+            camposVacios.push('Tipo de RIF debe ser J o G para Persona Jurídica');
+            tipoRif.style.borderColor = '#ff4444';
+            
+            // Mostrar mensaje específico
+             Swal.fire({
+                title: "Error en la Validación",
+                text: "Para Persona Jurídica, el Tipo de RIF debe ser 'J o G'",
+                icon: "error"
+            });
+        } else if (tipoRif) {
+            tipoRif.style.borderColor = '';
+        }
+
+        // Validar campos del Registro Mercantil
+        const camposRegistro = [
+            { id: 'nombreRegistroMercantil', nombre: 'Nombre del Registro Mercantil' },
+            { id: 'fechaRegistro', nombre: 'Fecha de Registro' },
+            { id: 'nroRegistro', nombre: 'Nro de Registro' },
+            { id: 'numeroTomo', nombre: 'Número de Tomo' },
+            { id: 'clausulaDelegatoria', nombre: 'Clausula Delegatoria' },
+            { id: 'ciudadRegistro', nombre: 'Ciudad de Registro' }
+        ];
+        
+        camposRegistro.forEach(campoInfo => {
+            const campo = document.getElementById(campoInfo.id);
+            if (campo && !campo.value.trim()) {
+                camposVacios.push(campoInfo.nombre);
+                campo.style.borderColor = '#ff4444';
+            }
+        });
+
+        // Validar campos del Representante Legal (solo para persona jurídica)
+        const camposRepresentante = [
+            { id: 'cedulaRepresentante', nombre: 'Cédula del Representante' },
+            { id: 'nombresRepresentante', nombre: 'Nombres y Apellidos del Representante' },
+            { id: 'cargoRepresentante', nombre: 'Cargo del Representante' },
+            { id: 'telefonoRepresentante', nombre: 'Teléfono del Representante' },
+            { id: 'correoRepresentante', nombre: 'Correo del Representante' }
+        ];
+            if(tipoCliente !== 'natural') {
+            camposRepresentante.forEach(campoInfo => {
+                const campo = document.getElementById(campoInfo.id);
+                if (campo && !campo.value.trim()) {
+                    camposVacios.push(campoInfo.nombre);
+                    campo.style.borderColor = '#ff4444';
+                }
+            });
+        }
+    } else if (tipoCliente === 'natural' || tipoCliente === 'firma') {
+        // Para persona natural o firma personal, validamos que el tipo de RIF sea V
+        const tipoRif = document.querySelector('select[name="tipoRif"]');
+        if (tipoRif && tipoRif.value !== 'V' && tipoRif.value !== 'E') {
+            camposVacios.push('Tipo de RIF debe ser V o E para Persona Natural o Firma Personal');
+            tipoRif.style.borderColor = '#ff4444';
+           Swal.fire({
+                title: "Error en la Validación",
+                text: "Para Persona Natural o Firma Personal, el Tipo de RIF debe ser 'V' o 'E'",
+                icon: "error"
+            });
+        } else if (tipoRif) {
+            tipoRif.style.borderColor = '';
+        }
+
+        // Nota: Los campos del representante legal NO se validan para persona natural
+        // ya que se usan los datos de la razón social
+        console.log('Validación de persona natural: usando datos de razón social');
+    }
+
+    // Validación específica para el formato del RIF
+    const rifInput = document.getElementById('rif');
+    if (rifInput && rifInput.value.trim()) {
+        const rifValue = rifInput.value.trim();
+        
+        // Validar que el RIF tenga el formato correcto (solo números)
+        if (!/^\d+$/.test(rifValue)) {
+            camposVacios.push('RIF (solo números, sin letras ni guiones)');
+            rifInput.style.borderColor = '#ff4444';
+            Swal.fire({
+                title: "Error en la Validación",
+                text: "El RIF debe contener solo números",
+                icon: "error"
+            });
+        }
+    }
+
+    if (camposVacios.length > 0) {
+         Swal.fire({
+            title: "Error en la Validación",
+            html: "Campos obligatorios vacíos o incorrectos:<br>- " + camposVacios.join('<br>- '),
+            icon: "error"
+        });
+        return false;
+    }
+    
+    return true;
+}
+
+
+
+//######## FIN VALIDACIONES PAG DISGLOBAL #########
+
+
+
+
+
+// Función para generar PDF según el aliado
+ function generarPDF() {
+    const currentPage = window.location.pathname.split('/').pop();
+    
+    if (currentPage.includes('disglobal')) {
+        //generarPDFDisglobal();
+         generarPlanillaUnicaDisglobal(); 
+      
+        
+    } else if (currentPage.includes('vepagos')) {
+        generarPDFVepagos();
+    } else if (currentPage.includes('master')) {
+        generarPDFMaster1();
+    } else if (currentPage.includes('credicard')) {
+        generarPDFCredicard();
+    } else {
+         Swal.fire({
+            title: "Generacion de planillas PDF",
+            text: "Seleccione un aliado para generar el PDF",
+            icon: "error"
+        });
+    }
+}
+
+// Generar PDF para Disglobal
+/*
+function generarPDFDisglobal() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ compress: false });
+    
+    // Obtener datos del formulario
+    const tipoColocacion = document.querySelector('input[name="modeloNegocio"]').value;
+    const tipoCliente = document.querySelector('input[name="tipoCliente"]:checked').value;
+    const razonSocial = document.querySelector('input[name="razonSocial"]').value;
+    const rif = document.querySelector('input[name="rif"]').value;
+    
+    // Configurar documento
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(16);
+    doc.text('CONTRATO DISGLOBAL', 105, 20, { align: 'center' });
+    
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Tipo de Colocación: ${tipoColocacion}`, 20, 40);
+    doc.text(`Tipo de Cliente: ${tipoCliente}`, 20, 50);
+    doc.text(`Razón Social: ${razonSocial}`, 20, 60);
+    doc.text(`RIF: ${rif}`, 20, 70);
+    
+    // Agregar firma si existe
+    const signatureCanvas = document.getElementById('signatureCanvas');
+    if (signatureCanvas && !isCanvasBlank(signatureCanvas)) {
+        const signatureData = signatureCanvas.toDataURL('image/png');
+        doc.addImage(signatureData, 'PNG', 20, 150, 80, 30);
+        doc.text('Firma del Representante', 20, 190);
+    }
+    
+    // Guardar PDF
+    doc.save('contrato_disglobal.pdf');
+    
+}
+*/
+
+ function generarPlanillaUnicaDisglobal() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ compress: false});
+    
+    // Obtener datos del formulario
+    const tipoColocacion = document.querySelector('select[name="modeloNegocio"]').value;
+    const tipoCliente = document.querySelector('input[name="tipoCliente"]:checked').value;
+    const razonSocial = document.querySelector('input[name="razonSocial"]').value;
+    const tiporif = document.querySelector('select[name="tipoRif"]').value;
+    let rif = document.querySelector('input[name="rif"]').value;
+    const banco = document.querySelector('select[name="banco"]').value;
+    let cuentaBancaria = document.querySelector('input[name="cuentaBancaria"]').value;
+    const actividadEconomica = document.querySelector('input[name="actividadEconomica"]').value;
+    const ciudad = document.querySelector('input[name="ciudad"]').value;
+    const estado = document.querySelector('input[name="estado"]').value;
+    const municipio = document.querySelector('input[name="municipio"]').value;
+    const codigoPostal = document.querySelector('input[name="codigoPostal"]').value;
+    const direccionFiscal = document.querySelector('input[name="direccionFiscal"]').value;
+    const telefono = document.querySelector('input[name="telefono"]').value;
+    const correo = document.querySelector('input[name="correo"]').value;
+    const nombreRegistroMercantil = document.querySelector('input[name="nombreRegistroMercantil"]').value;
+    const fechaRegistro = document.querySelector('input[name="fechaRegistro"]').value;
+    const nroRegistro = document.querySelector('input[name="nroRegistro"]').value;    
+    const numeroTomo = document.querySelector('input[name="numeroTomo"]').value;
+    const clausulaDelegatoria = document.querySelector('input[name="clausulaDelegatoria"]').value;
+    const ciudadRegistro = document.querySelector('input[name="ciudadRegistro"]').value;
+    let representanteLegal = document.querySelector('input[name="nombresRepresentante"]').value;
+    const estadoCivil = document.querySelector('select[name="estadoCivil"]').value;
+    const cargoRepresentante = document.querySelector('input[name="cargoRepresentante"]').value;
+    const telefonoRepresentante = document.querySelector('input[name="telefonoRepresentante"]').value;
+    const correoRepresentante = document.querySelector('input[name="correoRepresentante"]').value;
+    let cedulaRepresentante = document.querySelector('input[name="cedulaRepresentante"]').value;
+    const modeloEquipo = document.querySelector('input[name="modeloEquipo"]').value;
+    const cantidadEquipo = document.querySelector('input[name="cantidadEquipo"]').value;
+    const incluyeSim = document.querySelector('input[name="incluyeSim"]:checked').value;
+    const operadora = document.querySelector('select[name="operadora"]').value;
+    const incluyeSeguro = document.querySelector('input[name="incluyeSeguro"]:checked').value;    
+    const tarifaSeguro = document.querySelector('input[name="tarifaSeguro"]').value;
+    const frecuenciaCobro = document.querySelector('select[name="frecuenciaCobro"]').value;
+    const montoTarifa = document.querySelector('input[name="montoTarifa"]').value;    
+    const appAdicional = document.querySelector('input[name="appsAdicionales"]:checked').value;
+    const nombreAppAdicional = document.querySelector('input[name="nombreApp"]').value;
+    const serialEquipo = document.querySelector('input[name="serialEquipo"]').value;
+    const serialSim = document.querySelector('input[name="serialSim"]').value;
+    const modeloRecepcion = document.querySelector('input[name="modeloRecepcion"]').value;
+    const marcaRecepcion = document.querySelector('input[name="marcaRecepcion"]').value;
+    const serialRecepcion = document.querySelector('input[name="serialRecepcion"]').value;
+
+
+    // Configurar documento
+    let imgData= new Image();
+    imgData.src = 'img/disglobal/planilla_unica1.png'; // Tu imagen en Base64
+    doc.addImage(imgData, 'PNG', 0, 0, 210, 297); // 210x297mm es A4
+    doc.setFont('helvetica');
+    doc.setFontSize(7);
+    const fechaActual = new Date();
+
+    const dia = fechaActual.getDate();       // Día del mes (1-31)
+    const mes = fechaActual.getMonth() + 1;  // Mes (0-11, por eso sumamos 1)
+    const anio = fechaActual.getFullYear();
+    doc.text(`  ${String(dia).padStart(2, '0')} ${String(mes).padStart(2, '0')}  ${anio}`, 185, 16, );
+    doc.setFontSize(12);
+    doc.text("X", 193, 25, );
+    
+    
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'normal');
+    switch (tipoColocacion ) {
+        case "contado":
+            doc.text("X", 110, 44, );
+             generarContratoDisglobal(tipoCliente);
+            break;
+        case "financiado":
+            doc.text("X", 140, 44, );
+            break;
+        case "comodato":
+            doc.text("X", 162, 44, );
+             generarContratoDisglobal("comodato");
+            break;    
+        default:
+            break;
+    }
+     doc.setFontSize(10);
+    doc.text(` ${banco.toUpperCase()}`, 31, 53);
+   
+    
+    cuentaBancaria.replace(/[\s-]+/g, '');
+    let distancia = 105; // Posición inicial para la primera letra
+    for (let caracter of cuentaBancaria) {
+
+    doc.text(` ${caracter}`, distancia, 53); 
+    distancia += 4.35; // Incrementar la distancia para la siguiente letra
+    }
+    doc.text(` ${tiporif}`, 18, 66);
+
+    //doc.text(`RIF: ${rif}`, 18, 66);
+    rif = rif.replace(/[\s-a-zA-Z]/g, '');
+        distancia = 22.3; // Posición inicial para la primera letra
+    for (let caracter of rif) {
+
+    doc.text(` ${caracter}`, distancia, 66); 
+    distancia += 4.35; // Incrementar la distancia para la siguiente letra
+    }
+    
+    doc.text(`${razonSocial.toUpperCase().slice(0, 45)}`, 65, 66);
+    doc.text(`${actividadEconomica.toUpperCase().slice(0, 25)}`, 140, 66);
+    doc.text(`${ciudad.toUpperCase().slice(0, 25)}`, 16, 76);
+    doc.text(`${estado.toUpperCase().slice(0, 25)}`, 71, 76);
+    doc.text(`${municipio.toUpperCase().slice(0, 25)}`, 128, 76);
+    doc.text(`${codigoPostal.toUpperCase().slice(0, 6)}`, 180, 76);
+    doc.text(`${direccionFiscal.toUpperCase().slice(0, 100)}`, 16, 86);
+    doc.text(`${telefono.slice(0, 4)}`, 19, 95);
+    doc.text(`${telefono.slice(4, 12).replace(/[\s-]+/g, '')}`, 40, 95);
+    doc.text(`${correo.toUpperCase().slice(0, 30)}`, 132, 95);
+    doc.text(`${nombreRegistroMercantil.toUpperCase().slice(0, 50)}`, 16, 109);
+    let fechareg = fechaRegistro.replace(/^(\d{4})-(\d{2})-(\d{2})$/g,'$3/$2/$1');
+    
+
+    //const fechaFormateada = `${diaR}/${mesR}/${anioR}`;
+    doc.text(`${fechareg}`, 16, 117);
+    doc.text(`${nroRegistro.toUpperCase().slice(0, 30)}`, 50, 117);    
+    doc.text(`${numeroTomo.toUpperCase().slice(0, 30)}`, 90, 117);
+    doc.text(`${clausulaDelegatoria.toUpperCase().slice(0, 30)}`, 133, 117);
+    doc.text(`${ciudadRegistro.toUpperCase().slice(0, 30)}`, 160, 117);
+    
+    if (tipoCliente === 'natural') {
+        doc.setFontSize(9);
+        doc.text(`${rif.slice(0, 8)}`, 16, 132);
+        doc.text(`${razonSocial.toUpperCase().slice(0, 40)}`, 36, 132);
+        doc.text(`${telefono}`, 123, 132);
+        doc.text(`${correo.toUpperCase().slice(0, 30)}`, 155, 132);
+        //seccion de representante legal al final del documento
+        doc.setFontSize(7);
+        doc.text(`${razonSocial.toUpperCase().slice(0, 40)}`, 34, 221);
+        doc.text(`${ciudad.toUpperCase().slice(0, 30)}`, 16, 225);
+        doc.text(`${rif.slice(0, 8)}`, 100, 225);
+    } else {
+         doc.setFontSize(9);
+       /* doc.text(`${razonSocial.toUpperCase().slice(0, 30)}`, 16, 132);
+        doc.text(`${telefono.toUpperCase().slice(0, 11)}`, 123, 132);*/
+        doc.text(`${cedulaRepresentante.slice(0, -1)}`, 16, 132);
+        doc.text(`${representanteLegal.toUpperCase().slice(0, 40)}`, 40, 132);
+        doc.text(`${cargoRepresentante.toUpperCase().slice(0, 30)}`, 85, 132);
+        doc.text(`${telefonoRepresentante.toUpperCase().slice(0, 11)}`, 126, 132);
+        doc.text(`${correoRepresentante.toUpperCase().slice(0, 30)}`, 153, 132);
+        //seccion de representante legal al final del documento
+        doc.setFontSize(7);
+        doc.text(`${representanteLegal.toUpperCase().slice(0, 40)}`, 32, 221);
+        doc.text(`${estadoCivil.toUpperCase()}`, 142, 221);
+        doc.text(`${ciudad.toUpperCase().slice(0, 30)}`, 16, 225);
+        doc.text(`${cedulaRepresentante.slice(0, -1)}`, 100, 225);
+    }
+
+    doc.text(`${modeloEquipo.toUpperCase().slice(0, 30)}`, 22, 147);
+    doc.text(`${cantidadEquipo.toUpperCase().slice(0, 5)}`, 60, 147);
+
+        switch (incluyeSim) {
+        case "si":
+            doc.text("X", 71, 147 );
+            break;
+        case "no":
+            doc.text("X", 80, 147 );
+            break;
+        default:
+            break;
+    }
+        switch (operadora) {
+        case "movistar":
+            doc.text("X", 110, 143 );
+            break;
+        case "digitel":
+            doc.text("X", 110, 147 );
+            break;
+        case "movilnet":
+            doc.text("X", 110, 151 );
+            break;
+        default:
+            break;
+    }
+        switch (incluyeSeguro) {
+        case "si":
+            doc.text("X", 123, 147 );
+            doc.text(`${tarifaSeguro.toUpperCase().slice(0, 30)}`, 141, 147);
+             doc.setFontSize(5);
+            doc.text(`${frecuenciaCobro.toUpperCase().slice(0, 30)}`, 159, 147);
+             doc.setFontSize(9);
+            doc.text(`${montoTarifa.toUpperCase().slice(0, 30)}`, 183, 147);
+            break;
+        case "no":  
+            doc.text("X", 132, 147 );
+            break;
+        default:
+            break;
+    }
+
+        switch (appAdicional) { 
+        case "si":
+            doc.text("X", 63, 151 );
+            doc.setFontSize(9);
+            doc.text(`${nombreAppAdicional.toUpperCase().slice(0, 80)}`, 28, 155);
+            break;
+        case "no":
+            doc.text("X", 71, 151 );
+            break;
+        default:
+            break;
+    }
+    doc.setFontSize(9);
+     doc.text(`${serialEquipo.toUpperCase().slice(0, 30)}`, 34, 166);
+     doc.text(`${serialSim.toUpperCase().slice(0, 30)}`, 105, 166);
+
+    doc.text(`${modeloRecepcion.toUpperCase().slice(0, 30)}, ${marcaRecepcion.toUpperCase().slice(0, 30)}, ${serialRecepcion.toUpperCase().slice(0, 30)}`, 16, 174);
+   
+
+
+
+     if (tipoCliente === 'natural') {
+        // Para persona natural, copiar datos de razón social al representante legal
+        representanteLegal = document.querySelector('input[name="razonSocial"]').value
+        cedulaRepresentante = rif.slice(0, -1);
+        doc.text(`${representanteLegal.toUpperCase()}`, 65, 245);  
+        doc.text(`${cedulaRepresentante}`, 68, 256);  
+        
+        
+               
+    }else {
+        doc.text(`${representanteLegal.toUpperCase()}`, 65, 245);  
+        doc.text(`${cedulaRepresentante}`, 68, 256);  
+        
+        
+     
+
+    }
+
+
+    // Agregar firma si existe
+    const signatureCanvas = document.getElementById('signatureCanvas');
+    if (signatureCanvas && !isCanvasBlank(signatureCanvas)) {
+        const signatureData = signatureCanvas.toDataURL('image/png');
+        
+        doc.addImage(signatureData, 'PNG', 65, 258, 35, 10);
+        
+    }
+
+    /* generar cargo a cuenta */
+     doc.addPage();
+     let imgData1= new Image();
+    imgData1.src = 'img/disglobal/cargo_a_cuenta.png'; // Tu imagen en Base64
+    doc.addImage(imgData1, 'PNG', 0, 0, 210, 297); // 210x297mm es A4
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'normal');
+
+    if (tipoCliente === 'natural') {
+        // Para persona natural, copiar datos de razón social al representante legal
+        representanteLegal = document.querySelector('input[name="razonSocial"]').value
+        cedulaRepresentante = rif.slice(0, -1);
+        doc.text(`${representanteLegal.toUpperCase()}`, 30, 82);  
+        doc.text(`${tiporif.toUpperCase()}-${cedulaRepresentante}`, 120, 88);  
+        doc.text(`${razonSocial.toUpperCase()}`, 85, 107);  
+        doc.text(`${tiporif.toUpperCase()}-${rif}`, 60, 113); 
+        doc.text(`${cuentaBancaria}`, 37, 124);
+               
+    }else {
+        doc.text(`${representanteLegal.toUpperCase()}`, 30, 82);  
+        doc.text(`${cedulaRepresentante.toUpperCase().slice(0,-1)}`, 120, 88);  
+        doc.text(`${razonSocial.toUpperCase()}`, 85, 107);  
+        doc.text(`${tiporif.toUpperCase()}-${rif}`, 60, 113); 
+        doc.text(`${cuentaBancaria}`, 37, 124);
+     
+
+    }
+
+    // Agregar firma si existe
+    const signatureCanvas1 = document.getElementById('signatureCanvas');
+    if (signatureCanvas && !isCanvasBlank(signatureCanvas1)) {
+        const signatureData1 = signatureCanvas.toDataURL('image/png');
+        
+        doc.addImage(signatureData1, 'PNG', 30, 200, 35, 10);
+        
+    }
+         doc.setFontSize(7);
+    doc.text(`${representanteLegal.toUpperCase()}`, 25, 220); 
+      doc.setFontSize(10);
+    doc.text(`${cedulaRepresentante.toUpperCase()}`, 30, 230); 
+    
+    
+      
+    
+
+    /* fin cargo a cuenta */
+    // Guardar PDF
+    const razonSocialAbrv = razonSocial.substring(0, 30).replace(/[^a-zA-Z0-9]/g, '_');
+        doc.save(`planilla_unica_disglobal_${razonSocialAbrv || 'solicitud'}.pdf`);
+   // doc.save('planilla_unica_disglobal.pdf');
+    Swal.fire({
+  title: "Venta con Disglobal",
+  text: "Planilla Unica generada exitosamente!",
+  icon: "success"
+});
+}
+
+ function generarCargoDisglobal() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ compress: false });    
+        
+    const tipoCliente = document.querySelector('input[name="tipoCliente"]:checked').value;
+    let representanteLegal = document.querySelector('input[name="nombresRepresentante"]').value ;
+    let cedulaRepresentante = document.querySelector('input[name="cedulaRepresentante"]').value ;
+    const razonSocial = document.querySelector('input[name="razonSocial"]').value ;
+    const tiporif = document.querySelector('select[name="tipoRif"]').value ;
+    let rif = document.querySelector('input[name="rif"]').value ;
+    const banco = document.querySelector('select[name="banco"]').value ;
+    const cuentaBancaria = document.querySelector('input[name="cuentaBancaria"]').value ;
+    let imgData= new Image();
+    imgData.src = 'img/disglobal/cargo_a_cuenta.png'; // Tu imagen en Base64
+    doc.addImage(imgData, 'PNG', 0, 0, 210, 297); // 210x297mm es A4
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'normal');    
+     
+    if (tipoCliente === 'natural') {
+        // Para persona natural, copiar datos de razón social al representante legal
+        representanteLegal = document.querySelector('input[name="razonSocial"]').value
+        cedulaRepresentante = rif.slice(0, -1);
+        doc.text(`${representanteLegal.toUpperCase()}`, 30, 82);  
+        doc.text(`${tiporif.toUpperCase()}-${cedulaRepresentante.toUpperCase()}`, 120, 88);  
+        doc.text(`${razonSocial.toUpperCase()}`, 85, 107);  
+        doc.text(`${tiporif.toUpperCase()}-${rif}`, 60, 113); 
+        doc.text(`${cuentaBancaria}`, 37, 124);
+               
+    }else {
+        doc.text(`${representanteLegal.toUpperCase()}`, 30, 82);  
+        doc.text(`${cedulaRepresentante.toUpperCase().slice(0,-1)}`, 120, 88);  
+        doc.text(`${razonSocial.toUpperCase()}`, 85, 107);  
+        doc.text(`${tiporif.toUpperCase()}-${rif}`, 60, 113); 
+        doc.text(`${cuentaBancaria}`, 37, 124);
+     
+
+    }
+
+    // Agregar firma si existe
+    const signatureCanvas = document.getElementById('signatureCanvas');
+    if (signatureCanvas && !isCanvasBlank(signatureCanvas)) {
+        const signatureData = signatureCanvas.toDataURL('image/png');
+        
+        doc.addImage(signatureData, 'PNG', 30, 200, 35, 10);
+        
+    }
+         doc.setFontSize(7);
+    doc.text(`${representanteLegal.toUpperCase()}`, 30, 220); 
+      doc.setFontSize(10);
+    doc.text(`${cedulaRepresentante.toUpperCase()}`, 30, 230); 
+    
+    
+      
+     doc.save('cargo_a_cuenta.pdf');
+     Swal.fire({
+  title: "Venta con Disglobal",
+  text: "Cargo a cuenta Generado exitosamente!",
+  icon: "success"
+});
+    
+    
+}   
+
+ function generarContratoDisglobal(tipoContrato) {
+    /* datos necesarios para el contrato */
+   
+     // Obtener datos del formulario
+    const tipoColocacion = document.querySelector('select[name="modeloNegocio"]').value;
+    const tipoCliente = document.querySelector('input[name="tipoCliente"]:checked').value;
+    const razonSocial = document.querySelector('input[name="razonSocial"]').value;
+    const tiporif = document.querySelector('select[name="tipoRif"]').value;
+    let rif = document.querySelector('input[name="rif"]').value;
+    const banco = document.querySelector('select[name="banco"]').value;
+   
+    const ciudad = document.querySelector('input[name="ciudad"]').value;
+    const estado = document.querySelector('input[name="estado"]').value;
+    
+    const direccionFiscal = document.querySelector('input[name="direccionFiscal"]').value;
+    const telefono = document.querySelector('input[name="telefono"]').value;
+    const correo = document.querySelector('input[name="correo"]').value;
+    const nombreRegistroMercantil = document.querySelector('input[name="nombreRegistroMercantil"]').value;
+    const fechaRegistro = document.querySelector('input[name="fechaRegistro"]').value;
+    const nroRegistro = document.querySelector('input[name="nroRegistro"]').value;    
+    const numeroTomo = document.querySelector('input[name="numeroTomo"]').value;
+    const clausulaDelegatoria = document.querySelector('input[name="clausulaDelegatoria"]').value;
+    const ciudadRegistro = document.querySelector('input[name="ciudadRegistro"]').value;
+    const estadoRegistro = document.querySelector('input[name="estadoRegistro"]').value;
+    let representanteLegal = document.querySelector('input[name="nombresRepresentante"]').value;
+    const cargoRepresentante = document.querySelector('input[name="cargoRepresentante"]').value;
+    const telefonoRepresentante = document.querySelector('input[name="telefonoRepresentante"]').value;
+    const correoRepresentante = document.querySelector('input[name="correoRepresentante"]').value;
+    let cedulaRepresentante = document.querySelector('input[name="cedulaRepresentante"]').value;
+    const nacionalidadRepresentante = document.querySelector('input[name="nacionalidadRepresentante"]').value;
+    const facultadoPor = document.querySelector('select[name="facultadoPor"]').value;
+    const modeloEquipo = document.querySelector('input[name="modeloEquipo"]').value;
+    const serialEquipo = document.querySelector('input[name="serialEquipo"]').value;
+    const serialSim = document.querySelector('input[name="serialSim"]').value;
+    const fechaActual = new Date();
+    const dia = fechaActual.getDate();       // const mes = fechaActual.getMonth() + 1;  // Mes (0-11, por eso sumamos 1)
+    const mes = fechaActual.toLocaleString('default', { month: 'long' });   
+    const anio = fechaActual.getFullYear();
+    let imgData1= new Image();
+    let imgData2= new Image();
+    let imgData3= new Image();
+    const signatureCanvas = document.getElementById('signatureCanvas');
+    const razonSocialAbrv = razonSocial.substring(0, 30).replace(/[^a-zA-Z0-9]/g, '_');
+    let fecha=fechaRegistro.split('-');
+    let diaR=fecha[2];
+    let mesR=fecha[1];
+    let anioR=fecha[0];
+
+    const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({ compress: false }); 
+
+    switch (tipoContrato) {
+        
+        
+        case 'natural':
+            // Generar contrato PN
+            
+            imgData1.src = 'img/disglobal/contrato_PN_1.png'; // Tu imagen en Base64
+            doc.addImage(imgData1, 'PNG', 0, 0, 216, 279); //carta es 216x279mm
+            doc.setFontSize(6);
+            doc.setFont('helvetica', 'normal');    
+            
+            
+                // Para persona natural, copiar datos de razón social al representante legal
+                representanteLegal = document.querySelector('input[name="razonSocial"]').value
+                cedulaRepresentante = rif.slice(0, -1);
+                doc.text(`${representanteLegal.toUpperCase()}`, 15, 29.5);  
+                doc.text(`${ciudad.toUpperCase()}`, 127, 29.5); 
+                doc.text(`${cedulaRepresentante.toUpperCase()}`, 15, 32);  
+                
+                doc.text(`${tiporif.toUpperCase()}-${rif}`, 80, 32); 
+                switch (banco) {
+                    case "plaza":
+                        doc.text(`CUARENTA Y CUATRO`, 120, 119.5);
+                        doc.text(`44$`, 195, 119.5);
+                        break;
+                    case "bancrecer":
+                        doc.text(`CUARENTA Y CINCO`, 120, 119.5);
+                        doc.text(`45$`, 195, 119.5);
+                        break;
+
+                    case "bnc":
+                        doc.text(`CUARENTA Y CINCO`, 120, 119.5);
+                        doc.text(`45$`, 195, 119.5);
+                        break;
+                    case "delsur":
+                        doc.text(`CUARENTA Y TRES`, 120, 119.5);
+                        doc.text(`43$`, 195, 119.5);
+                        break;
+                    case "bfc":
+                        doc.text(`CUARENTA Y CINCO`, 120, 119.5);
+                        doc.text(`45$`, 195, 119.5);
+                        break;
+
+                    case "bancamiga":
+                        doc.text(`1,5% al 1,8%`, 120, 119.5);
+                        doc.text(`---`, 195, 119.5);
+                        break;
+                
+                    default:
+                        doc.text(`CUARENTA`, 120, 119.5);
+                        doc.text(`40$`, 195, 119.5);
+                        break;
+                }
+                
+                    
+           doc.addPage();
+            
+            imgData2.src = 'img/disglobal/contrato_PN_2.png'; // Tu imagen en Base64
+            doc.addImage(imgData2, 'PNG', 0, 0, 216, 279);  
+            doc.setFontSize(6);
+            doc.setFont('helvetica', 'normal');
+
+            doc.text(`${direccionFiscal.toUpperCase()}`, 15, 164);
+            doc.text(`${telefono.toUpperCase()}`, 95, 164);
+             doc.text(`${representanteLegal.toUpperCase()}`, 146, 164); 
+            doc.text(`${correo.toUpperCase()}`, 15, 166.5);
+            doc.text(`${ciudad.toUpperCase()}`, 151, 169);
+            
+            
+            doc.text(` ${dia} `, 190, 169);
+            doc.text(`  ${mes.toUpperCase()} `, 20, 171.5);
+            doc.text(` ${anio}`, 54, 171.5);
+            doc.text(`${modeloEquipo.toUpperCase()}`, 30, 197.3);
+            doc.text(`${serialEquipo.toUpperCase()}`, 30, 199.8);
+            doc.text(`${serialSim.toUpperCase()}`, 30, 202.2);
+            doc.text(`${banco.toUpperCase()}`, 30, 204.9);
+            doc.setFontSize(5);
+            doc.text(`${ciudad.toUpperCase()}`, 79.8, 210);
+            doc.setFontSize(6);
+            doc.text(` ${dia} `, 102, 210);
+            doc.text(`  ${mes.toUpperCase()} `, 120, 210);
+            doc.text(` ${anio}`, 147.5, 210);
+
+            // Agregar firma si existe
+            
+            if (signatureCanvas && !isCanvasBlank(signatureCanvas)) {
+                const signatureData = signatureCanvas.toDataURL('image/png');
+                
+                doc.addImage(signatureData, 'PNG', 137, 176, 35, 10);
+                doc.addImage(signatureData, 'PNG', 137, 220, 35, 10);
+                
+            }
+               
+           
+            
+            
+            
+            // Guardar PDF
+            
+            doc.save(`contrato_PN_disglobal_${razonSocialAbrv || 'solicitud'}.pdf`);
+           // doc.save('contrato_PN.pdf');
+            Swal.fire({
+                title: "Venta con Disglobal",
+                text: "Contrato PN generado exitosamente!",
+                icon: "success"
+                });
+            break;
+        case 'juridica':
+            imgData1.src = 'img/disglobal/contrato_PJ_1.png'; // Tu imagen en Base64
+            doc.addImage(imgData1, 'PNG', 0, 0, 216, 279); //carta es 216x279mm
+            doc.setFontSize(6);
+            doc.setFont('helvetica', 'normal');    
+            
+            
+               
+               
+                doc.text(`${razonSocial.toUpperCase()}`, 30, 32);  
+                doc.text(`${ciudad.toUpperCase()}`, 151, 32); 
+                doc.text(`${nombreRegistroMercantil.toUpperCase()}`, 51, 34);
+                doc.setFontSize(4);
+                doc.text(`${estadoRegistro.toUpperCase()}`, 75, 34);
+                doc.setFontSize(6);
+                doc.text(`${diaR}`, 95, 34);
+                doc.text(`${obtenerMes(mesR)}`, 101, 34);
+                doc.text(`${anioR.slice(2,4)}`, 124.5, 34);
+                doc.text(`${nroRegistro}`, 135, 34.5);
+                doc.setFontSize(4);
+                doc.text(`${numeroTomo}`, 145.5, 34.5);
+                doc.setFontSize(6);
+                doc.text(`${rif}`, 30, 36.5); 
+                doc.text(`${cargoRepresentante.toUpperCase()}`, 83, 36.5);
+                doc.text(`${representanteLegal.toUpperCase()}`, 120, 36.5);
+                doc.text(`${nacionalidadRepresentante.toUpperCase()}`, 47, 39);
+                doc.text(`${ciudad.toUpperCase()}`, 106, 39);
+                doc.text(`${cedulaRepresentante.toUpperCase().slice(0,-1)}`, 30, 41.5); //se le quita un digito al rif para colocar la cedula del representante legal 
+                doc.text(`${cedulaRepresentante.toUpperCase()}`, 88, 41.5)
+                doc.text(`${facultadoPor.toUpperCase()}`, 124.5, 41.5);
+                switch (banco) {
+                    case "plaza":
+                        doc.text(`CUARENTA Y CUATRO`, 47, 153);
+                        doc.text(`44$`, 123, 153);
+                        break;
+                    case "bancrecer":
+                        doc.text(`CUARENTA Y CINCO`, 47, 153);
+                        doc.text(`45$`, 123, 153);
+                        break;
+
+                    case "bnc":
+                        doc.text(`CUARENTA Y CINCO`, 47, 153);
+                        doc.text(`45$`, 123, 153);
+                        break;
+                    case "delsur":
+                        doc.text(`CUARENTA Y TRES`, 47, 153);
+                        doc.text(`43$`, 123, 153);
+                        break;
+                    case "bfc":
+                        doc.text(`CUARENTA Y CINCO`, 47, 153);
+                        doc.text(`45$`, 123, 153);
+                        break;
+
+                    case "bancamiga":
+                        doc.text(`1,5% al 1,8%`, 47, 153);
+                        doc.text(`---`, 123, 153);
+                        break;
+                
+                    default:
+                        doc.text(`CUARENTA`, 47, 153);
+                        doc.text(`40$`, 123, 153);
+                        break;
+                }
+              
+                    
+           doc.addPage();
+            
+            imgData2.src = 'img/disglobal/contrato_PJ_2.png'; // Tu imagen en Base64
+            doc.addImage(imgData2, 'PNG', 0, 0, 216, 279);  
+
+          doc.addPage();
+            imgData3.src = 'img/disglobal/contrato_PJ_3.png'; // Tu imagen en Base64
+            doc.addImage(imgData3, 'PNG', 0, 0, 216, 279);  
+
+
+            doc.setFontSize(6);
+            doc.setFont('helvetica', 'normal');
+
+            doc.text(`${direccionFiscal.toUpperCase()}`, 30, 90);
+            doc.text(`${telefono.toUpperCase()}`, 138, 90);
+             doc.text(`${representanteLegal.toUpperCase()}`, 45, 93); 
+            doc.text(`${correo.toUpperCase()}`, 106, 93);
+            doc.text(`${ciudad.toUpperCase()}`, 132, 98.5);
+            doc.text(` ${dia} `, 164, 98.5);
+            doc.text(` ${mes.toUpperCase()} `, 30, 101);
+            doc.text(`${anio.toString().slice(3,4)}`, 70, 101);
+            doc.text(`${modeloEquipo.toUpperCase()}`, 47, 122.5);
+            doc.text(`${serialEquipo.toUpperCase()}`, 47, 125);
+            doc.text(`${serialSim.toUpperCase()}`, 47, 127.3);
+            doc.text(`${banco.toUpperCase()}`, 47, 129.7);
+            doc.setFontSize(3);
+            doc.text(`${ciudad.toUpperCase()}`, 100, 137);
+            doc.setFontSize(6);
+            doc.text(` ${dia} `, 115, 137);
+            doc.setFontSize(3);
+            doc.text(`  ${mes.toUpperCase()} `, 133, 137);
+            doc.setFontSize(6);
+            doc.text(` ### ${anio}`, 148, 137);
+
+            // Agregar firma si existe
+            
+            if (signatureCanvas && !isCanvasBlank(signatureCanvas)) {
+                const signatureData = signatureCanvas.toDataURL('image/png');
+                
+                doc.addImage(signatureData, 'PNG', 140, 105, 35, 10);
+                doc.addImage(signatureData, 'PNG', 140, 141, 35, 10);
+                
+            }
+                
+           
+            
+            
+            
+            // Guardar PDF
+            
+           doc.save(`contrato_PJ_disglobal_${razonSocialAbrv || 'solicitud'}.pdf`);
+           // doc.save('contrato_PN.pdf');
+            Swal.fire({
+                title: "Venta con Disglobal!",
+                text: "Contrato PJ generado exitosamente!",
+                icon: "success"
+                });
+            break;
+        case 'firma':
+             
+                imgData1.src = 'img/disglobal/contrato_FP_1.png'; // Tu imagen en Base64
+                doc.addImage(imgData1, 'PNG', 0, 0, 216, 279); //carta es 216x279mm
+                doc.setFontSize(6);
+                doc.setFont('helvetica', 'normal');    
+                
+                
+                    // Para persona natural, copiar datos de razón social al representante legal
+                
+                    doc.text(`${razonSocial.toUpperCase()}`, 15, 29.5);  
+                    doc.text(`${ciudad.toUpperCase()}`, 100, 29.5); 
+                    doc.text(`${nombreRegistroMercantil.toUpperCase()}`, 160, 29.5);
+                    doc.setFontSize(4);
+                    doc.text(`${estadoRegistro.toUpperCase()}`, 190.5, 29.5);
+                    doc.setFontSize(6);
+                    doc.text(`${cedulaRepresentante.toUpperCase().slice(0,-1)}`, 85, 34);  
+                    doc.text(`${diaR}`, 16.5, 31.5);
+                    doc.text(`${obtenerMes(mesR)}`, 25, 31.5);
+                    doc.text(`${anioR}`, 47, 31.5);
+                    doc.text(`${nroRegistro}`, 66, 31.5);
+                    doc.text(`${numeroTomo}`, 77, 31.5);
+                    doc.text(`${representanteLegal.toUpperCase()}`, 100, 31.5);
+                    doc.text(`${ciudad.toUpperCase()}`, 16, 34);
+
+                    doc.text(`${tiporif.toUpperCase()}-${rif}`, 141, 34); 
+                    switch (banco) {
+                    case "plaza":
+                        doc.text(`CUARENTA Y CUATRO`, 127, 122);
+                        doc.text(`44$`, 16, 124);
+                        break;
+                    case "bancrecer":
+                        doc.text(`CUARENTA Y CINCO`, 127, 122);
+                        doc.text(`45$`, 16, 124);
+                        break;
+
+                    case "bnc":
+                        doc.text(`CUARENTA Y CINCO`, 127, 122);
+                        doc.text(`45$`, 16, 124);
+                        break;
+                    case "delsur":
+                        doc.text(`CUARENTA Y TRES`, 127, 122);
+                        doc.text(`43$`, 16, 124);
+                        break;
+                    case "bfc":
+                        doc.text(`CUARENTA Y CINCO`, 127, 122);
+                        doc.text(`45$`, 16, 124);
+                        break;
+
+                    case "bancamiga":
+                        doc.text(`1,5% al 1,8%`, 127, 122);
+                        doc.text(`---`, 16, 124);
+                        break;
+                
+                    default:
+                        doc.text(`CUARENTA`, 127, 122);
+                        doc.text(`40$`, 16, 124);
+                        break;
+                }
+                    
+                        
+                doc.addPage();
+                
+                imgData2.src = 'img/disglobal/contrato_FP_2.png'; // Tu imagen en Base64
+                doc.addImage(imgData2, 'PNG', 0, 0, 216, 279);  
+                doc.setFontSize(6);
+                doc.setFont('helvetica', 'normal');
+
+                doc.text(`${direccionFiscal.toUpperCase()}`, 15, 166.5);
+                doc.text(`${telefono.toUpperCase()}`, 138, 166.5);
+                doc.text(`${representanteLegal.toUpperCase()}`, 15, 169); 
+                doc.text(`${correo.toUpperCase()}`, 69, 169);
+                doc.text(`${ciudad.toUpperCase()}`, 22, 173.8);
+                doc.text(` ${dia} `, 75, 173.8);
+                doc.text(`  ${mes.toUpperCase()} `, 95, 173.8);
+                doc.text(` ### ${anio}`, 128.5, 173.8);
+                doc.text(`${modeloEquipo.toUpperCase()}`, 30, 195);
+                doc.text(`${serialEquipo.toUpperCase()}`, 30, 197.5);
+                doc.text(`${serialSim.toUpperCase()}`, 30, 200);
+                doc.text(`${banco.toUpperCase()}`, 30, 202.4);
+                doc.setFontSize(4);
+                doc.text(`${ciudad.toUpperCase()}`, 80, 206.5);
+                doc.setFontSize(6);
+                doc.text(` ${dia} `, 102, 206.5);
+                doc.text(`  ${mes.toUpperCase()} `, 121, 206.5);
+                doc.text(` ### ${anio}`, 149, 206.5);
+
+                // Agregar firma si existe
+                
+                if (signatureCanvas && !isCanvasBlank(signatureCanvas)) {
+                    const signatureData = signatureCanvas.toDataURL('image/png');
+                    
+                    doc.addImage(signatureData, 'PNG', 140, 179, 35, 10);
+                    doc.addImage(signatureData, 'PNG', 140, 209, 35, 10);
+                    
+                }
+                    
+            
+                
+                
+                
+                // Guardar PDF
+                
+                 doc.save(`contrato_FP_disglobal_${razonSocialAbrv || 'solicitud'}.pdf`);
+            // doc.save('contrato_PN.pdf');
+                Swal.fire({
+                    title: "Venta con Disglobal",
+                    text: "Contrato FP generado exitosamente!",
+                    icon: "success"
+                    });
+            break;
+        case "comodato":
+                    imgData1.src = 'img/disglobal/contrato_comodato_1.png';
+                    doc.addImage(imgData1, 'PNG', 0, 0, 216, 279); //carta es 216x279mm
+                doc.setFontSize(6);
+                doc.setFont('helvetica', 'normal');
+
+                 doc.text(`${razonSocial.toUpperCase()}`, 68, 32.5);  
+                doc.text(`${ciudad.toUpperCase()}`, 151, 32.5); 
+                if (tipoCliente === 'natural') {
+                    doc.text(`----------`, 34, 35.5);
+                    //doc.setFontSize(4);
+                    doc.text(`-------`, 68, 35.5);
+                    doc.setFontSize(6);
+                    doc.text(`--------`, 102, 35.5);
+                    
+                    doc.text(`-------`, 126, 35.5);
+                    doc.text(`-----`, 141.3, 35.5);
+                    //doc.setFontSize(4);
+                    doc.text(`-----`, 155, 35.5);
+                    doc.setFontSize(6);
+                    doc.text(`${tiporif}-${rif}`, 30, 38.5); 
+                    doc.text(`------`, 68, 38.5);
+                    doc.text(`----------`, 106, 38.5);
+                    doc.text(`---------`, 145, 38.5);
+                    doc.text(`${ciudad.toUpperCase()}`, 30, 41.5);
+                    doc.text(`${tiporif}-${rif.toUpperCase().slice(0,-1)}`, 89, 41.5); //se le quita un digito al rif para colocar la cedula del representante legal 
+                    doc.text(`${tiporif}-${rif}`, 147, 41.5)
+                    doc.text(`-------------`, 30, 44.5);
+                }else {
+                    doc.text(`${nombreRegistroMercantil.toUpperCase()}`, 34, 35.5);
+                    //doc.setFontSize(4);
+                    doc.text(`${estadoRegistro.toUpperCase()}`, 68, 35.5);
+                    doc.setFontSize(6);
+                    doc.text(`${diaR} de ${obtenerMes(mesR).toUpperCase()}`, 102, 35.5);
+                    
+                    doc.text(`${anioR}`, 126, 35.5);
+                    doc.text(`${nroRegistro}`, 141.3, 35.5);
+                    //doc.setFontSize(4);
+                    doc.text(`${numeroTomo}`, 155, 35.5);
+                    doc.setFontSize(6);
+                    doc.text(`${tiporif}-${rif}`, 30, 38.5); 
+                    doc.text(`${cargoRepresentante.toUpperCase()}`, 68, 38.5);
+                    doc.text(`${representanteLegal.toUpperCase()}`, 106, 38.5);
+                    doc.text(`${nacionalidadRepresentante.toUpperCase()}`, 145, 38.5);
+                    doc.text(`${ciudad.toUpperCase()}`, 30, 41.5);
+                    doc.text(`${cedulaRepresentante.toUpperCase().slice(0,-1)}`, 88, 41.5); //se le quita un digito al rif para colocar la cedula del representante legal 
+                    doc.text(`${cedulaRepresentante.toUpperCase()}`, 147, 41.5)
+                    doc.text(`${facultadoPor.toUpperCase()}`, 30, 44.5);
+                    }
+                    switch (banco) {
+                        case "plaza":
+                            doc.text(`CUARENTA Y CUATRO`, 47, 153);
+                            doc.text(`44$`, 123, 153);
+                            break;
+                        case "bancrecer":
+                            doc.text(`CUARENTA Y CINCO`, 47, 153);
+                            doc.text(`45$`, 123, 153);
+                            break;
+
+                        case "bnc":
+                            doc.text(`CUARENTA Y CINCO`, 47, 153);
+                            doc.text(`45$`, 123, 153);
+                            break;
+                        case "delsur":
+                            doc.text(`CUARENTA Y TRES`, 47, 153);
+                            doc.text(`43$`, 123, 153);
+                            break;
+                        case "bfc":
+                            doc.text(`CUARENTA Y CINCO`, 47, 153);
+                            doc.text(`45$`, 123, 153);
+                            break;
+
+                        case "bancamiga":
+                            doc.text(`1,5% al 1,8%`, 47, 153);
+                            doc.text(`---`, 123, 153);
+                            break;
+                    
+                        default:
+                            doc.text(`CUARENTA DOLARES`, 85, 159);
+                            //doc.text(`40$`, 123, 153);
+                            break;
+                }
+              
+                   
+           doc.addPage();
+            
+            imgData2.src = 'img/disglobal/contrato_comodato_2.png'; // Tu imagen en Base64
+            doc.addImage(imgData2, 'PNG', 0, 0, 216, 279);  
+
+          doc.addPage();
+            imgData3.src = 'img/disglobal/contrato_comodato_3.png'; // Tu imagen en Base64
+            doc.addImage(imgData3, 'PNG', 0, 0, 216, 279);  
+
+
+            doc.setFontSize(6);
+            doc.setFont('helvetica', 'normal');
+                if (tipoCliente === 'natural') {
+                    representanteLegal = document.querySelector('input[name="razonSocial"]').value;
+                }
+
+               
+            doc.text(`${direccionFiscal.toUpperCase()}`, 105, 82.5);
+            doc.text(`${telefono.toUpperCase()}`, 40, 85.5);
+             doc.text(`${representanteLegal.toUpperCase()}`, 100, 85.5); 
+            doc.text(`${correo.toUpperCase()}`, 30, 88.5);
+            doc.text(`${ciudad.toUpperCase()}`, 152, 91.5);
+            doc.text(` ${dia} `, 183, 91.5);
+            doc.text(` ${mes.toUpperCase()} `, 35, 94.5);
+            doc.text(`${anio.toString()}`, 68, 94.5);
+            doc.text(`${modeloEquipo.toUpperCase()}`, 45, 125.5);
+            doc.text(`${serialEquipo.toUpperCase()}`, 45, 128);
+            doc.text(`${serialSim.toUpperCase()}`, 45, 130.5);
+            doc.text(`${banco.toUpperCase()}`, 45, 133);
+            
+            doc.text(`${ciudad.toUpperCase()}`, 100, 142);
+            doc.setFontSize(6);
+            doc.text(` ${dia} `, 133, 142);
+            
+            doc.text(`  ${mes.toUpperCase()} `, 160, 142);
+            doc.setFontSize(6);
+            doc.text(` ${anio}`, 185, 142);
+             
+            // Agregar firma si existe
+            
+            if (signatureCanvas && !isCanvasBlank(signatureCanvas)) {
+                const signatureData = signatureCanvas.toDataURL('image/png');
+                
+                doc.addImage(signatureData, 'PNG', 140, 104, 35, 10);
+                doc.addImage(signatureData, 'PNG', 140, 151, 35, 10);
+                
+            }
+                
+           
+            
+            
+            
+            // Guardar PDF
+            
+            doc.save(`contrato_comodato_disglobal_${razonSocialAbrv || 'solicitud'}.pdf`);
+           // doc.save('contrato_PN.pdf');
+            Swal.fire({
+                title: "Venta con Disglobal!",
+                text: "Contrato comodato generado exitosamente!",
+                icon: "success"
+                });
+                
+        default:
+            break;
+    }
+}
+
+// Generar PDF para Vepagos
+function generarPDFVepagos() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ compress: false });
+    
+    // Obtener datos del formulario
+    const tipoColocacion = document.querySelector('select[name="tipoColocacion"]').value;
+    const tipoCliente = document.querySelector('input[name="tipoCliente"]:checked').value;
+    const razonSocial = document.querySelector('input[name="razonSocial"]').value;
+    const tiporif = document.querySelector('select[name="tipoRif"]').value;
+    let rif = document.querySelector('input[name="rif"]').value;
+    const banco = document.querySelector('select[name="banco"]').value;
+    let cuentaBancaria = document.querySelector('input[name="cuentaBancaria"]').value;
+    const codigoAfiliado =document.querySelector('input[name="codigoAfiliado"]').value;
+    const codOficina =document.querySelector('input[name="codOficina"]').value;
+    const regional =document.querySelector('input[name="regional"]').value;
+    const actividadEconomica = document.querySelector('input[name="actividadEconomica"]').value;
+    const ciudad = document.querySelector('input[name="ciudad"]').value;
+    const estado = document.querySelector('input[name="estado"]').value;
+    
+    const telefono = document.querySelector('input[name="telefono"]').value;
+    const correo = document.querySelector('input[name="correo"]').value;
+    
+    let representanteLegal = document.querySelector('input[name="nombresRepresentante"]').value;
+    
+   
+    
+    let cedulaRepresentante = document.querySelector('input[name="cedulaRepresentante"]').value;
+    const modeloEquipo = document.querySelector('select[name="modeloEquipo"]').value;
+    const serialEquipo = document.querySelector('input[name="serialEquipo"]').value;
+  
+    const operadora = document.querySelector('select[name="operadora"]').value;
+    const metodoPago = document.querySelector('select[name="metodoPago"]').value;
+    const monto = document.querySelector('input[name="monto"]').value;
+    const plazoFinanciamiento = document.querySelector('input[name="plazoFinanciamiento"]').value;
+    const montoRestante = document.querySelector('input[name="montoRestante"]').value;
+    const cuotaDiaria = document.querySelector('input[name="cuotaDiaria"]').value;
+    const planServicio = document.querySelector('select[name="planServicio"]').value;
+    const signatureCanvas = document.getElementById('signatureCanvas');
+    const fechaActual = new Date();
+    const dia = fechaActual.getDate();       // Día del mes (1-31)
+    const mes = fechaActual.getMonth() + 1;  // Mes (0-11, por eso sumamos 1)
+    const anio = fechaActual.getFullYear();
+    // Configurar documento
+    let imgData= new Image();
+    let imgData2= new Image();
+    let imgData3= new Image();
+
+
+
+// RECIBO DE PAGO VEPAGOS
+
+    imgData.src = 'img/vepagos/PLANILLA_RECIBO_VENTAS.png'; // Tu imagen en Base64
+    doc.addImage(imgData, 'PNG', 0, 0, 210, 297); // 210x297mm es A4
+    doc.setFont('helvetica');
+    doc.setFontSize(11);
+
+    doc.text(`  ${String(dia).padStart(2, '0')}/${String(mes).padStart(2, '0')}/${anio}`, 160, 33.5, );
+    doc.setFont('helvetica', 'bold');
+    
+    
+    
+    
+    doc.setFont('helvetica', 'normal');
+    doc.text(`${razonSocial.toUpperCase()}`, 57, 39.5);
+    if (tipoCliente === 'natural'){
+        doc.text(`x`,36.5,43.5)
+        representanteLegal = document.querySelector('input[name="razonSocial"]').value
+        cedulaRepresentante = rif.slice(0, -1);
+        doc.setFontSize(9);
+        doc.text(`${representanteLegal.toUpperCase()}`, 135, 45);  
+        doc.setFontSize(12);
+        doc.text(`${tiporif.toUpperCase()}-${cedulaRepresentante.toUpperCase()}`, 70, 50.5); 
+    } else{
+        doc.text(`x`,28.5,43.5)
+        doc.text(`${representanteLegal.toUpperCase()}`, 135, 45);  
+        doc.text(`${cedulaRepresentante.toUpperCase()}`, 70, 50.5);  
+    }
+
+    doc.text(` ${rif}`, 43, 45);
+    doc.text(` ${codigoAfiliado}`, 145, 50.5);
+     doc.text(`${correo.toUpperCase().slice(0, 30)}`, 50, 56);
+     doc.text(`${telefono}`, 135, 56);
+     cuentaBancaria.replace(/[\s-]+/g, '');
+    let distancia = 50; // Posición inicial para la primera letra
+    for (let caracter of cuentaBancaria) {
+
+    doc.text(` ${caracter}`, distancia, 61.8); 
+    distancia += 7.10; // Incrementar la distancia para la siguiente letra
+    }
+    doc.text(`${codOficina}`, 78, 67.5);
+
+    switch (planServicio) {
+        case "vx1":
+            doc.text(`x`,52,84.5)
+            break;
+        case "vx2":
+
+            doc.text(`x`,64.2,84.5)
+            break;
+        case "vx3":
+
+            doc.text(`x`,76.5,84.5)
+            break;
+        default:
+            break;
+    }
+
+     switch (operadora) {
+        case "movistar":
+            doc.text("X", 125, 84.5 );
+            break;
+        case "digitel":
+            doc.text("X", 140, 84.5 );
+            break;
+        case "movilnet":
+            doc.text("X", 158, 84.5 );
+            break;
+        case "ninguna":
+            doc.setFontSize(9);
+            doc.text("Ninguna X", 160, 84.5 );
+            break;    
+        default:
+            break;
+    }
+    doc.setFontSize(12);
+    switch (banco) {
+        case "venezuela":
+            doc.text(`x`,48.5,90);
+            break;
+        case "mercantil":
+            doc.text(`x`,68,90);
+            break;
+        case "banplus":
+             doc.text(`x`,86.5,90);
+            break;
+        case "tesoro":
+             doc.text(`x`,105,90);
+            break;
+        case "fondocomun":
+             doc.text(`x`,133,90);
+            break;
+        case "bdt":
+             doc.text(`x`,149,90);
+            break;
+        case "plaza":
+             doc.text(`x`,166,90);
+            break;
+        case "activo":
+            doc.text(`x`,28.7,96);
+            break;
+        case "delsur":
+            doc.text(`x`,46.8,96);
+            break;
+        case "bancrecer":
+            doc.text(`x`,70,96);
+            break;
+        case "r4":
+            doc.text(`x`,80.5,96);
+            break;
+        case "100banco":
+            doc.text(`x`,106.5,96);
+            break;
+        case "provincial":
+            doc.text(`x`,129.5,96);
+            break;
+        case "bancaribe":
+            doc.text(`x`,153.5,96);
+            break;     
+        case "banesco":
+            doc.setFontSize(9);
+            doc.text(`Banesco X`,159.5,96);
+            doc.setFontSize(12);
+            break;            
+
+        default:
+            break;
+    }
+     
+    switch (modeloEquipo) {
+        case "7210":
+            doc.text(`x`,39.5,101.5);
+            break;
+        case "A50":
+               doc.text(`x`,53.5,101.5);     
+                    break;
+        case "A920":
+                doc.text(`x`,69,101.5);    
+                    break;
+        case "A8900":
+                doc.setFontSize(9);
+                doc.text(`A8900 X`,162,102); 
+                doc.setFontSize(12);   
+                    break;
+        case "T1":
+               doc.text(`x`,92.5,101.5);     
+                    break;
+        case "6210":
+                doc.text(`x`,106,101.5);    
+                    break;
+        case "8210":
+                doc.setFontSize(9);
+                doc.text(`8210 X`,162,102); 
+                doc.setFontSize(12);   
+                    break;
+        case "9220":
+                doc.text(`x`,118.5,101.5);    
+                    break;
+        case "Q2":
+                doc.text(`x`,138.5,101.5);    
+                    break;
+        case "Q3":
+                doc.text(`x`,157.5,101.5);
+                    break;            
+    
+        default:
+            break;
+    }
+
+    switch (metodoPago) {
+        case "efectivo":
+            doc.text(`x`,58.5,115.5)
+            break;
+        case "transferencia":
+                 doc.text(`x`,86,115.5)   
+                    break;
+        case "debito":
+                 doc.text(`x`,105.5,115.5)   
+                    break;
+        case "pago_movil":
+                 doc.text(`x`,131,115.5)   
+                    break;
+        case "banesco_panama":
+                    doc.text(`x`,46.5,120.5)
+                    break;
+        case "zelle":
+                    doc.setFontSize(9);
+                    doc.text(`Zelle X`,52,120.5)
+                    doc.setFontSize(12);
+                    break;
+        default:
+            break;
+    }
+
+
+    doc.text(`${monto}`, 163, 116);
+    
+    
+    
+    
+    // Agregar firma
+    
+    if (signatureCanvas && !isCanvasBlank(signatureCanvas)) {
+        const signatureData = signatureCanvas.toDataURL('image/png');
+        doc.addImage(signatureData, 'PNG', 129, 135, 35, 10);
+        //doc.text('Firma', 20, 190);
+    }
+
+//AUTORIZACIONDE-DOMICILIACION-VEPAGOS
+        doc.addPage();
+            
+            imgData2.src = 'img/vepagos/AUTORIZACIONDE-DOMICILIACION-VEPAGOS.PNG'; // Tu imagen en Base64
+            doc.addImage(imgData2, 'PNG', 0, 0, 216, 279); 
+        doc.setFontSize(12);
+
+     if (tipoCliente === 'natural'){
+        
+        representanteLegal = document.querySelector('input[name="razonSocial"]').value
+        cedulaRepresentante = rif.slice(0, -1);
+        
+        doc.text(`${representanteLegal.toUpperCase()}`, 38, 65);  
+        
+        doc.text(`${tiporif.toUpperCase()}-${cedulaRepresentante.toUpperCase()}`, 65, 71.5); 
+        doc.text(`${representanteLegal.toUpperCase()}`, 34, 85); 
+        doc.text(`${tiporif.toUpperCase()}-${rif}`, 135, 85);
+    } else{
+        
+        doc.text(`${representanteLegal.toUpperCase()}`, 38, 65);   
+        doc.text(`${cedulaRepresentante.toUpperCase()}`, 65, 71.5);  
+        doc.text(`${razonSocial.toUpperCase()}`, 34, 85); 
+        doc.text(`${tiporif.toUpperCase()}-${rif}`, 135, 85);
+    }
+    doc.text(`${banco.toUpperCase()}`, 50, 91);  
+    cuentaBancaria = document.querySelector('input[name="cuentaBancaria"]').value;
+    doc.text(`${cuentaBancaria}`, 100, 98);  
+    doc.text(`  ${String(dia).padStart(2, '0')}`, 50, 141, );
+    doc.text(`  ${obtenerMes(mes)}`, 70, 141 );
+    doc.text(`  ${String(anio).slice(2,4)}`, 138, 141, );
+
+    if (signatureCanvas && !isCanvasBlank(signatureCanvas)) {
+        const signatureData = signatureCanvas.toDataURL('image/png');
+        doc.addImage(signatureData, 'PNG', 50, 180, 35, 10);
+        
+    }
+
+    
+    // Si es financiado, generar adendum
+    if (tipoColocacion === 'financiado') {
+        doc.addPage(); 
+        imgData3.src = 'img/vepagos/ADENDUM_INICIAL_60.png'; // Tu imagen en Base64
+            doc.addImage(imgData3, 'PNG', 0, 0, 216, 279); 
+        doc.setFontSize(12);
+        
+        const plazo = document.querySelector('input[name="plazoFinanciamiento"]').value;
+        const montoRestante = document.querySelector('input[name="montoRestante"]').value;
+        const cuotaDiaria = document.querySelector('input[name="cuotaDiaria"]').value;
+        
+        doc.setFontSize(12);
+        doc.text(`${razonSocial.toUpperCase()}`, 102, 62);
+       // doc.text(`${fechaActual}`, 34, 80);
+        doc.text(`  ${String(dia).padStart(2, '0')}/${String(mes).padStart(2, '0')}/${anio}`, 60, 82 );
+        //doc.text(`${plazo}`, 20, 40);
+        doc.text(`USD ${montoRestante}`, 140, 138);
+        doc.text(`USD ${cuotaDiaria}`, 60, 158);
+        doc.setFontSize(9);
+        doc.text(`${ciudad.toUpperCase()}`, 55, 220);
+        doc.text(`  ${String(dia).padStart(2, '0')}`, 98, 220 );
+        doc.text(`  ${obtenerMes(mes)}`, 140, 220 );
+        doc.text(`  ${String(anio).slice(2,4)}`, 175, 220 );
+        //doc.text(`${plazo}`, 20, 40);
+
+
+         if (signatureCanvas && !isCanvasBlank(signatureCanvas)) {
+        const signatureData = signatureCanvas.toDataURL('image/png');
+        doc.addImage(signatureData, 'PNG', 160, 240, 35, 10);
+        
+    }
+    }
+
+   
+
+     const razonSocialAbrv = razonSocial.substring(0, 30).replace(/[^a-zA-Z0-9]/g, '_');
+    doc.save(`recibo_vepagos_${razonSocialAbrv || 'solicitud'}.pdf`);
+     Swal.fire({
+  title: "Venta con Vepagos!",
+  text: "Recibo y planillas generadas exitosamente!",
+  icon: "success"
+});
+}
+
+//Generar PDF para Master
+function generarPDFMaster1() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ compress: false });
+    let imgData1= new Image();
+            imgData1.src = 'img/master/planilla_de_solicitud.png'; // Tu imagen en Base64
+            doc.addImage(imgData1, 'PNG', 0, 0, 216, 279); //carta es 216x279mm
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');   
+      //const tipoColocacion = document.querySelector('select[name="modeloNegocio"]').value;
+    const tipoCliente = document.querySelector('input[name="tipoCliente"]:checked').value;
+    const plataforma= document.getElementById('plataforma').value;
+    const razonSocial = document.querySelector('input[name="razonSocial"]').value;
+    const tiporif = document.querySelector('select[name="tipoRif"]').value;
+    let rif = document.querySelector('input[name="rif"]').value;
+    const banco = document.querySelector('select[name="banco"]').value;
+    const codigoAfiliacion = document.querySelector('input[name="codigoAfiliacion"]').value;
+    let cuentaBancaria = document.querySelector('input[name="cuentaBancaria"]').value;
+    const actividadEconomica = document.querySelector('input[name="actividadEconomica"]').value;
+    const ciudad = document.querySelector('input[name="ciudad"]').value;
+    const estado = document.querySelector('input[name="estado"]').value;
+    const municipio = document.querySelector('input[name="municipio"]').value;
+    const codigoPostal = document.querySelector('input[name="codigoPostal"]').value;
+    const direccionFiscal = document.querySelector('input[name="direccionFiscal"]').value;
+    const telefono = document.querySelector('input[name="telefono"]').value;
+    const correo = document.querySelector('input[name="correo"]').value;
+    const nombreRegistroMercantil = document.querySelector('input[name="nombreRegistroMercantil"]').value;
+    const fechaRegistro = document.querySelector('input[name="fechaRegistro"]').value;
+    const nroRegistro = document.querySelector('input[name="nroRegistro"]').value;    
+    const numeroTomo = document.querySelector('input[name="numeroTomo"]').value;
+    const clausulaDelegatoria = document.querySelector('input[name="clausulaDelegatoria"]').value;
+    const ciudadRegistro = document.querySelector('input[name="ciudadRegistro"]').value;
+   /* const representanteLegal = tipoCliente === 'natural' ? razonSocial : document.querySelector('input[name="nombresRepresentante"]').value ;
+    const cargoRepresentante = tipoCliente === 'natural' ? "Dueño" : document.querySelector('input[name="cargoRepresentante"]').value;
+    const telefonoRepresentante =tipoCliente === 'natural' ? telefono : document.querySelector('input[name="telefonoRepresentante"]').value;
+    const correoRepresentante = tipoCliente === 'natural' ? correo :document.querySelector('input[name="correoRepresentante"]').value;
+    const cedulaRepresentante = tipoCliente === 'natural' ? rif.slice(0, -1) : document.querySelector('input[name="cedulaRepresentante"]').value;*/
+    const representanteLegal = document.querySelector('input[name="nombresRepresentante"]').value;
+    const cargoRepresentante = document.querySelector('input[name="cargoRepresentante"]').value;
+    const telefonoRepresentante = document.querySelector('input[name="telefonoRepresentante"]').value;
+    const correoRepresentante = document.querySelector('input[name="correoRepresentante"]').value;
+    const cedulaRepresentante = document.querySelector('input[name="cedulaRepresentante"]').value;
+    const nacionalidadRepresentante = document.querySelector('input[name="nacionalidadRepresentante"]').value;
+    const modeloEquipo = document.querySelector('select[name="modeloEquipo"]').value;
+    const cantidadEquipo = document.querySelector('input[name="cantidadEquipo"]').value;
+    const incluyeSim = document.querySelector('input[name="incluyeSim"]:checked').value;
+    const operadora = document.querySelector('select[name="operadora"]').value;
+    const facultadoPor = document.querySelector('select[name="facultadoPor"]').value;
+    const serialEquipo = document.querySelector('input[name="serialEquipo"]').value;
+    const serialSim = document.querySelector('input[name="serialSim"]').value;
+    const formaPago = document.querySelector('input[name="formaPago"]').value;
+   const fechaActual = new Date();
+
+    const dia = fechaActual.getDate();       // Día del mes (1-31)
+    const mes = fechaActual.getMonth() + 1;  // Mes (0-11, por eso sumamos 1)
+    const anio = fechaActual.getFullYear();
+/*   ######################################################
+    Aquí iría el código para escribir cada campo en la posición correcta de la planilla
+    ##############################################3#########*/
+        doc.text(`${String(dia).padStart(2, '0')}/ ${String(mes).padStart(2, '0')}/ ${anio}`, 185, 35.5 );
+        
+    
+    doc.text("X", 193, 40, );
+
+    doc.text(` ${banco.toUpperCase()}`, 31, 60);
+   
+    let distancia = 69.5; // Posición inicial para la primera letra
+    for (let caracter of codigoAfiliacion) {
+
+    doc.text(` ${caracter}`, distancia, 60); 
+    distancia += 4.34; // Incrementar la distancia para la siguiente letra
+    }
+    cuentaBancaria.replace(/[\s-]+/g, '');
+     distancia = 108.5; // Posición inicial para la primera letra
+    for (let caracter of cuentaBancaria) {
+
+    doc.text(` ${caracter}`, distancia, 60); 
+    distancia += 4.34; // Incrementar la distancia para la siguiente letra
+    }
+    doc.text(` ${tiporif}`, 21, 72);
+
+    //doc.text(`RIF: ${rif}`, 18, 66);
+    rif = rif.replace(/[\s-a-zA-Z]/g, '');
+        distancia = 26.7; // Posición inicial para la primera letra
+    for (let caracter of rif) {
+
+    doc.text(` ${caracter}`, distancia, 72); 
+    distancia += 4.34; // Incrementar la distancia para la siguiente letra
+    }
+    
+    doc.text(`${razonSocial.toUpperCase().slice(0, 30)}`, 69, 72);
+
+    doc.text(`${actividadEconomica.toUpperCase().slice(0, 25)}`, 140, 72);
+    doc.text(`${ciudad.toUpperCase().slice(0, 25)}`, 21, 80);
+    doc.text(`${estado.toUpperCase().slice(0, 25)}`, 75, 80);
+    doc.text(`${municipio.toUpperCase().slice(0, 25)}`, 128, 80);
+    doc.text(`${codigoPostal.toUpperCase().slice(0, 6)}`, 180, 80);
+    doc.text(`${direccionFiscal.toUpperCase().slice(0, 100)}`, 21, 88);
+    //doc.text(`${telefono.toUpperCase().slice(0, 4)}`, 19, 100);
+    doc.text(`${telefono.toUpperCase().slice(0, 11)}`, 21, 105);
+    doc.text(`${correo.toUpperCase().slice(0, 30)}`, 132, 105);
+    doc.text(`${nombreRegistroMercantil.toUpperCase().slice(0, 50)}`, 21, 120);
+    let fechareg = fechaRegistro.replace(/^(\d{4})-(\d{2})-(\d{2})$/g,'$3/$2/$1');
+    
+
+    //const fechaFormateada = `${diaR}/${mesR}/${anioR}`;
+    doc.text(`${fechareg}`, 21, 128);
+    doc.text(`${nroRegistro.toUpperCase().slice(0, 30)}`, 45, 128);    
+    doc.text(`${numeroTomo.toUpperCase().slice(0, 30)}`, 93, 128);
+    doc.text(`${clausulaDelegatoria.toUpperCase().slice(0, 30)}`, 136, 128);
+    doc.text(`${ciudadRegistro.toUpperCase().slice(0, 30)}`, 160, 128);
+    
+
+       
+   
+         
+       doc.setFontSize(8);
+        doc.text(`${cedulaRepresentante.replace(/[\s-a-zA-Z]/g, '').slice(0, -1)}`, 21, 142);
+        doc.text(`${representanteLegal.toUpperCase().slice(0, 45)}`, 45, 142);
+        doc.text(`${cargoRepresentante.toUpperCase().slice(0, 30)}`, 93, 142);
+        doc.text(`${telefonoRepresentante.toUpperCase().slice(0, 11)}`, 126, 142);
+        doc.text(`${correoRepresentante.toUpperCase().slice(0, 30)}`, 153, 142);
+   
+    
+    doc.text(`${modeloEquipo.toUpperCase().slice(0, 30)}`, 22, 182);
+    doc.text(`${cantidadEquipo.toUpperCase().slice(0, 5)}`, 72, 181);
+
+        switch (incluyeSim) {
+        case "si":
+            switch (operadora) {
+                case "movistar":
+                    doc.text("X", 126, 181 );
+                    break;
+                case "digitel":
+                    doc.text("X", 88, 181 );
+                    break;
+                case "movilnet":
+                    doc.text("X", 110, 151 );
+                    break;
+                default:
+                    break;
+            }
+            break;
+        
+        default:
+            break;
+    }
+
+         doc.text(`${representanteLegal.toUpperCase().slice(0, 45)}, ${cedulaRepresentante.replace(/[\s-a-zA-Z]/g, '').slice(0, -1)}`, 23, 253);
+        doc.text(`${ciudad.toUpperCase().slice(0, 25)}, ${String(dia).padStart(2, '0')}/ ${String(mes).padStart(2, '0')}/ ${anio}`, 148, 255);
+        
+        // Agregar firma si existe
+    const signatureCanvas = document.getElementById('signatureCanvas');
+    if (signatureCanvas && !isCanvasBlank(signatureCanvas)) {
+        const signatureData = signatureCanvas.toDataURL('image/png');
+       // doc.text(`${razonSocial.toUpperCase().slice(0, 30)}`, 65, 245);
+        //doc.text(`${rif.slice(0, 8)}`, 68, 256);
+        doc.addImage(signatureData, 'PNG', 72, 250, 35, 10);
+        
+    }
+    
+   // ############## cargo a cuenta ##################
+   doc.addPage();
+     let imgData2= new Image();
+    imgData2.src = 'img/master/cargo_a_cuenta.png'; // Tu imagen en Base64
+    doc.addImage(imgData2, 'PNG', 0, 0, 210, 297); // 210x297mm es A4
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'normal');
+
+    doc.text(`${representanteLegal.toUpperCase()}`, 65, 65);
+    doc.text(`${nacionalidadRepresentante.toUpperCase()}`, 30, 73.5);
+    doc.text(`${cedulaRepresentante.replace(/[\s-a-zA-Z]/g, '').slice(0, -1)}`, 160, 80.5);
+    doc.text(`${ciudad.toUpperCase()}`, 30, 80.5);
+    doc.text(`${razonSocial.toUpperCase()}`, 55, 103);
+    doc.text(`${tiporif.toUpperCase()}-${rif}`, 87, 110.5);
+    doc.setFontSize(10);
+    doc.text(`${cuentaBancaria}`, 50, 125);
+
+
+    
+    if (signatureCanvas && !isCanvasBlank(signatureCanvas)) {
+        const signatureData = signatureCanvas.toDataURL('image/png');
+       // doc.text(`${razonSocial.toUpperCase().slice(0, 30)}`, 65, 245);
+        //doc.text(`${rif.slice(0, 8)}`, 68, 256);
+        doc.addImage(signatureData, 'PNG', 33, 208, 35, 10);
+        
+    }
+
+
+    doc.setFontSize(9);
+    doc.text(`${representanteLegal.toUpperCase()}`, 32, 230);
+    doc.setFontSize(11);
+    doc.text(`${cedulaRepresentante.slice(0, 10)}`, 33, 237);
+
+
+
+   // ############## contrato ##################
+   
+   doc.addPage();
+     let imgData3= new Image();
+    imgData3.src = 'img/master/CTTO1.png'; // Tu imagen en Base64
+    doc.addImage(imgData3, 'PNG', 0, 0, 210, 297); // 210x297mm es A4
+    doc.setFontSize(7);
+    doc.setFont('helvetica', 'normal');
+    //doc.setTextColor("#ff0000"); 
+    doc.setTextColor(255, 0, 0); 
+    doc.text(`${razonSocial.toUpperCase()}`, 124, 37);
+    doc.text(`${ciudad.toUpperCase()}`, 10, 41);
+    doc.text(`${nombreRegistroMercantil.toUpperCase() || '--------'}`, 75, 41);
+    doc.text(`${ciudadRegistro.toUpperCase()|| '--------'}`, 94, 41);
+    doc.text(`${fechareg.slice(0, 2)} de ${obtenerMes(fechareg.slice(3,5))}`, 130, 41);
+    doc.text(`${fechareg.slice(6, 10)}`, 157, 41);
+
+    doc.text(`${nroRegistro.toUpperCase()|| '--------'}`, 178, 41);    
+    doc.text(`${numeroTomo.toUpperCase()|| '--------'}`, 189.5, 41);
+    doc.text(`${tiporif.toUpperCase()}-${rif}`, 96, 45.5);
+    doc.text(`${cargoRepresentante.toUpperCase()}`, 165, 45.5);
+    doc.text(`${representanteLegal.toUpperCase()}`, 10, 50);
+    doc.text(`${nacionalidadRepresentante.toUpperCase()}`, 65, 50);
+    doc.text(`${ciudad.toUpperCase()}`, 120, 50);
+    doc.text(`${cedulaRepresentante.replace(/[\s-a-zA-Z]/g, '').slice(0, 10)}`, 186, 50);
+    
+    doc.text(`${cedulaRepresentante}`, 102, 54.5);
+    doc.text(`${facultadoPor.toUpperCase()}`, 152, 54.5);
+    
+
+
+
+
+
+
+
+
+     doc.addPage();
+     let imgData4= new Image();
+    imgData4.src = 'img/master/CTTO2.png'; // Tu imagen en Base64
+    doc.addImage(imgData4, 'PNG', 0, 0, 210, 297); // 210x297mm es A4
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+
+    doc.text(`CUARENTA`, 28, 90.5);
+    doc.text(`40`, 124, 90.5);
+
+
+
+
+
+
+
+
+
+
+
+     doc.addPage();
+     let imgData5= new Image();
+    imgData5.src = 'img/master/CTTO3.png'; // Tu imagen en Base64
+    doc.addImage(imgData5, 'PNG', 0, 0, 210, 297); // 210x297mm es A4
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`${direccionFiscal.toUpperCase()}`, 28, 37);
+    doc.text(`${telefonoRepresentante.toUpperCase().slice(0, 11)}`, 28, 41);
+    doc.text(`${representanteLegal.toUpperCase()}`, 28, 45.5);
+    doc.text(`${correoRepresentante.toUpperCase().slice(0, 30)}`, 43, 50);
+    doc.setFontSize(8);
+    doc.text(`${dia}`, 134, 63.5);
+    doc.text(`${obtenerMes(mes)}`, 159, 63.5);
+    doc.text(`${String(anio).slice(2,4)}`, 181.5, 63.5);
+      
+
+    if (signatureCanvas && !isCanvasBlank(signatureCanvas)) {
+        const signatureData = signatureCanvas.toDataURL('image/png');
+       
+        doc.addImage(signatureData, 'PNG', 95, 75, 35, 10);
+        
+    }
+
+    /*  ######################################################
+                Anexo A
+            intificacin del equipo
+    #######################################################*/
+    doc.setFontSize(12);
+    doc.text(`WIZARD|SUNMI`, 23, 217);
+    doc.text(`${modeloEquipo}`, 24, 221.5);
+    doc.text(`${serialEquipo.toUpperCase()}`, 23, 225.5);
+    doc.text(`${serialSim.toUpperCase()}`, 38, 230);
+    doc.text(`${operadora.toUpperCase()}`, 49, 234.5);
+    doc.text(`${dia}`, 140, 252.5);
+    doc.text(`${obtenerMes(mes)}`, 177, 252.5);
+    doc.text(`${String(anio).slice(2,4)}`, 19, 257);
+
+    if (signatureCanvas && !isCanvasBlank(signatureCanvas)) {
+        const signatureData = signatureCanvas.toDataURL('image/png');
+       
+        doc.addImage(signatureData, 'PNG', 98, 273, 35, 10);
+        
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+     // Guardar el PDF
+        const razonSocialAbrv = razonSocial.substring(0, 20).replace(/[^a-zA-Z0-9]/g, '_');
+        doc.save(`planilla_master_${razonSocialAbrv || 'solicitud'}.pdf`);
+        
+         Swal.fire({
+            title: "Venta con Master",
+            text: "Planilla generada exitosamente!",
+            icon: "success"
+            });
+}
+
+
+// Generar PDF para Credicard
+function generarPDFCredicard() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ compress: true });
+    
+    const modalidad = document.querySelector('input[name="modalidad"]:checked').value;
+    const razonSocial = document.querySelector('input[name="razonSocial"]').value;
+    const rif = document.querySelector('input[name="rifComercio"]').value;
+    
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(16);
+    doc.text('CONTRATO CREDICARD', 105, 20, { align: 'center' });
+    
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Modalidad: ${modalidad}`, 20, 40);
+    doc.text(`Razón Social: ${razonSocial}`, 20, 50);
+    doc.text(`RIF: ${rif}`, 20, 60);
+    
+    // Agregar firma
+    const signatureCanvas = document.getElementById('signatureCanvas');
+    if (signatureCanvas && !isCanvasBlank(signatureCanvas)) {
+        const signatureData = signatureCanvas.toDataURL('image/png');
+        doc.addImage(signatureData, 'PNG', 20, 150, 80, 30);
+        doc.text('Firma del Representante', 20, 190);
+    }
+    
+    doc.save('contrato_credicard.pdf');
+     Swal.fire({
+  title: "Venta con Credicard",
+  text: "Contrato generado exitosamente!",
+  icon: "success"
+});
+    
+}
+
+// Función para enviar por WhatsApp
+function enviarPorWhatsApp() {
+    // Obtener datos del formulario
+     const currentPage = window.location.pathname.split('/').pop();
+      let mensaje = '';
+    const fechaActual = new Date();
+    const dia = fechaActual.getDate();       // Día del mes (1-31)
+    const mes = fechaActual.getMonth() + 1;  // Mes (0-11, por eso sumamos 1)
+    const anio = fechaActual.getFullYear();
+
+  
+   
+   
+    // Obtener datos básicos según la página
+    if (currentPage.includes('disglobal')) {
+         const tipoColocacion = document.querySelector('select[name="modeloNegocio"]').value;
+        const codigoAfiliacion = document.querySelector('input[name="codigoAfiliado"]').value;
+        const razonSocial = document.querySelector('input[name="razonSocial"]').value;
+        const tiporif = document.querySelector('select[name="tipoRif"]').value;
+        let rif = document.querySelector('input[name="rif"]').value;
+        const banco = document.querySelector('select[name="banco"]').value;
+        let cuentaBancaria = document.querySelector('input[name="cuentaBancaria"]').value;
+        const actividadEconomica = document.querySelector('input[name="actividadEconomica"]').value;
+        const ciudad = document.querySelector('input[name="ciudad"]').value;
+        const estado = document.querySelector('input[name="estado"]').value;
+        const zonaPostal = document.querySelector('input[name="codigoPostal"]').value;
+        const direccionFiscal = document.querySelector('input[name="direccionFiscal"]').value;
+        const telefono = document.querySelector('input[name="telefono"]').value;
+        const correo = document.querySelector('input[name="correo"]').value;
+        
+        let representanteLegal = document.querySelector('input[name="nombresRepresentante"]').value;
+        
+        const telefonoRepresentante = document.querySelector('input[name="telefonoRepresentante"]').value;
+        const correoRepresentante = document.querySelector('input[name="correoRepresentante"]').value;
+        let cedulaRepresentante = document.querySelector('input[name="cedulaRepresentante"]').value;
+        const modeloEquipo = document.querySelector('input[name="modeloEquipo"]').value;
+        const cantidadEquipo = document.querySelector('input[name="cantidadEquipo"]').value;
+        
+        const operadora = document.querySelector('select[name="operadora"]').value;
+        
+        const serialEquipo = document.querySelector('input[name="serialEquipo"]').value;
+        const serialSim = document.querySelector('input[name="serialSim"]').value;
+
+        mensaje += `*Disglobal*
+        \nBanco: ${banco.toUpperCase()}
+        \nRazón Social: ${razonSocial.toUpperCase()}
+        \nRif.: ${tiporif}-${rif}
+        \nCódigo: ${codigoAfiliacion}
+        \nCuenta: ${cuentaBancaria}
+        \nModelo: ${modeloEquipo.toUpperCase()}
+        \nSerial: ${serialEquipo.toUpperCase()}
+        \nOperadora: ${operadora.toUpperCase()}
+        \nSimCard: ${serialSim.toUpperCase()}
+        \nCorreo: ${correo.toUpperCase()}
+        \nTeléfono: ${telefono}
+        \nDirección: ${direccionFiscal.toUpperCase()} ${ciudad.toUpperCase()} ${estado.toUpperCase()} ZONA POSTAL ${zonaPostal}
+        \nModalidad de venta: ${tipoColocacion.toUpperCase()}
+        \nTASA: 
+        \nFecha de envío: ${String(dia).padStart(2, '0')}/${String(mes).padStart(2, '0')}/${anio}
+        \nNumero de referencia de transferencia:
+        `;
+    } else if (currentPage.includes('vepagos')) {
+       const razonSocial = document.querySelector('input[name="razonSocial"]').value;
+        const tiporif = document.querySelector('select[name="tipoRif"]').value;
+        
+        let rif = document.querySelector('input[name="rif"]').value;
+        const representanteLegal = document.querySelector('input[name="nombresRepresentante"]').value;
+        const tipoCliente = document.querySelector('input[name="tipoCliente"]:checked').value; 
+        const banco = document.querySelector('select[name="banco"]').value;
+        let cuentaBancaria = document.querySelector('input[name="cuentaBancaria"]').value;
+        const codOficina = document.querySelector('input[name="codOficina"]').value;
+        const regional = document.querySelector('input[name="regional"]').value;
+        const estado = document.querySelector('input[name="estado"]').value;
+        const telefono = document.querySelector('input[name="telefono"]').value;
+        const correo = document.querySelector('input[name="correo"]').value;
+        const actividadEconomica = document.querySelector('input[name="actividadEconomica"]').value;
+        const modeloEquipo = document.querySelector('select[name="modeloEquipo"]').value;
+        const formaPago = document.querySelector('select[name="metodoPago"]').value;
+        const serialEquipo = document.querySelector('input[name="serialEquipo"]').value;
+        const operadora = document.querySelector('select[name="operadora"]').value;
+        const codigoAfiliacion = document.querySelector('input[name="codigoAfiliado"]').value;
+        const tipoColocacion = document.querySelector('select[name="tipoColocacion"]').value;
+
+          mensaje += `
+        PLANTILLA ÚNICA 
+        \nAliado: VEPAGOS
+        \nComercio: ${razonSocial.toUpperCase()}
+        \nRIF: ${tiporif}-${rif}
+        \nREPRESENTANTE: ${tipoCliente === "natural" ? razonSocial.toUpperCase() : representanteLegal.toUpperCase()}
+        \nBanco: ${banco.toUpperCase()}
+        \nCuenta Bancaria: ${cuentaBancaria}
+        \nCod Oficina:${codOficina}
+        \nRegional: ${regional}
+        \nEstado: ${estado.toUpperCase()}
+        \nTeléfono: ${telefono}
+        \nCorreo Electrónico: ${correo}
+        \nEconómica: ${actividadEconomica.toUpperCase()} 
+        \nModelo del Equipo: ${modeloEquipo.toUpperCase()}
+        \nCantidad de Equipo: 1
+        \nMétodo de Pago: ${formaPago.toUpperCase()}
+        \nSerial del Equipo: ${serialEquipo.toUpperCase()}
+        \nOperadora: ${operadora.toUpperCase()}
+        \nCódigo de Afiliación: ${codigoAfiliacion}
+        \nModalidad de venta: ${tipoColocacion.toUpperCase()}
+        \nTerminal: 
+        
+        
+        `; 
+      
+
+    } else if (currentPage.includes('master')) {
+        
+        mensaje += `
+        SOLICITUD DE AUTORIZACIÓN DE VENTA
+        \nTipo de venta:  
+        \nRazón social: 
+        \nRif: 
+        \nBanco:  
+        \nCódigo afiliación: 
+        \nCantidad equipo:  
+        \nModelo:  
+        \nSerial del equipo:  
+        \nOperador: 
+        \nSerial de la simcard: 
+        \nCorreo:  
+        \nTeléfono: 
+        \nNúmero de cuenta:  
+        \nDirección completa del rif con su zona postal:  
+        \nMarca: MASTER
+        \nForma de pago:  
+        \nCobro Mantenimiento: 
+        `;
+    } else if (currentPage.includes('credicard')) {
+        const razonSocial = document.querySelector('input[name="razonSocial"]').value;
+        mensaje += `*Credicard*\nRazón Social: ${razonSocial}\n`;
+    }
+    
+    //mensaje += '\nLos documentos PDF se adjuntan por separado.';
+    
+    // Codificar mensaje para URL
+    const mensajeCodificado = encodeURIComponent(mensaje);
+    
+    // Abrir WhatsApp
+    window.open(`https://wa.me/?text=${mensajeCodificado}`, '_blank');
+    
+    // Generar PDF antes de enviar
+    generarPDF();
+}
+
+// Utilidad para verificar si el canvas está vacío
+function isCanvasBlank(canvas) {
+    const context = canvas.getContext('2d');
+    const pixelBuffer = new Uint32Array(
+        context.getImageData(0, 0, canvas.width, canvas.height).data.buffer
+    );
+    return !pixelBuffer.some(color => color !== 0);
+}
