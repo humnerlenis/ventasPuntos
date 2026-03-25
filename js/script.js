@@ -1155,24 +1155,24 @@ function generarPDFDisglobal() {
                 switch (banco) {
                     case "plaza":
                         doc.text(`CUARENTA Y CUATRO`, 120, 119.5);
-                        doc.text(`44$`, 195, 119.5);
+                        doc.text(`40$`, 195, 119.5);
                         break;
                     case "bancrecer":
                         doc.text(`CUARENTA Y CINCO`, 120, 119.5);
-                        doc.text(`45$`, 195, 119.5);
+                        doc.text(`43$`, 195, 119.5);
                         break;
 
                     case "bnc":
                         doc.text(`CUARENTA Y CINCO`, 120, 119.5);
-                        doc.text(`45$`, 195, 119.5);
+                        doc.text(`40$`, 195, 119.5);
                         break;
                     case "delsur":
                         doc.text(`CUARENTA Y TRES`, 120, 119.5);
-                        doc.text(`43$`, 195, 119.5);
+                        doc.text(`40$`, 195, 119.5);
                         break;
                     case "bfc":
                         doc.text(`CUARENTA Y CINCO`, 120, 119.5);
-                        doc.text(`45$`, 195, 119.5);
+                        doc.text(`40$`, 195, 119.5);
                         break;
 
                     case "bancamiga":
@@ -1272,24 +1272,24 @@ function generarPDFDisglobal() {
                 switch (banco) {
                     case "plaza":
                         doc.text(`CUARENTA Y CUATRO`, 47, 153);
-                        doc.text(`44$`, 123, 153);
+                        doc.text(`40$`, 123, 153);
                         break;
                     case "bancrecer":
                         doc.text(`CUARENTA Y CINCO`, 47, 153);
-                        doc.text(`45$`, 123, 153);
+                        doc.text(`43$`, 123, 153);
                         break;
 
                     case "bnc":
                         doc.text(`CUARENTA Y CINCO`, 47, 153);
-                        doc.text(`45$`, 123, 153);
+                        doc.text(`40$`, 123, 153);
                         break;
                     case "delsur":
                         doc.text(`CUARENTA Y TRES`, 47, 153);
-                        doc.text(`43$`, 123, 153);
+                        doc.text(`40$`, 123, 153);
                         break;
                     case "bfc":
                         doc.text(`CUARENTA Y CINCO`, 47, 153);
-                        doc.text(`45$`, 123, 153);
+                        doc.text(`40$`, 123, 153);
                         break;
 
                     case "bancamiga":
@@ -1391,24 +1391,24 @@ function generarPDFDisglobal() {
                     switch (banco) {
                     case "plaza":
                         doc.text(`CUARENTA Y CUATRO`, 127, 122);
-                        doc.text(`44$`, 16, 124);
+                        doc.text(`40$`, 16, 124);
                         break;
                     case "bancrecer":
                         doc.text(`CUARENTA Y CINCO`, 127, 122);
-                        doc.text(`45$`, 16, 124);
+                        doc.text(`43$`, 16, 124);
                         break;
 
                     case "bnc":
                         doc.text(`CUARENTA Y CINCO`, 127, 122);
-                        doc.text(`45$`, 16, 124);
+                        doc.text(`40$`, 16, 124);
                         break;
                     case "delsur":
                         doc.text(`CUARENTA Y TRES`, 127, 122);
-                        doc.text(`43$`, 16, 124);
+                        doc.text(`40$`, 16, 124);
                         break;
                     case "bfc":
                         doc.text(`CUARENTA Y CINCO`, 127, 122);
-                        doc.text(`45$`, 16, 124);
+                        doc.text(`40$`, 16, 124);
                         break;
 
                     case "bancamiga":
@@ -1525,11 +1525,11 @@ function generarPDFDisglobal() {
                     switch (banco) {
                         case "plaza":
                             doc.text(`CUARENTA Y CUATRO`, 47, 153);
-                            doc.text(`44$`, 123, 153);
+                            doc.text(`45$`, 123, 153);
                             break;
                         case "bancrecer":
                             doc.text(`CUARENTA Y CINCO`, 47, 153);
-                            doc.text(`45$`, 123, 153);
+                            doc.text(`43$`, 123, 153);
                             break;
 
                         case "bnc":
@@ -1538,7 +1538,7 @@ function generarPDFDisglobal() {
                             break;
                         case "delsur":
                             doc.text(`CUARENTA Y TRES`, 47, 153);
-                            doc.text(`43$`, 123, 153);
+                            doc.text(`45$`, 123, 153);
                             break;
                         case "bfc":
                             doc.text(`CUARENTA Y CINCO`, 47, 153);
@@ -1551,8 +1551,8 @@ function generarPDFDisglobal() {
                             break;
                     
                         default:
-                            doc.text(`CUARENTA DOLARES`, 85, 159);
-                            //doc.text(`40$`, 123, 153);
+                            doc.text(`CUARENTA Y CINCO DOLARES`, 85, 159);
+                            doc.text(`45$`, 123, 153);
                             break;
                 }
               
