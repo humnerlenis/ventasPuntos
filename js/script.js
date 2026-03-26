@@ -2128,19 +2128,19 @@ function generarPDFMaster1() {
    // ############## cargo a cuenta ##################
    doc.addPage();
      let imgData2= new Image();
-    imgData2.src = 'img/master/cargo_a_cuenta.png'; // Tu imagen en Base64
+    imgData2.src = 'img/master/cargo_a_cuenta1.png'; // Tu imagen en Base64
     doc.addImage(imgData2, 'PNG', 0, 0, 210, 297); // 210x297mm es A4
     doc.setFontSize(12);
     doc.setFont('helvetica', 'normal');
 
-    doc.text(`${representanteLegal.toUpperCase()}`, 65, 65);
-    doc.text(`${nacionalidadRepresentante.toUpperCase()}`, 30, 73.5);
-    doc.text(`${cedulaRepresentante.replace(/[\s-a-zA-Z]/g, '').slice(0, -1)}`, 160, 80.5);
-    doc.text(`${ciudad.toUpperCase()}`, 30, 80.5);
-    doc.text(`${razonSocial.toUpperCase()}`, 55, 103);
-    doc.text(`${tiporif.toUpperCase()}-${rif}`, 87, 110.5);
+    doc.text(`${representanteLegal.toUpperCase()}`, 65, 79);
+    doc.text(`${nacionalidadRepresentante.toUpperCase()}`, 30, 86.5);
+    (cedulaRepresentante.length > 8)?doc.text(`${cedulaRepresentante.replace(/[\s-a-zA-Z]/g, '').slice(0, -1)}`, 160, 94):doc.text(`${cedulaRepresentante}`, 160, 94);
+    doc.text(`${ciudad.toUpperCase()}`, 30, 94);
+    doc.text(`${razonSocial.toUpperCase()}`, 55, 116.5);
+    doc.text(`${tiporif.toUpperCase()}-${rif}`, 90, 124);
     doc.setFontSize(10);
-    doc.text(`${cuentaBancaria}`, 50, 125);
+    doc.text(`${cuentaBancaria}`, 52, 139);
 
 
     
@@ -2148,15 +2148,15 @@ function generarPDFMaster1() {
         const signatureData = signatureCanvas.toDataURL('image/png');
        // doc.text(`${razonSocial.toUpperCase().slice(0, 30)}`, 65, 245);
         //doc.text(`${rif.slice(0, 8)}`, 68, 256);
-        doc.addImage(signatureData, 'PNG', 33, 208, 35, 10);
+        doc.addImage(signatureData, 'PNG', 33, 214.5, 35, 10);
         
     }
 
 
     doc.setFontSize(9);
-    doc.text(`${representanteLegal.toUpperCase()}`, 32, 230);
+    doc.text(`${representanteLegal.toUpperCase()}`, 31, 235.5);
     doc.setFontSize(11);
-    doc.text(`${cedulaRepresentante.slice(0, 10)}`, 33, 237);
+    doc.text(`${cedulaRepresentante.slice(0, 10)}`, 33, 243.5);
 
 
 
@@ -2244,6 +2244,7 @@ function generarPDFMaster1() {
                 Anexo A
             intificacin del equipo
     #######################################################*/
+    
     doc.setFontSize(12);
     doc.text(`WIZARD|SUNMI`, 23, 217);
     doc.text(`${modeloEquipo}`, 24, 221.5);
@@ -2260,17 +2261,6 @@ function generarPDFMaster1() {
         doc.addImage(signatureData, 'PNG', 98, 273, 35, 10);
         
     }
-
-
-
-
-
-
-
-
-
-
-
 
 
 
