@@ -831,7 +831,11 @@ function generarPDFDisglobal() {
     doc.text(`${direccionFiscal.toUpperCase().slice(0, 100)}`, 16, 86);
     doc.text(`${telefono.slice(0, 4)}`, 19, 95);
     doc.text(`${telefono.slice(4, 12).replace(/[\s-]+/g, '')}`, 40, 95);
+    if (correo.length > 30) {
+        doc.setFontSize(6); // Reducir tamaño de fuente para correos largos
+    }
     doc.text(`${correo.toUpperCase().slice(0, 30)}`, 132, 95);
+    doc.setFontSize(12);
     doc.text(`${nombreRegistroMercantil.toUpperCase().slice(0, 50)}`, 16, 109);
     let fechareg = fechaRegistro.replace(/^(\d{4})-(\d{2})-(\d{2})$/g,'$3/$2/$1');
     
@@ -1706,7 +1710,11 @@ function generarPDFVepagos() {
 
     doc.text(` ${rif}`, 43, 45);
     doc.text(` ${codigoAfiliado}`, 145, 50.5);
+    if (correo.length > 30) {
+        doc.setFontSize(6); 
+    }
      doc.text(`${correo.toUpperCase().slice(0, 30)}`, 50, 56);
+     doc.setFontSize(11);
      doc.text(`${telefono}`, 135, 56);
      cuentaBancaria.replace(/[\s-]+/g, '');
     let distancia = 50; // Posición inicial para la primera letra
@@ -2065,7 +2073,11 @@ function generarPDFMaster1() {
     doc.text(`${direccionFiscal.toUpperCase().slice(0, 100)}`, 21, 88);
     //doc.text(`${telefono.toUpperCase().slice(0, 4)}`, 19, 100);
     doc.text(`${telefono.toUpperCase().slice(0, 11)}`, 21, 105);
+    if (correo.length > 30) {
+        doc.setFontSize(6);
+    }
     doc.text(`${correo.toUpperCase().slice(0, 30)}`, 132, 105);
+    doc.setFontSize(10);
     doc.text(`${nombreRegistroMercantil.toUpperCase().slice(0, 50)}`, 21, 120);
     let fechareg = fechaRegistro.replace(/^(\d{4})-(\d{2})-(\d{2})$/g,'$3/$2/$1');
     
