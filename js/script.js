@@ -326,8 +326,7 @@ function setupEventListeners() {
    
      const nacionalidadRepresentante = document.getElementById('nacionalidadRepresentante');
         const razonSocial = document.querySelector('input[name="razonSocial"]');
-        const tipoRif = document.querySelector('select[name="tipoRif"]');
-        const rif = document.querySelector('input[name="rif"]').value; 
+       
         //const telefono = document.querySelector('input[name="telefono"]').value;
         const telefono = document.getElementById('telefono');
         
@@ -345,6 +344,8 @@ function setupEventListeners() {
                     nombresRepresentante.addEventListener('focus', function() {
                          const tipoCliente = document.querySelector('input[name="tipoCliente"]:checked')?.value;
                         const razonSocial = document.querySelector('input[name="razonSocial"]');
+                         const tipoRif = document.querySelector('select[name="tipoRif"]');
+                            const rif = document.querySelector('input[name="rif"]'); 
                         //console.log(tipoRif);
                         if  (tipoCliente === 'natural' || tipoCliente === 'firma') {
                             
@@ -358,7 +359,7 @@ function setupEventListeners() {
                                     
                                 } else {
                                     nombresRepresentante.value = razonSocial.value;
-                                            cedulaRepresentante.value = rif.slice(0, -1); // Asumiendo que el RIF termina con una letra, se quita para la cédula
+                                            cedulaRepresentante.value = tipoRif.value + rif.value; // Asumiendo que el RIF termina con una letra, se quita para la cédula
                                         if (cargoRepresentante) {
                                                 cargoRepresentante.value = 'DUEÑO';
                                             }

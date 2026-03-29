@@ -327,13 +327,13 @@ function setupEventListeners() {
    
      const nacionalidadRepresentante = document.getElementById('nacionalidadRepresentante');
         const razonSocial = document.querySelector('input[name="razonSocial"]');
-        const tipoRif = document.querySelector('select[name="tipoRif"]');
-        const rif = document.querySelector('input[name="rif"]').value; 
+       // const tipoRif = document.querySelector('select[name="tipoRif"]');
+       // const rif = document.querySelector('input[name="rif"]').value; 
         //const telefono = document.querySelector('input[name="telefono"]').value;
-        const telefono = document.getElementById('telefono');
+        
         
         //const correo = document.querySelector('input[name="correo"]').value;
-        const correo = document.getElementById('correo');
+        
         
         
         const nombresRepresentante = document.querySelector('input[name="nombresRepresentante"]');
@@ -346,6 +346,10 @@ function setupEventListeners() {
                     nombresRepresentante.addEventListener('focus', function() {
                          const tipoCliente = document.querySelector('input[name="tipoCliente"]:checked')?.value;
                         const razonSocial = document.querySelector('input[name="razonSocial"]');
+                        const tipoRif = document.querySelector('select[name="tipoRif"]');
+                        const rif = document.querySelector('input[name="rif"]'); 
+                        const telefono = document.getElementById('telefono');
+                        const correo = document.getElementById('correo');
                         //console.log(tipoRif);
                         if  (tipoCliente === 'natural' || tipoCliente === 'firma') {
                             
@@ -358,10 +362,13 @@ function setupEventListeners() {
                                     });
                                     
                                 } else {
-                                    nombresRepresentante.value = razonSocial.value;
-                                            cedulaRepresentante.value = rif.slice(0, -1); // Asumiendo que el RIF termina con una letra, se quita para la cédula
+                                    nombresRepresentante.value = razonSocial.value;                                            
+                                    //cedulaRepresentante.value = ; // Asumiendo que el RIF termina con una letra, se quita para la cédula
+                                    
+                                    console.log("hashshshsh  " + document.querySelector('input[name="rif"]').value.slice(0, -1));
                                         if (cargoRepresentante) {
                                                 cargoRepresentante.value = 'DUEÑO';
+                                                alert('Datos del representante legal autocompletados exitosamente');
                                             }
                                             if (telefonoRepresentante) {
                                                 telefonoRepresentante.value = telefono.value;
