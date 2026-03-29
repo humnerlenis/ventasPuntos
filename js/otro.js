@@ -681,42 +681,7 @@ function validarFormularioDisglobal() {
 }
 
 // Generar PDF para Disglobal
-/*
-function generarPDFDisglobal() {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({ compress: false });
-    
-    // Obtener datos del formulario
-    const tipoColocacion = document.querySelector('input[name="modeloNegocio"]').value;
-    const tipoCliente = document.querySelector('input[name="tipoCliente"]:checked').value;
-    const razonSocial = document.querySelector('input[name="razonSocial"]').value;
-    const rif = document.querySelector('input[name="rif"]').value;
-    
-    // Configurar documento
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(16);
-    doc.text('CONTRATO DISGLOBAL', 105, 20, { align: 'center' });
-    
-    doc.setFontSize(12);
-    doc.setFont('helvetica', 'normal');
-    doc.text(`Tipo de Colocación: ${tipoColocacion}`, 20, 40);
-    doc.text(`Tipo de Cliente: ${tipoCliente}`, 20, 50);
-    doc.text(`Razón Social: ${razonSocial}`, 20, 60);
-    doc.text(`RIF: ${rif}`, 20, 70);
-    
-    // Agregar firma si existe
-    const signatureCanvas = document.getElementById('signatureCanvas');
-    if (signatureCanvas && !isCanvasBlank(signatureCanvas)) {
-        const signatureData = signatureCanvas.toDataURL('image/png');
-        doc.addImage(signatureData, 'PNG', 20, 150, 80, 30);
-        doc.text('Firma del Representante', 20, 190);
-    }
-    
-    // Guardar PDF
-    doc.save('contrato_disglobal.pdf');
-    
-}
-*/
+
 
  function generarPlanillaUnicaDisglobal() {
     const { jsPDF } = window.jspdf;
