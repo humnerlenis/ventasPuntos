@@ -857,6 +857,7 @@ function generarPDFDisglobal() {
         doc.setFontSize(7);
         doc.text(`${razonSocial.toUpperCase().slice(0, 40)}`, 34, 221);
         doc.text(`${ciudad.toUpperCase().slice(0, 30)}`, 16, 225);
+        doc.text(`${estadoCivil.toUpperCase()}`, 142, 221);
         doc.text(`${rif.slice(0, 8)}`, 100, 225);
     } else {
          doc.setFontSize(9);
@@ -870,6 +871,8 @@ function generarPDFDisglobal() {
         //seccion de representante legal al final del documento
         doc.setFontSize(7);
         doc.text(`${representanteLegal.toUpperCase().slice(0, 40)}`, 32, 221);
+        
+        
         doc.text(`${estadoCivil.toUpperCase()}`, 142, 221);
         doc.text(`${ciudad.toUpperCase().slice(0, 30)}`, 16, 225);
         doc.text(`${cedulaRepresentante.slice(0, -1)}`, 100, 225);
