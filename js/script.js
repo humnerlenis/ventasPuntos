@@ -1480,7 +1480,7 @@ function generarPDFDisglobal() {
                 doc.setFont('helvetica', 'normal');
 
                  doc.text(`${razonSocial.toUpperCase()}`, 68, 32.5);  
-                doc.text(`${ciudad.toUpperCase()}`, 151, 32.5); 
+                doc.text(`${ciudad.toUpperCase()}`, 148.5, 32.5); 
                 if (tipoCliente === 'natural') {
                     doc.text(`----------`, 34, 35.5);
                     //doc.setFontSize(4);
@@ -1497,7 +1497,7 @@ function generarPDFDisglobal() {
                     doc.text(`------`, 68, 38.5);
                     doc.text(`----------`, 106, 38.5);
                     doc.text(`---------`, 145, 38.5);
-                    doc.text(`${ciudad.toUpperCase()}`, 30, 41.5);
+                    doc.text(`${ciudad.toUpperCase()}`, 26, 41.5);
                     doc.text(`${tiporif}-${rif.toUpperCase().slice(0,-1)}`, 89, 41.5); //se le quita un digito al rif para colocar la cedula del representante legal 
                     doc.text(`${tiporif}-${rif}`, 147, 41.5)
                     doc.text(`-------------`, 30, 44.5);
@@ -1577,7 +1577,7 @@ function generarPDFDisglobal() {
             doc.text(`${direccionFiscal.toUpperCase()}`, 105, 82.5);
             doc.text(`${telefono.toUpperCase()}`, 40, 85.5);
              doc.text(`${representanteLegal.toUpperCase()}`, 100, 85.5); 
-            doc.text(`${correo.toUpperCase()}`, 30, 88.5);
+            doc.text(`${correo.toUpperCase()}`, 26, 88.5);
             doc.text(`${ciudad.toUpperCase()}`, 152, 91.5);
             doc.text(` ${dia} `, 183, 91.5);
             doc.text(` ${mes.toUpperCase()} `, 35, 94.5);
@@ -1587,7 +1587,7 @@ function generarPDFDisglobal() {
             doc.text(`${serialSim.toUpperCase()}`, 45, 130.5);
             doc.text(`${banco.toUpperCase()}`, 45, 133);
             
-            doc.text(`${ciudad.toUpperCase()}`, 100, 142);
+            doc.text(`${ciudad.toUpperCase()}`, 96, 142);
             doc.setFontSize(6);
             doc.text(` ${dia} `, 133, 142);
             
